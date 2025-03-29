@@ -1,6 +1,6 @@
 name: Auto Assign Reviewers
 on:
-  pull_request:
+  pull_request_target:
     types: [opened]
 
 jobs:
@@ -16,4 +16,4 @@ jobs:
             erminmiro,
             OlgaKupar,
             thedovla,
-            TJCur,
+            TJCur
