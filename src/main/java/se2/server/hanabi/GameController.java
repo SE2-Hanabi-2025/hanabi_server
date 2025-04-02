@@ -15,16 +15,16 @@ public class GameController {
         return "Connection established with the server!";
     }
 
-    @GetMapping("/start-game")
+    @GetMapping("/game/start")
     public String startGame() {
         deck = new Deck();  // Reset the deck
         return "Game started! New deck created.";
     }
 
-    @GetMapping("/draw")
+    @GetMapping("/game/draw")
     public String drawCard() {
         Card card = deck.drawCard();
-        return (card != null) ? "Drew a card: " + card : "No more cards in the deck!";
+        return (card != null) ? "Drew a card: " + card.getValue() : "No more cards in the deck!";
     }
 
 }
