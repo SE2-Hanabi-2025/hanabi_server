@@ -25,7 +25,6 @@ public class HanabiApplication {
 			session.disconnect();
 		} catch (Exception e) {
 			System.out.println("Verbindung zum SSH-Server fehlgeschlagen");
-			e.printStackTrace();
 		}
 	}
 }
