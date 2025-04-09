@@ -32,6 +32,13 @@ class GameControllerTest {
     }
 
     @Test
+    void testInfoButtonServerStatus() throws Exception {
+        mockMvc.perform(get("/status"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Server is running and ready to accept requests."));
+    }
+
+    @Test
     void testDrawCard() throws Exception {
         // Start the game to initialize the deck
         mockMvc.perform(get("/game/start")).andExpect(status().isOk());
