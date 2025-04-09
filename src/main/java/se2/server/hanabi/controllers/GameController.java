@@ -27,4 +27,9 @@ public class GameController {
         return (card != null) ? "Drew a card: " + card.getValue() : "No more cards in the deck!";
     }
 
+    @GetMapping("/status")
+    public String getServerStatus() {
+        return "Server is running and ready to accept requests.";
+    }
+
 }
