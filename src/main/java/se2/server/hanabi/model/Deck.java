@@ -1,4 +1,4 @@
-package se2.server.hanabi.CardLogic;
+package se2.server.hanabi.model;
 
 import java.util.ArrayList;
 import java.util.Collections;

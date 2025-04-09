@@ -1,4 +1,4 @@
-package se2.server.hanabi.CardLogic;
+package se2.server.hanabi.model;
 
 public class Card {
     private int value;
