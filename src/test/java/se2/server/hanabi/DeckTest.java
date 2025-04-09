@@ -2,8 +2,8 @@ package se2.server.hanabi;
 
 import org.junit.jupiter.api.Test;
 
-import se2.server.hanabi.CardLogic.Card;
-import se2.server.hanabi.CardLogic.Deck;
+import se2.server.hanabi.model.Card;
+import se2.server.hanabi.model.Deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 

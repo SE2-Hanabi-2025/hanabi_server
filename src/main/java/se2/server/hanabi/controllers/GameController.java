@@ -1,9 +1,9 @@
-package se2.server.hanabi;
+package se2.server.hanabi.controllers;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import se2.server.hanabi.CardLogic.Card;
-import se2.server.hanabi.CardLogic.Deck;
+import se2.server.hanabi.model.Card;
+import se2.server.hanabi.model.Deck;
 
 @RestController
 public class GameController {

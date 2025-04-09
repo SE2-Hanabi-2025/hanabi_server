@@ -10,13 +10,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class HanabiApplication {
 
+	/*
 	@Autowired
 	private SSHConnector sshConnector;
 
+
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(HanabiApplication.class, args);
 	}
 
+	/*
 	@PostConstruct
 	public void init() {
 		try {
@@ -27,4 +31,6 @@ public class HanabiApplication {
 			System.out.println("Verbindung zum SSH-Server fehlgeschlagen");
 		}
 	}
+
+	 */
 }
