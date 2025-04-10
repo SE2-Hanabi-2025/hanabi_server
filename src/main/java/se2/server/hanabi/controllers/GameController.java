@@ -18,7 +18,7 @@ public class GameController {
     @GetMapping("/connect")
     @Operation(
             summary = "Establish a connection with the server",
-            description = "This endpoint establishes a connection with the server. It returns a confirmation message that the server is up and running.",
+            description = "This endpoint establishes a connection with the server. Returns a confirmation message.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Connection established",
                             content = @io.swagger.v3.oas.annotations.media.Content(
@@ -35,7 +35,7 @@ public class GameController {
     @GetMapping("/game/start")
     @Operation(
             summary = "Start a new game",
-            description = "This endpoint resets the deck and starts a new game by initializing a new deck of cards. It also returns a message to confirm the game has started.",
+            description = "This endpoint resets the deck and starts a new game by initializing a new deck of cards. Returns a confirmation message.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Game started successfully",
                             content = @io.swagger.v3.oas.annotations.media.Content(
@@ -76,7 +76,7 @@ public class GameController {
     @GetMapping("/status")
     @Operation(
             summary = "Get server status",
-            description = "This endpoint checks the status of the server. It returns a message indicating if the server is up and running.",
+            description = "This endpoint checks the status of the server. Returns a confirmation message.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Server is running",
                             content = @io.swagger.v3.oas.annotations.media.Content(
