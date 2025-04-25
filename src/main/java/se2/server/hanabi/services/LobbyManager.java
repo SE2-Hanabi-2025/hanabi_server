@@ -16,10 +16,18 @@ public class LobbyManager {
     private final Map<String, Lobby> lobbies = new HashMap<>();
 
     public String  createLobby() {
-        Lobby lobby = new Lobby();
-        String lobbyId = lobby.getId();
+      String uniqueCode = generateUniqueCode();
+      Lobby lobby = new Lobby(uniqueCode);
         lobbies.put(lobby.getId(), lobby);
-        return lobbyId;
+        return uniqueCode;
+    }
+
+    private String generateUniqueCode() {
+        String code;
+        do {
+            code = LobbyCodeGenerator.generateLobbyCode();
+        } while (lobbies.containsKey(code));
+        return code;
     }
 
     public Lobby getLobby(String id) {

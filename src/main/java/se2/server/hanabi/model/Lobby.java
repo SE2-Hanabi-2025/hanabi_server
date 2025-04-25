@@ -5,14 +5,16 @@ import lombok.Getter;
 import java.util.*;
 
 public class Lobby {
+
     @Getter
     private final String id;
+
     @Getter
     private List<Player> players = new ArrayList<>();
     private boolean isGameStarted;
 
-    public Lobby() {
-        this.id = UUID.randomUUID().toString();
+    public Lobby(String id) {
+        this.id = id;
         this.players = new ArrayList<>();
         this.isGameStarted = false;
     }
@@ -23,4 +25,5 @@ public class Lobby {
     public void startGame(){
         this.isGameStarted = true;
     }
+
 }

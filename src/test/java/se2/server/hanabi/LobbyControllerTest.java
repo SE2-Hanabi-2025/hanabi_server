@@ -41,7 +41,7 @@ public class LobbyControllerTest {
 
     @Test
     void joinLobby_successful() throws Exception {
-        Lobby mockLobby = new Lobby();
+        Lobby mockLobby = new Lobby("test123");
         when(lobbyManager.getLobby("test123")).thenReturn(mockLobby);
         when(lobbyManager.joinLobby("test123", "Alice")).thenReturn(true);
 
@@ -61,7 +61,7 @@ public class LobbyControllerTest {
 
     @Test
     void joinLobby_gameAlreadyStarted() throws Exception {
-        Lobby startedLobby = new Lobby();
+        Lobby startedLobby = new Lobby("started");
         startedLobby.startGame(); // setzt isGameStarted auf true
         when(lobbyManager.getLobby("started")).thenReturn(startedLobby);
 
@@ -72,7 +72,7 @@ public class LobbyControllerTest {
 
     @Test
     void joinLobby_lobbyFull() throws Exception {
-        Lobby fullLobby = new Lobby();
+        Lobby fullLobby = new Lobby("fulllobby");
         List<Player> fullList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             fullList.add(new se2.server.hanabi.model.Player("Player" + i));
@@ -88,7 +88,7 @@ public class LobbyControllerTest {
 
     @Test
     void joinLobby_unknownJoinError() throws Exception {
-        Lobby lobby = new Lobby();
+        Lobby lobby = new Lobby("error");
         when(lobbyManager.getLobby("errorLobby")).thenReturn(lobby);
         when(lobbyManager.joinLobby("errorLobby", "Buggy")).thenReturn(false);
 
