@@ -1,5 +1,6 @@
 package se2.server.hanabi.gamemanager;
 
+import se2.server.hanabi.gamemanager.actions.DiscardCardAction;
 import se2.server.hanabi.gamemanager.actions.PlayCardAction;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
@@ -48,27 +49,8 @@ public class GameManager {
         return new PlayCardAction(this, playerName, cardIndex).execute();
     }
 
-    public ActionResult discardCard(String playerName, int handIndex) {
-        if (!isCurrentPlayer(playerName)) {
-            return ActionResult.invalid("Not your turn.");
-        }
-
-        // provisorische Lösung --> Spielregeln nachlesen: kann man Karte ablegen, wenn Hinweise voll sind?
-        if (hints >= GameRules.MAX_HINTS) {
-            return ActionResult.invalid("Hints are already full.");
-        }
-
-        List<Card> hand = hands.get(playerName);
-        if (handIndex < 0 || handIndex >= hand.size()) {
-            return ActionResult.invalid("Invalid card index.");
-        }
-
-        Card discarded = hand.remove(handIndex);
-        discardPile.add(discarded);
-        hints++;
-        drawToHand(playerName);
-        advanceTurn();
-        return ActionResult.success("Card discarded.");
+    public ActionResult discardCard(String playerName, int cardIndex) {
+        return new DiscardCardAction(this, playerName, cardIndex).execute();
     }
 
     public ActionResult giveHint(String playerName, String targetPlayerName, Card.Color color) {
