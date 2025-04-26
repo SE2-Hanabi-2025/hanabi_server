@@ -75,6 +75,30 @@ public class GameManager {
         }
     }
 
+    public ActionResult discardCard(String playerName, int handIndex) {
+        if (!isCurrentPlayer(playerName)) {
+            return ActionResult.invalid("Not your turn.");
+        }
+
+        // provisorische Lösung --> Spielregeln nachlesen: kann man Karte ablegen, wenn Hinweise voll sind?
+        if (hints >= GameRules.MAX_HINTS) {
+            return ActionResult.invalid("Hints are already full.");
+        }
+
+        List<Card> hand = hands.get(playerName);
+        if (handIndex < 0 || handIndex >= hand.size()) {
+            return ActionResult.invalid("Invalid card index.");
+        }
+
+        Card discarded = hand.remove(handIndex);
+        discardPile.add(discarded);
+        hints++;
+        drawToHand(playerName);
+        advanceTurn();
+        return ActionResult.success("Card discarded.");
+    }
+
+
     // Helper functions
     private void drawToHand(String playerName) {
         if (!deck.isEmpty()) {
