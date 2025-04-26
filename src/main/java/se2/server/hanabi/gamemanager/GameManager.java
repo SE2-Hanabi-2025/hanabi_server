@@ -1,5 +1,6 @@
 package se2.server.hanabi.gamemanager;
 
+import se2.server.hanabi.gamemanager.actions.PlayCardAction;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
 import se2.server.hanabi.model.Player;
@@ -43,36 +44,8 @@ public class GameManager {
         }
     }
 
-    public ActionResult playCard(String playerName, int handIndex) {
-        if (!isCurrentPlayer(playerName)) {
-            return ActionResult.invalid("Not your turn.");
-        }
-
-        List<Card> hand = hands.get(playerName);
-        if (handIndex < 0 || handIndex >= hand.size()) {
-            return ActionResult.invalid("Invalid card index.");
-        }
-
-        Card played = hand.remove(handIndex);
-        int expectedValue = playedCards.get(played.getColor()) + 1;
-
-        if (played.getValue() == expectedValue) {
-            playedCards.put(played.getColor(), expectedValue);
-            drawToHand(playerName);
-            checkEndCondition();
-            advanceTurn();
-            return ActionResult.success("Card played successfully.");
-        } else {
-            discardPile.add(played);
-            strikes++;
-            drawToHand(playerName);
-            if (strikes >= GameRules.MAX_STRIKES) {
-                gameOver = true;
-                return ActionResult.failure("Wrong card. Game over!");
-            }
-            advanceTurn();
-            return ActionResult.failure("Wrong card. Strike!");
-        }
+    public ActionResult playCard(String playerName, int cardIndex) {
+        return new PlayCardAction(this, playerName, cardIndex).execute();
     }
 
     public ActionResult discardCard(String playerName, int handIndex) {
@@ -125,6 +98,9 @@ public class GameManager {
         return ActionResult.failure("No matching card found in target player's hand.");
     }
 
+    public String getCurrentPlayerName() {
+        return players.get(currentPlayerIndex).getName();
+    }
 
     // Helper functions
     private void drawToHand(String playerName) {
@@ -133,7 +109,7 @@ public class GameManager {
         }
     }
 
-    private void advanceTurn() {
+    public void advanceTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
@@ -152,6 +128,69 @@ public class GameManager {
         if (isPerfect) {
             gameOver = true;
         }
+    }
+
+    public void drawCardToHand(String playerName) {
+        if (!deck.isEmpty()) {
+            hands.get(playerName).add(deck.drawCard());
+        }
+    }
+
+    public void incrementStrikes() {
+        strikes++;
+    }
+
+    // Getters & Setters
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Map<String, List<Card>> getHands() {
+        return hands;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public Map<Card.Color, Integer> getPlayedCards() {
+        return playedCards;
+    }
+
+    public List<Card> getDiscardPile() {
+        return discardPile;
+    }
+
+    public int getHints() {
+        return hints;
+    }
+
+    public void setHints(int hints) {
+        this.hints = hints;
+    }
+
+    public int getStrikes() {
+        return strikes;
+    }
+
+    public void setStrikes(int strikes) {
+        this.strikes = strikes;
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+
+    public void setCurrentPlayerIndex(int currentPlayerIndex) {
+        this.currentPlayerIndex = currentPlayerIndex;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 }
 
