@@ -1,12 +1,14 @@
 package se2.server.hanabi.gamemanager;
 
 import se2.server.hanabi.gamemanager.actions.DiscardCardAction;
+import se2.server.hanabi.gamemanager.actions.HintAction;
 import se2.server.hanabi.gamemanager.actions.PlayCardAction;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
 import se2.server.hanabi.model.Player;
 import se2.server.hanabi.rules.GameRules;
 import se2.server.hanabi.services.ActionResult;
+import se2.server.hanabi.services.HintType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,31 +55,8 @@ public class GameManager {
         return new DiscardCardAction(this, playerName, cardIndex).execute();
     }
 
-    public ActionResult giveHint(String playerName, String targetPlayerName, Card.Color color) {
-        if (!isCurrentPlayer(playerName)) {
-            return ActionResult.invalid("Not your turn.");
-        }
-
-        if (hints <= 0) {
-            return ActionResult.invalid("No hints left.");
-        }
-
-        if (targetPlayerName.equals(playerName)) {
-            return ActionResult.invalid("Cannot give a hint to yourself.");
-        }
-
-        List<Card> targetHand = hands.get(targetPlayerName);
-        for (Card card : targetHand) {
-            if (card.getColor() == color) {
-                // Hinweis geben
-                hints--;
-                advanceTurn();
-                return ActionResult.success("Hint given successfully.");
-            }
-        }
-
-        // kann man falsche Hinweise geben?
-        return ActionResult.failure("No matching card found in target player's hand.");
+    public ActionResult giveHint(String fromPlayer, String toPlayer, HintType type, Object value) {
+        return new HintAction(this, fromPlayer, toPlayer, type, value).execute();
     }
 
     public String getCurrentPlayerName() {
