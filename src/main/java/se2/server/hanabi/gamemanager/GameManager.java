@@ -1,5 +1,6 @@
 package se2.server.hanabi.gamemanager;
 
+import se2.server.hanabi.api.GameStatus;
 import se2.server.hanabi.gamemanager.actions.DiscardCardAction;
 import se2.server.hanabi.gamemanager.actions.HintAction;
 import se2.server.hanabi.gamemanager.actions.PlayCardAction;
@@ -61,6 +62,31 @@ public class GameManager {
 
     public String getCurrentPlayerName() {
         return players.get(currentPlayerIndex).getName();
+    }
+
+    // DTOs GameStatus
+
+    public GameStatus getStatusFor(String viewer) {
+        return new GameStatus(
+                players,
+                getVisibleHands(viewer),
+                playedCards,
+                discardPile,
+                hints,
+                strikes,
+                gameOver,
+                getCurrentPlayerName()
+        );
+    }
+
+    public Map<String, List<Card>> getVisibleHands(String viewer) {
+        Map<String, List<Card>> copy = new HashMap<>();
+        for (Map.Entry<String, List<Card>> entry : hands.entrySet()) {
+            if (!entry.getKey().equals(viewer)) {
+                copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+            }
+        }
+        return copy;
     }
 
     // Helper functions
