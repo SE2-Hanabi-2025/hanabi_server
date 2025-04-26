@@ -98,6 +98,33 @@ public class GameManager {
         return ActionResult.success("Card discarded.");
     }
 
+    public ActionResult giveHint(String playerName, String targetPlayerName, Card.Color color) {
+        if (!isCurrentPlayer(playerName)) {
+            return ActionResult.invalid("Not your turn.");
+        }
+
+        if (hints <= 0) {
+            return ActionResult.invalid("No hints left.");
+        }
+
+        if (targetPlayerName.equals(playerName)) {
+            return ActionResult.invalid("Cannot give a hint to yourself.");
+        }
+
+        List<Card> targetHand = hands.get(targetPlayerName);
+        for (Card card : targetHand) {
+            if (card.getColor() == color) {
+                // Hinweis geben
+                hints--;
+                advanceTurn();
+                return ActionResult.success("Hint given successfully.");
+            }
+        }
+
+        // kann man falsche Hinweise geben?
+        return ActionResult.failure("No matching card found in target player's hand.");
+    }
+
 
     // Helper functions
     private void drawToHand(String playerName) {
