@@ -1,4 +1,4 @@
-package se2.server.hanabi.services;
+package se2.server.hanabi.gamemanager;
 
 public class ActionResult {
     private final boolean success;

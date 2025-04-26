@@ -3,7 +3,7 @@ package se2.server.hanabi.gamemanager.actions;
 import se2.server.hanabi.gamemanager.GameManager;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.rules.GameRules;
-import se2.server.hanabi.services.ActionResult;
+import se2.server.hanabi.gamemanager.ActionResult;
 
 import java.util.List;
 

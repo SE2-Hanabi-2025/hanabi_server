@@ -1,8 +1,8 @@
 package se2.server.hanabi.gamemanager.actions;
 
 import se2.server.hanabi.gamemanager.GameManager;
-import se2.server.hanabi.services.ActionResult;
-import se2.server.hanabi.services.HintType;
+import se2.server.hanabi.gamemanager.ActionResult;
+import se2.server.hanabi.gamemanager.HintType;
 
 public class HintAction {
     private final GameManager game;
