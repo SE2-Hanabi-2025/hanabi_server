@@ -24,6 +24,9 @@ public class GameManager {
     private int strikes = 0;
     private int currentPlayerIndex = 0;
     private boolean gameOver = false;
+    private final GameLogger logger = new GameLogger();
+    private int finalTurnsRemaining = -1;
+
 
     public GameManager(List<Player> players) {
         if (!GameRules.isPlayerCountValid(players.size())) {
@@ -95,7 +98,25 @@ public class GameManager {
     }
 
     public void advanceTurn() {
+        if (gameOver) {
+            return;
+        }
+
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+
+        if (deck.isEmpty()) {
+            if (finalTurnsRemaining == -1) {
+                finalTurnsRemaining = players.size();
+                logger.info("Deck is empty. Final turn started!");
+            } else {
+                finalTurnsRemaining--;
+                if (finalTurnsRemaining == 0) {
+                    gameOver = true;
+                    logger.info("Final turn reached. Game over!");
+                }
+            }
+        }
+        checkEndCondition();
     }
 
     private boolean isCurrentPlayer(String playerName) {
@@ -103,16 +124,32 @@ public class GameManager {
     }
 
     private void checkEndCondition() {
-        if (deck.isEmpty()) {
-            // z. B. letzte Runde einläuten oder sofort beenden
-            gameOver = true; // oder: setze letzte Rundenlogik
+
+        if (strikes >= GameRules.MAX_STRIKES) {
+            gameOver = true;
+            logger.error("Game over: maximum strikes reached (" + strikes + ")");
+            logFinalScore();
+            return;
         }
 
-        boolean isPerfect = playedCards.values().stream()
-                .allMatch(v -> v == GameRules.MAX_CARD_VALUE);
+        boolean isPerfect = playedCards.values().stream().allMatch(v -> v == GameRules.MAX_CARD_VALUE);
+
         if (isPerfect) {
             gameOver = true;
+            logger.info("Game completed perfectly!");
+            logFinalScore();
+            return;
         }
+        if (finalTurnsRemaining == 0) {
+            gameOver = true;
+            logger.info("Game over: final turns reached");
+            logFinalScore();
+        }
+    }
+
+    private void logFinalScore() {
+        int totalScore = playedCards.values().stream().mapToInt(Integer::intValue).sum();
+        logger.info("Final score: " + totalScore + " out of " + GameRules.MAX_SCORE);
     }
 
     public void drawCardToHand(String playerName) {
@@ -124,6 +161,11 @@ public class GameManager {
     public void incrementStrikes() {
         strikes++;
     }
+
+    public GameLogger getLogger() {
+        return logger;
+    }
+
 
     // Getters & Setters
     public List<Player> getPlayers() {
