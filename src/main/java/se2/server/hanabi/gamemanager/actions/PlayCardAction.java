@@ -33,11 +33,14 @@ public class PlayCardAction {
 
         if (card.getValue() == expected) {
             game.getPlayedCards().put(card.getColor(), expected);
+            game.getLogger().info(playerName + " successfully played " + card);
         } else {
             game.getDiscardPile().add(card);
             game.incrementStrikes();
+            game.getLogger().warn(playerName + " played wrong card: " + card + ". Strikes: " + game.getStrikes());
             if (game.getStrikes() >= GameRules.MAX_STRIKES) {
                 game.setGameOver(true);
+                game.getLogger().error(playerName + " messed up so badly that the game is over. Well done, genius! " + game.getStrikes()); // :)
                 return ActionResult.failure("Wrong card. Game over!");
             }
         }

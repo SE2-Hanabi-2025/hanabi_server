@@ -30,6 +30,8 @@ public class HintAction {
         // TODO: Apply filtering logic to hint receiver's hand
 
         game.setHints(game.getHints() - 1);
+        game.getLogger().info(fromPlayer + " gave a hint to " + toPlayer + ": " + type + " " + value);
+
         game.advanceTurn();
         return ActionResult.success("Hint given to " + toPlayer);
     }

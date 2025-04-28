@@ -35,6 +35,8 @@ public class DiscardCardAction {
         Card card = hand.remove(cardIndex);
         game.getDiscardPile().add(card);
         game.setHints(game.getHints() + 1);
+        game.getLogger().info(playerName + " discarded " + card + " and gained a hint.");
+
         game.drawCardToHand(playerName);
         game.advanceTurn();
         return ActionResult.success("Card discarded.");
