@@ -27,7 +27,6 @@ public class GameManager {
     private boolean gameOver = false;
     private final GameLogger logger = new GameLogger();
     private int finalTurnsRemaining = -1;
-    private String gameId;
 
     /**
      * Factory method to create a new game with player names
@@ -54,9 +53,8 @@ public class GameManager {
         }
         this.players = players;
         this.deck = new Deck();
-        this.gameId = java.util.UUID.randomUUID().toString().substring(0, 8);
         
-        logger.info("Starting new game with ID: " + gameId);
+        logger.info("Starting new game with " + players.size() + " players");
         logger.info("Players: " + players.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
         // Initialize played cards
@@ -248,10 +246,6 @@ public class GameManager {
      */
     public List<String> getGameHistory() {
         return logger.getHistory();
-    }
-
-    public String getGameId() {
-        return gameId;
     }
 
     public GameLogger getLogger() {
