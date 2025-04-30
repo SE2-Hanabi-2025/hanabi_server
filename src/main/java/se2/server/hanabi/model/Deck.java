@@ -35,4 +35,12 @@ public class Deck {
     public boolean isEmpty() {
         return cards.isEmpty();
     }
+    
+    /**
+     * Get the number of cards remaining in the deck
+     * @return number of remaining cards
+     */
+    public int getRemainingCards() {
+        return cards.size();
+    }
 }
