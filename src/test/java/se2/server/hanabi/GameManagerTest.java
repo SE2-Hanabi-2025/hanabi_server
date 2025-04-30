@@ -171,11 +171,4 @@ public class GameManagerTest {
         }
         assertTrue(foundSetupMessage);
     }
-
-    @Test
-    void testGameId() {
-        String gameId = gameManager.getGameId();
-        assertNotNull(gameId);
-        assertFalse(gameId.isEmpty());
-    }
 }

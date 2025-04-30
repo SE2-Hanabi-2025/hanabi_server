@@ -33,21 +33,53 @@ public class PlayCardAction {
 
         if (card.getValue() == expected) {
             game.getPlayedCards().put(card.getColor(), expected);
-            game.getLogger().info(playerName + " successfully played " + card);
+            
+            // More detailed success message
+            String successMessage = playerName + " successfully played " + card;
+            
+            // Special message for completing a color stack
+            if (card.getValue() == GameRules.MAX_CARD_VALUE) {
+                successMessage += " - Completed the " + card.getColor() + " stack!";
+                // If player completes a color stack and there are fewer than max hints, add a hint token
+                if (game.getHints() < GameRules.MAX_HINTS) {
+                    game.setHints(game.getHints() + 1);
+                    successMessage += " Gained a hint token!";
+                }
+            }
+            
+            game.getLogger().info(successMessage);
+            
+            // Check if this was the final card for a perfect game
+            boolean allComplete = game.getPlayedCards().values().stream()
+                .allMatch(value -> value == GameRules.MAX_CARD_VALUE);
+            if (allComplete) {
+                game.setGameOver(true);
+                return ActionResult.success("Perfect! You completed all stacks! Final score: " + game.getCurrentScore());
+            }
+            
+            game.drawCardToHand(playerName);
+            game.advanceTurn();
+            return ActionResult.success("You successfully played " + card + ". Current score: " + game.getCurrentScore());
         } else {
             game.getDiscardPile().add(card);
             game.incrementStrikes();
-            game.getLogger().warn(playerName + " played wrong card: " + card + ". Strikes: " + game.getStrikes());
+            String failMessage = playerName + " played wrong card: " + card + 
+                ". Expected " + expected + " of " + card.getColor() + ". Strikes: " + game.getStrikes();
+            game.getLogger().warn(failMessage);
+            
             if (game.getStrikes() >= GameRules.MAX_STRIKES) {
                 game.setGameOver(true);
-                game.getLogger().error(playerName + " messed up so badly that the game is over. Well done, genius! " + game.getStrikes()); // :)
-                return ActionResult.failure("Wrong card. Game over!");
+                game.getLogger().error("Game over: " + playerName + " played the wrong card and reached " + 
+                    game.getStrikes() + " strikes. Final score: " + game.getCurrentScore());
+                return ActionResult.failure("Wrong card! Game over with a score of " + game.getCurrentScore());
             }
+            
+            game.drawCardToHand(playerName);
+            game.advanceTurn();
+            return ActionResult.failure("Wrong card! You played " + card + " but expected " + 
+                expected + " of " + card.getColor() + ". You now have " + game.getStrikes() + 
+                " strike(s) out of " + GameRules.MAX_STRIKES + ".");
         }
-
-        game.drawCardToHand(playerName);
-        game.advanceTurn();
-        return ActionResult.success("Card played.");
     }
 }
 

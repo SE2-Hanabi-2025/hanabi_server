@@ -105,12 +105,24 @@ public class GameManager {
             return ActionResult.invalid("Cannot give hint to yourself.");
         }
         
+        if (hints <= 0) {
+            return ActionResult.invalid("No hint tokens available.");
+        }
+        
+        if (!playerExists(toPlayer)) {
+            return ActionResult.invalid("Target player does not exist in this game.");
+        }
+        
         logger.info(fromPlayer + " attempts to give a " + type + " hint to " + toPlayer + " with value: " + value);
         return new HintAction(this, fromPlayer, toPlayer, type, value).execute();
     }
     
     private boolean isActionValid(String playerName) {
         return !gameOver && isCurrentPlayer(playerName);
+    }
+    
+    private boolean playerExists(String playerName) {
+        return players.stream().anyMatch(p -> p.getName().equals(playerName));
     }
 
     public String getCurrentPlayerName() {
@@ -162,11 +174,6 @@ public class GameManager {
     }
 
     // Helper functions
-    private void drawToHand(String playerName) {
-        if (!deck.isEmpty()) {
-            hands.get(playerName).add(deck.drawCard());
-        }
-    }
 
     public void advanceTurn() {
         if (gameOver) {
@@ -251,7 +258,7 @@ public class GameManager {
     public GameLogger getLogger() {
         return logger;
     }
-
+    
     // Getters & Setters
     public List<Player> getPlayers() {
         return players;
