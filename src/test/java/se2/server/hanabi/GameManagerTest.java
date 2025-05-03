@@ -7,7 +7,6 @@ import se2.server.hanabi.gamemanager.ActionResult;
 import se2.server.hanabi.gamemanager.GameManager;
 import se2.server.hanabi.gamemanager.HintType;
 import se2.server.hanabi.model.Card;
-import se2.server.hanabi.model.Player;
 import se2.server.hanabi.rules.GameRules;
 
 import java.util.Arrays;
