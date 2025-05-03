@@ -19,6 +19,7 @@ public class Card {
 
     @Override
     public String toString() {
+<<<<<<< HEAD
         return "Card{" + "value=" + value + ", color=" + color + '}';
     }
 
@@ -28,5 +29,8 @@ public class Card {
         BLUE,
         YELLOW,
         WHITE
+=======
+        return "Card{" + "value=" + value + " color=" + color + '}';
+>>>>>>> origin/development
     }
 }
