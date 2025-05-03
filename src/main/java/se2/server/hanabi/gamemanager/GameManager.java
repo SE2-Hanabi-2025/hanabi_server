@@ -57,11 +57,26 @@ public class GameManager {
         logger.info("Starting new game with " + players.size() + " players");
         logger.info("Players: " + players.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
-        // Initialize played cards
+        initializePlayedCards();
+        dealInitialCards();
+        
+        logger.info("Game setup completed. " + deck.getRemainingCards() + " cards left in deck.");
+        logger.info("Player " + getCurrentPlayerName() + " goes first.");
+    }
+    
+    /**
+     * Initialize the played cards map with all colors set to 0
+     */
+    private void initializePlayedCards() {
         for (Card.Color color : Card.Color.values()) {
             playedCards.put(color, 0);
         }
-
+    }
+    
+    /**
+     * Deal initial cards to all players based on the number of players
+     */
+    private void dealInitialCards() {
         int handSize = GameRules.getInitialHandSize(players.size());
         logger.info("Dealing " + handSize + " cards per player");
         
@@ -73,9 +88,6 @@ public class GameManager {
             }
             hands.put(player.getName(), hand);
         }
-        
-        logger.info("Game setup completed. " + deck.getRemainingCards() + " cards left in deck.");
-        logger.info("Player " + getCurrentPlayerName() + " goes first.");
     }
 
     public ActionResult playCard(String playerName, int cardIndex) {
