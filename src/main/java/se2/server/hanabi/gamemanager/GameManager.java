@@ -8,6 +8,7 @@ import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
 import se2.server.hanabi.model.Player;
 import se2.server.hanabi.rules.GameRules;
+import se2.server.hanabi.services.DrawService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class GameManager {
     private boolean gameOver = false;
     private final GameLogger logger = new GameLogger();
     private int finalTurnsRemaining = -1;
+    private final DrawService drawService = new DrawService();
 
     /**
      * Factory method to create a new game with player names
@@ -195,19 +197,7 @@ public class GameManager {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         logger.info("Turn advances to " + getCurrentPlayerName());
 
-        if (deck.isEmpty()) {
-            if (finalTurnsRemaining == -1) {
-                finalTurnsRemaining = players.size();
-                logger.info("Deck is empty. Final round started! " + finalTurnsRemaining + " turns remaining.");
-            } else {
-                finalTurnsRemaining--;
-                logger.info("Final round: " + finalTurnsRemaining + " turns remaining.");
-                if (finalTurnsRemaining == 0) {
-                    gameOver = true;
-                    logger.info("Final turn reached. Game over!");
-                }
-            }
-        }
+        drawService.checkDeckEmptyStatus(this);
         checkEndCondition();
     }
 
@@ -244,14 +234,14 @@ public class GameManager {
         logger.info("Final score: " + totalScore + " out of " + GameRules.MAX_SCORE);
     }
 
-    public void drawCardToHand(String playerName) {
-        if (!deck.isEmpty()) {
-            Card card = deck.drawCard();
-            hands.get(playerName).add(card);
-            logger.info(playerName + " drew a new card. " + deck.getRemainingCards() + " cards left in deck.");
-        } else {
-            logger.info(playerName + " could not draw a card - deck is empty.");
-        }
+    /**
+     * Draw a card to a player's hand from the deck
+     * 
+     * @param playerName the player who should draw a card
+     * @return the drawn card or null if no card was drawn
+     */
+    public Card drawCardToHand(String playerName) {
+        return drawService.drawCardToPlayerHand(this, playerName);
     }
 
     public void incrementStrikes() {
@@ -342,6 +332,14 @@ public class GameManager {
      */
     public int getFinalTurnsRemaining() {
         return finalTurnsRemaining;
+    }
+    
+    /**
+     * Set the number of turns remaining in the final round
+     * @param turns number of turns remaining
+     */
+    public void setFinalTurnsRemaining(int turns) {
+        this.finalTurnsRemaining = turns;
     }
 }
 
