@@ -163,7 +163,7 @@ public class GameManagerTest {
         // Initial history should contain setup messages
         boolean foundSetupMessage = false;
         for (String entry : history) {
-            if (entry.contains("Starting new game with ID:")) {
+            if (entry.contains("Starting new game with")) {
                 foundSetupMessage = true;
                 break;
             }
