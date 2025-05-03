@@ -19,15 +19,8 @@ public class PlayCardAction {
     }
 
     public ActionResult execute() {
-        if (!game.getCurrentPlayerName().equals(playerName)) {
-            return ActionResult.invalid("Not your turn.");
-        }
-
+        // The validation is now handled by GameManager before calling this method
         List<Card> hand = game.getHands().get(playerName);
-        if (cardIndex < 0 || cardIndex >= hand.size()) {
-            return ActionResult.invalid("Invalid card index.");
-        }
-
         Card card = hand.remove(cardIndex);
         int expected = game.getPlayedCards().get(card.getColor()) + 1;
 

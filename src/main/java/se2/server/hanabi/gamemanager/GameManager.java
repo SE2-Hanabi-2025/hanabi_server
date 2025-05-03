@@ -93,8 +93,13 @@ public class GameManager {
     }
 
     public ActionResult playCard(String playerName, int cardIndex) {
+        // Validation logic is now centralized in the GameManager
         if (!isActionValid(playerName)) {
             return ActionResult.invalid("Not your turn or game is over.");
+        }
+        
+        if (!isValidCardIndex(playerName, cardIndex)) {
+            return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
         
         logger.info(playerName + " attempts to play card at index " + cardIndex);
@@ -102,8 +107,19 @@ public class GameManager {
     }
 
     public ActionResult discardCard(String playerName, int cardIndex) {
+        // Validation logic is now centralized in the GameManager
         if (!isActionValid(playerName)) {
             return ActionResult.invalid("Not your turn or game is over.");
+        }
+        
+        if (!isValidCardIndex(playerName, cardIndex)) {
+            return ActionResult.invalid("Invalid card index: " + cardIndex);
+        }
+        
+        // Check if hints are already at maximum
+        if (hints >= GameRules.MAX_HINTS) {
+            logger.warn(playerName + " attempted to discard but hints are already at maximum.");
+            return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINTS + ").");
         }
         
         logger.info(playerName + " attempts to discard card at index " + cardIndex);
@@ -111,6 +127,7 @@ public class GameManager {
     }
 
     public ActionResult giveHint(String fromPlayer, String toPlayer, HintType type, Object value) {
+        // Extended validation logic is now centralized in the GameManager
         if (!isActionValid(fromPlayer)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
@@ -127,14 +144,41 @@ public class GameManager {
             return ActionResult.invalid("Target player does not exist in this game.");
         }
         
+        // Validate hint type and value
+        if (type == HintType.COLOR) {
+            if (!(value instanceof Card.Color)) {
+                return ActionResult.invalid("Invalid color value for color hint.");
+            }
+        } else if (type == HintType.VALUE) {
+            if (!(value instanceof Integer) || (Integer)value < 1 || (Integer)value > GameRules.MAX_CARD_VALUE) {
+                return ActionResult.invalid("Invalid card value. Must be between 1 and " + GameRules.MAX_CARD_VALUE + ".");
+            }
+        } else {
+            return ActionResult.invalid("Invalid hint type.");
+        }
+        
         logger.info(fromPlayer + " attempts to give a " + type + " hint to " + toPlayer + " with value: " + value);
         return new HintAction(this, fromPlayer, toPlayer, type, value).execute();
     }
     
+    /**
+     * Check if the action is valid (player's turn and game not over)
+     */
     private boolean isActionValid(String playerName) {
         return !gameOver && isCurrentPlayer(playerName);
     }
     
+    /**
+     * Check if a card index is valid for a player's hand
+     */
+    private boolean isValidCardIndex(String playerName, int cardIndex) {
+        List<Card> hand = hands.get(playerName);
+        return hand != null && cardIndex >= 0 && cardIndex < hand.size();
+    }
+    
+    /**
+     * Check if a player exists in the game
+     */
     private boolean playerExists(String playerName) {
         return players.stream().anyMatch(p -> p.getName().equals(playerName));
     }

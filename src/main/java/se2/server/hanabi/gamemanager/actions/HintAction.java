@@ -24,19 +24,10 @@ public class HintAction {
     }
 
     public ActionResult execute() {
-        if (!game.getCurrentPlayerName().equals(fromPlayer)) {
-            return ActionResult.invalid("Not your turn.");
-        }
-        if (game.getHints() == 0) {
-            return ActionResult.invalid("No hints left.");
-        }
-
+        // All validation is now handled by GameManager
         var targetHand = game.getHands().get(toPlayer);
-        if (targetHand == null) {
-            return ActionResult.invalid("Target player not found.");
-        }
-
-        // TODO: Apply filtering logic to hint receiver's hand
+        
+        // Apply filtering logic to hint receiver's hand
         List<Integer> matchingIndices = new ArrayList<>();
         for (int i = 0; i < targetHand.size(); i++) {
             Card card = targetHand.get(i);
@@ -49,7 +40,6 @@ public class HintAction {
         if (matchingIndices.isEmpty()) {
             return ActionResult.invalid("No matching cards found for this hint.");
         }
-
 
         game.setHints(game.getHints() - 1);
         game.getLogger().info(fromPlayer + " gave a hint to " + toPlayer + ": " + type + " " + value + " (matches at positions " + matchingIndices + ").");

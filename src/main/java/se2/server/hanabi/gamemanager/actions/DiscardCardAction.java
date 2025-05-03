@@ -19,19 +19,8 @@ public class DiscardCardAction {
     }
 
     public ActionResult execute() {
-        if (!game.getCurrentPlayerName().equals(playerName)) {
-            return ActionResult.invalid("Not your turn.");
-        }
-
-        if (game.getHints() >= GameRules.MAX_HINTS) {
-            return ActionResult.invalid("Hint tokens are full.");
-        }
-
+        // The validation is now handled by GameManager before calling this method
         List<Card> hand = game.getHands().get(playerName);
-        if (cardIndex < 0 || cardIndex >= hand.size()) {
-            return ActionResult.invalid("Invalid card index.");
-        }
-
         Card card = hand.remove(cardIndex);
         game.getDiscardPile().add(card);
         game.setHints(game.getHints() + 1);
