@@ -2,8 +2,6 @@ package se2.server.hanabi.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import se2.server.hanabi.model.Lobby;
-import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyCodeGenerator;
 
 import static org.junit.jupiter.api.Assertions.*;

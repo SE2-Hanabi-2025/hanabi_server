@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
-import se2.server.hanabi.controllers.LobbyController;
 import se2.server.hanabi.model.Lobby;
 import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyManager;
