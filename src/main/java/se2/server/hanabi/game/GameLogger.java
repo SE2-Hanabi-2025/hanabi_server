@@ -1,4 +1,4 @@
-package se2.server.hanabi.gamemanager;
+package se2.server.hanabi.game;
 
 import java.util.ArrayList;
 import java.util.Collections;

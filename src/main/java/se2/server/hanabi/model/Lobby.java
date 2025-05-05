@@ -1,7 +1,7 @@
 package se2.server.hanabi.model;
 
 import lombok.Getter;
-import se2.server.hanabi.gamemanager.GameManager;
+import se2.server.hanabi.game.GameManager;
 
 import java.util.*;
 import java.util.stream.Collectors;

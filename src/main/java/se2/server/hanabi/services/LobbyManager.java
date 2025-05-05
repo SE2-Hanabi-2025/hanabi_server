@@ -1,7 +1,7 @@
 package se2.server.hanabi.services;
 
 import org.springframework.stereotype.Service;
-import se2.server.hanabi.gamemanager.GameManager;
+import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.model.Lobby;
 import se2.server.hanabi.model.Player;
 

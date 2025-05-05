@@ -1,9 +1,8 @@
-package se2.server.hanabi.gamemanager;
+package se2.server.hanabi.game;
 
 import se2.server.hanabi.model.Card;
-import se2.server.hanabi.rules.GameRules;
+import se2.server.hanabi.util.GameRules;
 import java.util.List;
-import java.util.Map;
 
 public class GameValidator {
     public static boolean isPlayerTurn(GameManager game, String playerName) {

@@ -1,13 +1,14 @@
-package se2.server.hanabi.gamemanager;
+package se2.server.hanabi.game;
 
 import se2.server.hanabi.api.GameStatus;
-import se2.server.hanabi.gamemanager.actions.DiscardCardAction;
-import se2.server.hanabi.gamemanager.actions.HintAction;
-import se2.server.hanabi.gamemanager.actions.PlayCardAction;
+import se2.server.hanabi.game.actions.DiscardCardAction;
+import se2.server.hanabi.game.actions.HintAction;
+import se2.server.hanabi.game.actions.PlayCardAction;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
 import se2.server.hanabi.model.Player;
-import se2.server.hanabi.rules.GameRules;
+import se2.server.hanabi.util.ActionResult;
+import se2.server.hanabi.util.GameRules;
 import se2.server.hanabi.services.DrawService;
 import java.util.List;
 import java.util.Map;

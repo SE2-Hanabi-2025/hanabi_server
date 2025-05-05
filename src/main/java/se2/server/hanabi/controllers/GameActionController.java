@@ -9,11 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import se2.server.hanabi.api.GameStatus;
-import se2.server.hanabi.gamemanager.ActionResult;
-import se2.server.hanabi.gamemanager.GameManager;
-import se2.server.hanabi.gamemanager.HintType;
+import se2.server.hanabi.util.ActionResult;
+import se2.server.hanabi.game.GameManager;
+import se2.server.hanabi.game.HintType;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.services.LobbyManager;
+import se2.server.hanabi.util.ActionResultType;
 
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class GameActionController {
         
         ActionResult result = gameManager.playCard(playerName, cardIndex);
         
-        if (result.getType() == se2.server.hanabi.gamemanager.ActionResultType.INVALID_MOVE) {
+        if (result.getType() == ActionResultType.INVALID_MOVE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
         
@@ -101,7 +102,7 @@ public class GameActionController {
         
         ActionResult result = gameManager.discardCard(playerName, cardIndex);
         
-        if (result.getType() == se2.server.hanabi.gamemanager.ActionResultType.INVALID_MOVE) {
+        if (result.getType() == ActionResultType.INVALID_MOVE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
         
@@ -151,7 +152,7 @@ public class GameActionController {
         
         ActionResult result = gameManager.giveHint(fromPlayer, toPlayer, hintType, value);
         
-        if (result.getType() == se2.server.hanabi.gamemanager.ActionResultType.INVALID_MOVE) {
+        if (result.getType() == ActionResultType.INVALID_MOVE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
         

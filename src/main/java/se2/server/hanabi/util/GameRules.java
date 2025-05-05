@@ -1,4 +1,4 @@
-package se2.server.hanabi.rules;
+package se2.server.hanabi.util;
 
 import se2.server.hanabi.model.Card;
 

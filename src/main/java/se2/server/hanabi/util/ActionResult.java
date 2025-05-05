@@ -1,4 +1,4 @@
-package se2.server.hanabi.gamemanager;
+package se2.server.hanabi.util;
 
 public class ActionResult {
     private final ActionResultType type;

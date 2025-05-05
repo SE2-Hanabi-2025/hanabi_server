@@ -1,9 +1,9 @@
-package se2.server.hanabi.gamemanager;
+package se2.server.hanabi.game;
 
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
 import se2.server.hanabi.model.Player;
-import se2.server.hanabi.rules.GameRules;
+import se2.server.hanabi.util.GameRules;
 
 import java.util.ArrayList;
 import java.util.HashMap;

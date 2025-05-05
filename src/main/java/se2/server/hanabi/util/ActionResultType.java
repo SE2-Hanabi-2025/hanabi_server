@@ -1,4 +1,4 @@
-package se2.server.hanabi.gamemanager;
+package se2.server.hanabi.util;
 
 public enum ActionResultType {
     SUCCESS,

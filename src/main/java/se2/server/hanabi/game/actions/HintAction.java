@@ -1,8 +1,8 @@
-package se2.server.hanabi.gamemanager.actions;
+package se2.server.hanabi.game.actions;
 
-import se2.server.hanabi.gamemanager.GameManager;
-import se2.server.hanabi.gamemanager.ActionResult;
-import se2.server.hanabi.gamemanager.HintType;
+import se2.server.hanabi.game.GameManager;
+import se2.server.hanabi.util.ActionResult;
+import se2.server.hanabi.game.HintType;
 import se2.server.hanabi.model.Card;
 
 import java.util.ArrayList;

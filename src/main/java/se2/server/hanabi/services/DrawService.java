@@ -2,7 +2,7 @@ package se2.server.hanabi.services;
 
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
-import se2.server.hanabi.gamemanager.GameManager;
+import se2.server.hanabi.game.GameManager;
 
 /**
  * Service handling all card drawing operations in the game
