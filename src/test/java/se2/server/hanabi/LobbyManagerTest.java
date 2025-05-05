@@ -1,4 +1,4 @@
- package se2.server.hanabi;
+package se2.server.hanabi;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,9 +46,16 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void joinLobby_WhenGameStarted() {
         String lobbyId = lobbyManager.createLobby();
-        Lobby lobby = lobbyManager.getLobby(lobbyId);
-        lobby.startGame(); // Spiel starten
+        
+        // Add the minimum required players to start a game (2 players)
+        lobbyManager.joinLobby(lobbyId, "Player1");
+        lobbyManager.joinLobby(lobbyId, "Player2");
+        
+        // Start the game properly through the lobbyManager
+        boolean gameStarted = lobbyManager.startGame(lobbyId);
+        assertTrue(gameStarted, "Game should start successfully with 2 players");
 
+        // Now try to join after game is started
         boolean result = lobbyManager.joinLobby(lobbyId, "NewPlayer");
 
         assertFalse(result, "No player should be able to join once the game has started");

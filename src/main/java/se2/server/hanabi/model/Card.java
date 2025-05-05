@@ -19,6 +19,14 @@ public class Card {
 
     @Override
     public String toString() {
-        return "Card{" + "value=" + value + " color=" + color + '}';
+        return "Card{" + "value=" + value + ", color=" + color + '}';
+    }
+
+    public enum Color{
+        RED,
+        GREEN,
+        BLUE,
+        YELLOW,
+        WHITE
     }
 }

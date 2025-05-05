@@ -1,8 +1,10 @@
 package se2.server.hanabi.model;
 
 import lombok.Getter;
+import se2.server.hanabi.game.GameManager;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Lobby {
 
@@ -11,7 +13,11 @@ public class Lobby {
 
     @Getter
     private List<Player> players = new ArrayList<>();
+    
     private boolean isGameStarted;
+    
+    @Getter
+    private GameManager gameManager;
 
     public Lobby(String id) {
         this.id = id;
@@ -22,8 +28,24 @@ public class Lobby {
     public boolean isGameStarted() {
         return isGameStarted;
     }
-    public void startGame(){
+    
+    /**
+     * Start the game by creating a GameManager instance with the current players
+     * @return true if game was successfully started, false otherwise
+     */
+    public boolean startGame() {
+        if (isGameStarted || players.size() < 2) {
+            return false;
+        }
+        
+        // Create a new GameManager with the current players
+        this.gameManager = GameManager.createNewGame(
+            players.stream()
+                .map(Player::getName)
+                .collect(Collectors.toList())
+        );
+        
         this.isGameStarted = true;
+        return true;
     }
-
 }

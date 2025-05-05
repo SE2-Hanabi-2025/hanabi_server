@@ -62,7 +62,10 @@ public class LobbyControllerTest {
     @Test
     void joinLobby_gameAlreadyStarted() throws Exception {
         Lobby startedLobby = new Lobby("started");
-        startedLobby.startGame(); // setzt isGameStarted auf true
+        // Add at least 2 players to the lobby so we can start the game
+        startedLobby.getPlayers().add(new Player("Player1"));
+        startedLobby.getPlayers().add(new Player("Player2"));
+        startedLobby.startGame(); // Start the game now that we have enough players
         when(lobbyManager.getLobby("started")).thenReturn(startedLobby);
 
         mockMvc.perform(get("/join-lobby/started").param("name", "Test"))
