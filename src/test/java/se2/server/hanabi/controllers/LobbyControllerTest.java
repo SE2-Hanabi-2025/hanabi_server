@@ -1,4 +1,4 @@
-package se2.server.hanabi;
+package se2.server.hanabi.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

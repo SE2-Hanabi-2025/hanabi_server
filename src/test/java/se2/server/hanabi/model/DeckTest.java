@@ -1,4 +1,4 @@
-package se2.server.hanabi;
+package se2.server.hanabi.model;
 
 import org.junit.jupiter.api.Test;
 
