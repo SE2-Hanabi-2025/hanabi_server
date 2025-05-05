@@ -9,25 +9,13 @@ import se2.server.hanabi.model.Deck;
 import se2.server.hanabi.model.Player;
 import se2.server.hanabi.rules.GameRules;
 import se2.server.hanabi.services.DrawService;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameManager {
-    private final List<Player> players;
-    private final Map<String, List<Card>> hands = new HashMap<>();
-    private final Deck deck;
-    private final Map<Card.Color, Integer> playedCards = new HashMap<>();
-    private final List<Card> discardPile = new ArrayList<>();
-    private int hints = GameRules.MAX_HINTS;
-    private int strikes = 0;
-    private int currentPlayerIndex = 0;
-    private boolean gameOver = false;
+    private final GameState gameState;
     private final GameLogger logger = new GameLogger();
-    private int finalTurnsRemaining = -1;
     private final DrawService drawService = new DrawService();
 
     /**
@@ -53,138 +41,66 @@ public class GameManager {
         if (!GameRules.isPlayerCountValid(players.size())) {
             throw new IllegalArgumentException("Invalid number of players");
         }
-        this.players = players;
-        this.deck = new Deck();
+        
+        this.gameState = new GameState(players, logger);
         
         logger.info("Starting new game with " + players.size() + " players");
         logger.info("Players: " + players.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
-        initializePlayedCards();
-        dealInitialCards();
+        gameState.dealInitialCards();
         
-        logger.info("Game setup completed. " + deck.getRemainingCards() + " cards left in deck.");
-        logger.info("Player " + getCurrentPlayerName() + " goes first.");
-    }
-    
-    /**
-     * Initialize the played cards map with all colors set to 0
-     */
-    private void initializePlayedCards() {
-        for (Card.Color color : Card.Color.values()) {
-            playedCards.put(color, 0);
-        }
-    }
-    
-    /**
-     * Deal initial cards to all players based on the number of players
-     */
-    private void dealInitialCards() {
-        int handSize = GameRules.getInitialHandSize(players.size());
-        logger.info("Dealing " + handSize + " cards per player");
-        
-        for (Player player : players) {
-            List<Card> hand = new ArrayList<>();
-            for (int i = 0; i < handSize; i++) {
-                Card card = deck.drawCard();
-                hand.add(card);
-            }
-            hands.put(player.getName(), hand);
-        }
+        logger.info("Game setup completed. " + gameState.getDeck().getRemainingCards() + " cards left in deck.");
+        logger.info("Player " + gameState.getCurrentPlayerName() + " goes first.");
     }
 
     public ActionResult playCard(String playerName, int cardIndex) {
-        // Validation logic is now centralized in the GameManager
-        if (!isActionValid(playerName)) {
+        if (!GameValidator.isPlayerTurn(this, playerName)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        
-        if (!isValidCardIndex(playerName, cardIndex)) {
+        if (!GameValidator.isValidCardIndex(this, playerName, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
-        
         logger.info(playerName + " attempts to play card at index " + cardIndex);
         return new PlayCardAction(this, playerName, cardIndex).execute();
     }
 
     public ActionResult discardCard(String playerName, int cardIndex) {
-        // Validation logic is now centralized in the GameManager
-        if (!isActionValid(playerName)) {
+        if (!GameValidator.isPlayerTurn(this, playerName)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        
-        if (!isValidCardIndex(playerName, cardIndex)) {
+        if (!GameValidator.isValidCardIndex(this, playerName, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
-        
-        // Check if hints are already at maximum
-        if (hints >= GameRules.MAX_HINTS) {
+        if (!GameValidator.canDiscard(this)) {
             logger.warn(playerName + " attempted to discard but hints are already at maximum.");
             return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINTS + ").");
         }
-        
         logger.info(playerName + " attempts to discard card at index " + cardIndex);
         return new DiscardCardAction(this, playerName, cardIndex).execute();
     }
 
     public ActionResult giveHint(String fromPlayer, String toPlayer, HintType type, Object value) {
-        // Extended validation logic is now centralized in the GameManager
-        if (!isActionValid(fromPlayer)) {
+        if (!GameValidator.isPlayerTurn(this, fromPlayer)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        
-        if (fromPlayer.equals(toPlayer)) {
+        if (!GameValidator.isNotSelfHint(fromPlayer, toPlayer)) {
             return ActionResult.invalid("Cannot give hint to yourself.");
         }
-        
-        if (hints <= 0) {
+        if (!GameValidator.hasEnoughHints(this)) {
             return ActionResult.invalid("No hint tokens available.");
         }
-        
-        if (!playerExists(toPlayer)) {
+        if (!GameValidator.playerExists(this, toPlayer)) {
             return ActionResult.invalid("Target player does not exist in this game.");
         }
-        
-        // Validate hint type and value
-        if (type == HintType.COLOR) {
-            if (!(value instanceof Card.Color)) {
-                return ActionResult.invalid("Invalid color value for color hint.");
-            }
-        } else if (type == HintType.VALUE) {
-            if (!(value instanceof Integer) || (Integer)value < 1 || (Integer)value > GameRules.MAX_CARD_VALUE) {
-                return ActionResult.invalid("Invalid card value. Must be between 1 and " + GameRules.MAX_CARD_VALUE + ".");
-            }
-        } else {
-            return ActionResult.invalid("Invalid hint type.");
+        if (!GameValidator.isValidHintTypeAndValue(type, value)) {
+            return ActionResult.invalid("Invalid hint type or value.");
         }
-        
         logger.info(fromPlayer + " attempts to give a " + type + " hint to " + toPlayer + " with value: " + value);
         return new HintAction(this, fromPlayer, toPlayer, type, value).execute();
     }
-    
-    /**
-     * Check if the action is valid (player's turn and game not over)
-     */
-    private boolean isActionValid(String playerName) {
-        return !gameOver && isCurrentPlayer(playerName);
-    }
-    
-    /**
-     * Check if a card index is valid for a player's hand
-     */
-    private boolean isValidCardIndex(String playerName, int cardIndex) {
-        List<Card> hand = hands.get(playerName);
-        return hand != null && cardIndex >= 0 && cardIndex < hand.size();
-    }
-    
-    /**
-     * Check if a player exists in the game
-     */
-    private boolean playerExists(String playerName) {
-        return players.stream().anyMatch(p -> p.getName().equals(playerName));
-    }
 
     public String getCurrentPlayerName() {
-        return players.get(currentPlayerIndex).getName();
+        return gameState.getCurrentPlayerName();
     }
 
     // Game state information
@@ -196,14 +112,14 @@ public class GameManager {
      */
     public GameStatus getStatusFor(String playerName) {
         return new GameStatus(
-                players,
-                getVisibleHands(playerName),
-                playedCards,
-                discardPile,
-                hints,
-                strikes,
-                gameOver,
-                getCurrentPlayerName()
+                gameState.getPlayers(),
+                gameState.getVisibleHands(playerName),
+                gameState.getPlayedCards(),
+                gameState.getDiscardPile(),
+                gameState.getHints(),
+                gameState.getStrikes(),
+                gameState.isGameOver(),
+                gameState.getCurrentPlayerName()
         );
     }
     
@@ -213,7 +129,7 @@ public class GameManager {
      * @return List of cards in the player's hand, or null if player not found
      */
     public List<Card> getPlayerHand(String playerName) {
-        return hands.get(playerName);
+        return gameState.getHands().get(playerName);
     }
 
     /**
@@ -222,59 +138,22 @@ public class GameManager {
      * @return Map of player names to their hand of cards
      */
     public Map<String, List<Card>> getVisibleHands(String viewer) {
-        Map<String, List<Card>> copy = new HashMap<>();
-        for (Map.Entry<String, List<Card>> entry : hands.entrySet()) {
-            if (!entry.getKey().equals(viewer)) {
-                copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-            }
-        }
-        return copy;
+        return gameState.getVisibleHands(viewer);
     }
 
     // Helper functions
 
     public void advanceTurn() {
-        if (gameOver) {
-            return;
-        }
-
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        logger.info("Turn advances to " + getCurrentPlayerName());
-
-        drawService.checkDeckEmptyStatus(this);
-        checkEndCondition();
-    }
-
-    private boolean isCurrentPlayer(String playerName) {
-        return players.get(currentPlayerIndex).getName().equals(playerName);
-    }
-
-    private void checkEndCondition() {
-        if (strikes >= GameRules.MAX_STRIKES) {
-            gameOver = true;
-            logger.error("Game over: maximum strikes reached (" + strikes + ")");
-            logFinalScore();
-            return;
-        }
-
-        boolean isPerfect = playedCards.values().stream().allMatch(v -> v == GameRules.MAX_CARD_VALUE);
-
-        if (isPerfect) {
-            gameOver = true;
-            logger.info("Game completed perfectly!");
-            logFinalScore();
-            return;
-        }
-        
-        if (finalTurnsRemaining == 0) {
-            gameOver = true;
-            logger.info("Game over: final turns reached");
-            logFinalScore();
+        if (gameState.advanceTurn()) {
+            drawService.checkDeckEmptyStatus(this);
+            if (gameState.checkEndCondition()) {
+                logFinalScore();
+            }
         }
     }
 
     private void logFinalScore() {
-        int totalScore = playedCards.values().stream().mapToInt(Integer::intValue).sum();
+        int totalScore = gameState.getCurrentScore();
         logger.info("Final score: " + totalScore + " out of " + GameRules.MAX_SCORE);
     }
 
@@ -289,8 +168,7 @@ public class GameManager {
     }
 
     public void incrementStrikes() {
-        strikes++;
-        logger.warn("Strike count increased to " + strikes + " out of " + GameRules.MAX_STRIKES);
+        gameState.incrementStrikes();
     }
 
     /**
@@ -305,61 +183,63 @@ public class GameManager {
         return logger;
     }
     
-    // Getters & Setters
+    // GameState delegating methods
+    
+    public GameState getGameState() {
+        return gameState;
+    }
+    
     public List<Player> getPlayers() {
-        return players;
+        return gameState.getPlayers();
     }
 
     public Map<String, List<Card>> getHands() {
-        return hands;
+        return gameState.getHands();
     }
 
     public Deck getDeck() {
-        return deck;
+        return gameState.getDeck();
     }
 
     public Map<Card.Color, Integer> getPlayedCards() {
-        return playedCards;
+        return gameState.getPlayedCards();
     }
 
     public List<Card> getDiscardPile() {
-        return discardPile;
+        return gameState.getDiscardPile();
     }
 
     public int getHints() {
-        return hints;
+        return gameState.getHints();
     }
 
     public void setHints(int hints) {
-        this.hints = Math.min(hints, GameRules.MAX_HINTS);
-        logger.info("Hint tokens updated to " + this.hints + " out of " + GameRules.MAX_HINTS);
+        gameState.setHints(hints);
     }
 
     public int getStrikes() {
-        return strikes;
+        return gameState.getStrikes();
     }
 
     public void setStrikes(int strikes) {
-        this.strikes = strikes;
+        gameState.setStrikes(strikes);
     }
 
     public int getCurrentPlayerIndex() {
-        return currentPlayerIndex;
-    }
-
-    public void setCurrentPlayerIndex(int currentPlayerIndex) {
-        this.currentPlayerIndex = currentPlayerIndex;
+        return gameState.getPlayers().indexOf(
+            gameState.getPlayers().stream()
+                .filter(p -> p.getName().equals(gameState.getCurrentPlayerName()))
+                .findFirst()
+                .orElse(null)
+        );
     }
 
     public boolean isGameOver() {
-        return gameOver;
+        return gameState.isGameOver();
     }
 
     public void setGameOver(boolean gameOver) {
-        this.gameOver = gameOver;
-        if (gameOver) {
-            logger.info("Game is now marked as over.");
-        }
+        gameState.setGameOver(gameOver);
     }
     
     /**
@@ -367,7 +247,7 @@ public class GameManager {
      * @return current score as sum of all played cards' values
      */
     public int getCurrentScore() {
-        return playedCards.values().stream().mapToInt(Integer::intValue).sum();
+        return gameState.getCurrentScore();
     }
     
     /**
@@ -375,7 +255,7 @@ public class GameManager {
      * @return number of turns remaining or -1 if not in final round
      */
     public int getFinalTurnsRemaining() {
-        return finalTurnsRemaining;
+        return gameState.getFinalTurnsRemaining();
     }
     
     /**
@@ -383,7 +263,7 @@ public class GameManager {
      * @param turns number of turns remaining
      */
     public void setFinalTurnsRemaining(int turns) {
-        this.finalTurnsRemaining = turns;
+        gameState.setFinalTurnsRemaining(turns);
     }
 }
 
