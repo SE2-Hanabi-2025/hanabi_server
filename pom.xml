@@ -112,6 +112,13 @@
 			<version>2.2.0</version>
 		</dependency>
 
+		<!-- added for jackson, json de/serialisation --> 
+		<dependency>
+   			<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-web</artifactId>
+    		<version>3.4.3</version>
+	 	</dependency>
+
 
 	</dependencies>
 

@@ -2,7 +2,7 @@ package se2.server.hanabi;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import se2.server.hanabi.api.GameStatus;
+import se2.server.hanabi.api.GameState;
 import se2.server.hanabi.gamemanager.ActionResult;
 import se2.server.hanabi.gamemanager.GameManager;
 import se2.server.hanabi.gamemanager.HintType;
@@ -115,7 +115,7 @@ public class GameManagerTest {
 
     @Test
     void testGameStatusForPlayer() {
-        GameStatus status = gameManager.getStatusFor("Player1");
+        GameState status = gameManager.getStateFor("Player1");
         
         assertNotNull(status);
         assertEquals(3, status.getPlayers().size());

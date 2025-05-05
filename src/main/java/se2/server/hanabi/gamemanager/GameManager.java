@@ -1,6 +1,6 @@
 package se2.server.hanabi.gamemanager;
 
-import se2.server.hanabi.api.GameStatus;
+import se2.server.hanabi.api.GameState;
 import se2.server.hanabi.gamemanager.actions.DiscardCardAction;
 import se2.server.hanabi.gamemanager.actions.HintAction;
 import se2.server.hanabi.gamemanager.actions.PlayCardAction;
@@ -136,8 +136,8 @@ public class GameManager {
      * @param playerName Name of the player requesting status
      * @return GameStatus object with all relevant game information
      */
-    public GameStatus getStatusFor(String playerName) {
-        return new GameStatus(
+    public GameState getStateFor(String playerName) {
+        return new GameState(
                 players,
                 getVisibleHands(playerName),
                 playedCards,

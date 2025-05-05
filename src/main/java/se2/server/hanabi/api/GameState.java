@@ -6,7 +6,7 @@ import se2.server.hanabi.model.Player;
 import java.util.List;
 import java.util.Map;
 
-public class GameStatus {
+public class GameState {
 
     private final List<Player> players;
     private final Map<String, List<Card>> visibleHands;
@@ -17,7 +17,7 @@ public class GameStatus {
     private final boolean gameOver;
     private final String currentPlayer;
 
-    public GameStatus(List<Player> players, Map<String, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
+    public GameState(List<Player> players, Map<String, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
         this.players = players;
         this.visibleHands = visibleHands;
         this.playedCards = playedCards;

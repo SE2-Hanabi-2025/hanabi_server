@@ -3,17 +3,44 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import se2.server.hanabi.api.GameState;
+import se2.server.hanabi.gamemanager.GameManager;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
 
 @RestController
+@ResponseBody
 @Tag(name = "Game API", description = "Endpoints to manage the game and its operations like starting a game, drawing a card, etc.")
 public class GameController {
     private Deck deck = new Deck();  
+    private List<String> players = Arrays.asList("Player1", "Player2", "Player3");
+    private GameManager gameManager = GameManager.createNewGame(players);
 
+    // game sends game state Dto
+    @GetMapping("/game/state")
+    @Operation(
+            summary = "Get Game state dto",
+            description = "This endpoint returns the game as a GameState object serialised in json.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully recieve game state",
+                            content = @io.swagger.v3.oas.annotations.media.Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = GameState.class))),
+                    @ApiResponse(responseCode = "500", description = "Server error")
+
+            }
+    )
+    public GameState getGameState() {
+        return gameManager.getStateFor(players.get(0)); // gameState
+    }
     
     @GetMapping("/connect")
     @Operation(
