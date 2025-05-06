@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
-import se2.server.hanabi.model.Player;
 
 import java.util.Arrays;
 import java.util.List;
