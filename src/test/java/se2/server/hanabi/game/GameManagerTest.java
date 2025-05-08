@@ -1,11 +1,9 @@
-package se2.server.hanabi;
+package se2.server.hanabi.game;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se2.server.hanabi.api.GameStatus;
 import se2.server.hanabi.util.ActionResult;
-import se2.server.hanabi.game.GameManager;
-import se2.server.hanabi.game.HintType;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.util.GameRules;
 

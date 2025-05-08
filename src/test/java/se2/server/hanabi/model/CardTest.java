@@ -1,8 +1,7 @@
-package se2.server.hanabi;
+package se2.server.hanabi.model;
 
 import org.junit.jupiter.api.Test;
 
-import se2.server.hanabi.model.Card;
 
 import static org.junit.jupiter.api.Assertions.*;
 
