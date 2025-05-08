@@ -19,27 +19,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 )
 public class HanabiApplication {
 
-	/*
-	@Autowired
-	private SSHConnector sshConnector;
 
-
-	 */
 	public static void main(String[] args) {
 		SpringApplication.run(HanabiApplication.class, args);
 	}
 
-	/*
-	@PostConstruct
-	public void init() {
-		try {
-			Session session =sshConnector.connect();
-			System.out.println("SSH-Verbindung erfolgreich!");
-			session.disconnect();
-		} catch (Exception e) {
-			System.out.println("Verbindung zum SSH-Server fehlgeschlagen");
-		}
-	}
 
-	 */
 }
