@@ -3,7 +3,7 @@ package se2.server.hanabi.services;
 import java.security.SecureRandom;
 
 public class LobbyCodeGenerator {
-    private static final String Characters = "ABCDEFGHIJKLMNPQRSTUVWXYZ123456789";
+    private static final String Characters = "^[A-NP-Z1-9]+$";
     private static final int length = 6;
 
     private static final SecureRandom random = new SecureRandom();
