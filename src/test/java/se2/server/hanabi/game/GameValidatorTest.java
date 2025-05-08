@@ -55,8 +55,23 @@ class GameValidatorTest {
         Map<String, List<Card>> hands = new HashMap<>();
         hands.put("Alice", hand);
         when(gameManager.getHands()).thenReturn(hands);
-        assertFalse(GameValidator.isValidCardIndex(gameManager, "Alice", 2));
+        
+        assertFalse(GameValidator.isValidCardIndex(gameManager, "Alice", 1));
         assertFalse(GameValidator.isValidCardIndex(gameManager, "Alice", -1));
+        assertFalse(GameValidator.isValidCardIndex(gameManager, "Alice", 2));
+        assertTrue(GameValidator.isValidCardIndex(gameManager, "Alice", 0));
+    }
+    
+    @Test
+    void testIsValidCardIndex_ExactBoundaries() {
+        List<Card> hand = Arrays.asList(mock(Card.class), mock(Card.class));
+        Map<String, List<Card>> hands = new HashMap<>();
+        hands.put("Alice", hand);
+        when(gameManager.getHands()).thenReturn(hands);
+        
+        assertTrue(GameValidator.isValidCardIndex(gameManager, "Alice", 0));
+        assertTrue(GameValidator.isValidCardIndex(gameManager, "Alice", 1));
+        assertFalse(GameValidator.isValidCardIndex(gameManager, "Alice", 2));
     }
 
     @Test
