@@ -5,17 +5,17 @@ import se2.server.hanabi.util.GameRules;
 import java.util.List;
 
 public class GameValidator {
-    public static boolean isPlayerTurn(GameManager game, String playerName) {
-        return !game.isGameOver() && game.getCurrentPlayerName().equals(playerName);
+    public static boolean isPlayerTurn(GameManager game, int playerId) {
+        return !game.isGameOver() && game.getCurrentPlayerId() == playerId;
     }
 
-    public static boolean isValidCardIndex(GameManager game, String playerName, int cardIndex) {
-        List<Card> hand = game.getHands().get(playerName);
+    public static boolean isValidCardIndex(GameManager game, int playerId, int cardIndex) {
+        List<Card> hand = game.getHands().get(playerId);
         return hand != null && cardIndex >= 0 && cardIndex < hand.size();
     }
 
-    public static boolean playerExists(GameManager game, String playerName) {
-        return game.getPlayers().stream().anyMatch(p -> p.getName().equals(playerName));
+    public static boolean playerExists(GameManager game, int playerId) {
+        return game.getPlayers().stream().anyMatch(p -> p.getId() == playerId);
     }
 
     public static boolean hasEnoughHints(GameManager game) {
@@ -35,7 +35,7 @@ public class GameValidator {
         return false;
     }
 
-    public static boolean isNotSelfHint(String fromPlayer, String toPlayer) {
-        return !fromPlayer.equals(toPlayer);
+    public static boolean isNotSelfHint(int fromPlayerId, int toPlayerId) {
+        return fromPlayerId != toPlayerId;
     }
 }

@@ -41,14 +41,14 @@ public class GameActionController {
     )
     public ResponseEntity<GameStatus> getGameStatus(
             @PathVariable String lobbyId,
-            @RequestParam String playerName
+            @RequestParam int playerId
     ) {
         GameManager gameManager = lobbyManager.getGameManager(lobbyId);
         if (gameManager == null) {
             return ResponseEntity.notFound().build();
         }
         
-        return ResponseEntity.ok(gameManager.getStatusFor(playerName));
+        return ResponseEntity.ok(gameManager.getStatusFor(playerId));
     }
     
     @PostMapping("/{lobbyId}/play")
@@ -63,7 +63,7 @@ public class GameActionController {
     )
     public ResponseEntity<ActionResult> playCard(
             @PathVariable String lobbyId,
-            @RequestParam String playerName,
+            @RequestParam int playerId,
             @RequestParam int cardIndex
     ) {
         GameManager gameManager = lobbyManager.getGameManager(lobbyId);
@@ -71,7 +71,7 @@ public class GameActionController {
             return ResponseEntity.notFound().build();
         }
         
-        ActionResult result = gameManager.playCard(playerName, cardIndex);
+        ActionResult result = gameManager.playCard(playerId, cardIndex);
         
         if (result.getType() == ActionResultType.INVALID_MOVE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -92,7 +92,7 @@ public class GameActionController {
     )
     public ResponseEntity<ActionResult> discardCard(
             @PathVariable String lobbyId,
-            @RequestParam String playerName,
+            @RequestParam int playerId,
             @RequestParam int cardIndex
     ) {
         GameManager gameManager = lobbyManager.getGameManager(lobbyId);
@@ -100,7 +100,7 @@ public class GameActionController {
             return ResponseEntity.notFound().build();
         }
         
-        ActionResult result = gameManager.discardCard(playerName, cardIndex);
+        ActionResult result = gameManager.discardCard(playerId, cardIndex);
         
         if (result.getType() == ActionResultType.INVALID_MOVE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
@@ -121,8 +121,8 @@ public class GameActionController {
     )
     public ResponseEntity<ActionResult> giveHint(
             @PathVariable String lobbyId,
-            @RequestParam String fromPlayer,
-            @RequestParam String toPlayer,
+            @RequestParam int fromPlayerId,
+            @RequestParam int toPlayerId,
             @RequestParam HintType hintType,
             @RequestParam String hintValue
     ) {
@@ -142,7 +142,7 @@ public class GameActionController {
         } else {
             try {
                 value = Integer.parseInt(hintValue);
-                if (!(value instanceof Integer) || (Integer)value < 1 || (Integer)value > 5) {
+                if ((Integer)value < 1 || (Integer)value > 5) {
                     return ResponseEntity.badRequest().body(ActionResult.invalid("Invalid card value (must be 1-5)"));
                 }
             } catch (NumberFormatException e) {
@@ -150,7 +150,7 @@ public class GameActionController {
             }
         }
         
-        ActionResult result = gameManager.giveHint(fromPlayer, toPlayer, hintType, value);
+        ActionResult result = gameManager.giveHint(fromPlayerId, toPlayerId, hintType, value);
         
         if (result.getType() == ActionResultType.INVALID_MOVE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);

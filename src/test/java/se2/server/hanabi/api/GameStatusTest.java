@@ -11,13 +11,13 @@ import static org.mockito.Mockito.*;
 class GameStatusTest {
 
     private List<Player> players;
-    private Map<String, List<Card>> visibleHands;
+    private Map<Integer, List<Card>> visibleHands; // Changed key to Integer for playerId
     private Map<Card.Color, Integer> playedCards;
     private List<Card> discardPile;
     private int hints;
     private int strikes;
     private boolean gameOver;
-    private String currentPlayer;
+    private int currentPlayer; // Changed to Integer for playerId
 
     private GameStatus gameStatus;
 
@@ -25,13 +25,15 @@ class GameStatusTest {
     void setUp() {
         Player player1 = mock(Player.class);
         Player player2 = mock(Player.class);
+        when(player1.getId()).thenReturn(1); // Mock player IDs
+        when(player2.getId()).thenReturn(2);
         players = Arrays.asList(player1, player2);
 
         Card card1 = mock(Card.class);
         Card card2 = mock(Card.class);
         List<Card> hand1 = Arrays.asList(card1, card2);
         visibleHands = new HashMap<>();
-        visibleHands.put("player1", hand1);
+        visibleHands.put(1, hand1); // Using playerId as key
 
         playedCards = new EnumMap<>(Card.Color.class);
         playedCards.put(Card.Color.RED, 2);
@@ -42,9 +44,9 @@ class GameStatusTest {
         hints = 5;
         strikes = 1;
         gameOver = false;
-        currentPlayer = "player1";
+        currentPlayer = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, visibleHands, playedCards, discardPile, hints, strikes, gameOver, currentPlayer);
+        gameStatus = new GameStatus(players, visibleHands, playedCards, discardPile, hints, strikes, gameOver, String.valueOf(currentPlayer));
     }
 
     @Test
@@ -84,12 +86,12 @@ class GameStatusTest {
 
     @Test
     void testGetCurrentPlayer() {
-        assertEquals(currentPlayer, gameStatus.getCurrentPlayer());
+        assertEquals(String.valueOf(currentPlayer), gameStatus.getCurrentPlayer());
     }
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, visibleHands, playedCards, discardPile, hints, strikes, true, currentPlayer);
+        GameStatus status = new GameStatus(players, visibleHands, playedCards, discardPile, hints, strikes, true, String.valueOf(currentPlayer));
         assertTrue(status.isGameOver());
     }
 }
