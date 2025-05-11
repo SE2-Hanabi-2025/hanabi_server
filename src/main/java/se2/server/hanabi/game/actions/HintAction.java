@@ -10,53 +10,44 @@ import java.util.List;
 
 public class HintAction {
     private final GameManager game;
-    private final String fromPlayer;
-    private final String toPlayer;
+    private final int fromPlayerId;
+    private final int toPlayerId;
     private final HintType type;
     private final Object value;
 
-    public HintAction(GameManager game, String from, String to, HintType type, Object value) {
+    public HintAction(GameManager game, int fromPlayerId, int toPlayerId, HintType type, Object value) {
         this.game = game;
-        this.fromPlayer = from;
-        this.toPlayer = to;
+        this.fromPlayerId = fromPlayerId;
+        this.toPlayerId = toPlayerId;
         this.type = type;
         this.value = value;
     }
 
     public ActionResult execute() {
-        // All validation is now handled by GameManager
-        var targetHand = game.getHands().get(toPlayer);
-        
-        // Apply filtering logic to hint receiver's hand
+        List<Card> targetHand = game.getHands().get(toPlayerId);
+        if (targetHand == null) {
+            game.getLogger().warn("Target player " + toPlayerId + " not found while giving hint");
+            return ActionResult.failure("Target player not found");
+        }
+
         List<Integer> matchingIndices = new ArrayList<>();
         for (int i = 0; i < targetHand.size(); i++) {
             Card card = targetHand.get(i);
             if ((type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) ||
-                    (type == HintType.VALUE && card.getValue() == (int) value)) {
+                (type == HintType.VALUE && card.getValue() == (int) value)) {
                 matchingIndices.add(i);
             }
         }
 
         if (matchingIndices.isEmpty()) {
-            game.setHints(game.getHints() - 1);
-            game.getLogger().info(fromPlayer + " gave a hint to " + toPlayer + ": " + type + " " + value + " (matches at positions " + matchingIndices + ")");
-            game.advanceTurn();
-            return ActionResult.success("Hint given");
-        }
-        if (fromPlayer.equals(toPlayer)) {
-            game.getLogger().error("Hint failed - player tried to hint themselves");
-            return ActionResult.failure("Cannot give hint to yourself");
-        }
-        if (game.getHints() <= 0) {
-            game.getLogger().error("Hint failed - no hint tokens available");
-            return ActionResult.failure("No hint tokens available");
+            game.getLogger().info("No matching cards found for hint by player " + fromPlayerId);
+            return ActionResult.failure("No matching cards found");
         }
 
+        game.getLogger().info("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value);
         game.setHints(game.getHints() - 1);
-        game.getLogger().info(fromPlayer + " gave a hint to " + toPlayer + ": " + type + " " + value + " (matches at positions " + matchingIndices + ").");
-
         game.advanceTurn();
-        return ActionResult.success("Hint given to " + toPlayer);
+        return ActionResult.success("Hint given");
     }
 }
 
