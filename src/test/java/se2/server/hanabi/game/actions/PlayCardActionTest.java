@@ -76,4 +76,14 @@ public class PlayCardActionTest {
         assertTrue(result.getMessage().contains("Game over"));
         assertTrue(game.isGameOver());
     }
+
+    @Test
+    public void testPlayCardAfterGameOver() {
+        game.setGameOver(true);
+        List<Card> hand = game.getHands().get("Vlado");
+        hand.clear();
+        hand.add(new Card(1, Card.Color.RED));
+        ActionResult result = new PlayCardAction(game, "Vlado", 0).execute();
+        assertTrue(result.getMessage().contains("Game is already over"));
+    }
 }
