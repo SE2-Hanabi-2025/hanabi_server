@@ -27,5 +27,11 @@ class GameLoggerTest {
         assertTrue(history.get(0).contains("[INFO] This is an info message."));
     }
 
-    
+    @Test
+    void testWarnLogging() {
+        logger.warn("This is a warning message.");
+        List<String> history = logger.getHistory();
+        assertEquals(1, history.size());
+        assertTrue(history.get(0).contains("[WARN] This is a warning message."));
+    }
 }
