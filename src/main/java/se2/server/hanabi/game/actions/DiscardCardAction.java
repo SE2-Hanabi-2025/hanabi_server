@@ -29,7 +29,7 @@ public class DiscardCardAction {
             return ActionResult.failure("Player not found");
         }
         if (cardIndex < 0 || cardIndex >= hand.size()) {
-            game.getLogger().error("Discard failed - Invalid card index" + cardIndex + " for player: " + playerName);
+            game.getLogger().error("Discard failed - Invalid card index " + cardIndex + " for player: " + playerName);
             return ActionResult.failure("Invalid card index");
         }
         Card card = hand.remove(cardIndex);

@@ -65,4 +65,12 @@ public class DiscardCardActionTest {
         assertEquals(GameRules.MAX_HINTS, game.getHints());
     }
 
+    @Test
+    public void testDiscardWithInvalidIndex() {
+        List<Card> hand = game.getHands().get("Vlado");
+        hand.clear();
+        hand.add(new Card(1, Card.Color.WHITE));
+        ActionResult result = new DiscardCardAction(game, "Vlado", 5).execute();
+        assertTrue(result.getMessage().contains("Invalid card index"));
+    }
 }
