@@ -16,61 +16,61 @@ public class DiscardCardActionTest {
 
     @BeforeEach
     public void setup() {
-        game = GameManager.createNewGame(List.of("Vlado", "Ermin"));
+        game = GameManager.createNewGame(List.of(1, 2)); // Using player IDs instead of names
     }
 
     @Test
     public void testDiscardingCardAddsToDiscardPile() {
-        List<Card> hand = game.getHands().get("Vlado");
+        List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(2, Card.Color.GREEN));
-        ActionResult result = new DiscardCardAction(game, "Vlado", 0).execute();
+        ActionResult result = new DiscardCardAction(game, 1, 0).execute(); // Passing player ID 1
         assertTrue(result.getMessage().contains("Card discarded"));
         assertEquals(1, game.getDiscardPile().size());
     }
 
     @Test
     public void testDiscardByNonexistentPlayer() {
-        ActionResult result = new DiscardCardAction(game, "Ena", 0).execute();
+        ActionResult result = new DiscardCardAction(game, 3, 0).execute(); // Using non-existent player ID 3
         assertTrue(result.getMessage().contains("Player not found"));
     }
 
     @Test
     public void testDiscardAfterGameOver() {
         game.setGameOver(true);
-        List<Card> hand = game.getHands().get("Vlado");
+        List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(3, Card.Color.RED));
-        ActionResult result = new DiscardCardAction(game, "Vlado", 0).execute();
+        ActionResult result = new DiscardCardAction(game, 1, 0).execute(); // Passing player ID 1
         assertTrue(result.getMessage().contains("Game is already over"));
     }
 
     @Test
     public void testDiscardingIncreasesHintTokens() {
         game.setHints(GameRules.MAX_HINTS - 1);
-        List<Card> hand = game.getHands().get("Vlado");
+        List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(4, Card.Color.BLUE));
-        new DiscardCardAction(game, "Vlado", 0).execute();
+        new DiscardCardAction(game, 1, 0).execute(); // Passing player ID 1
         assertEquals(GameRules.MAX_HINTS, game.getHints());
     }
 
     @Test
     public void testDiscardDoesNotExceedMaxHintTokens() {
         game.setHints(GameRules.MAX_HINTS);
-        List<Card> hand = game.getHands().get("Vlado");
+        List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(4, Card.Color.WHITE));
-        new DiscardCardAction(game, "Vlado", 0).execute();
+        new DiscardCardAction(game, 1, 0).execute(); // Passing player ID 1
         assertEquals(GameRules.MAX_HINTS, game.getHints());
     }
 
     @Test
     public void testDiscardWithInvalidIndex() {
-        List<Card> hand = game.getHands().get("Vlado");
+        List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(1, Card.Color.WHITE));
-        ActionResult result = new DiscardCardAction(game, "Vlado", 5).execute();
+        ActionResult result = new DiscardCardAction(game, 1, 5).execute(); // Passing invalid card index
         assertTrue(result.getMessage().contains("Invalid card index"));
     }
 }
