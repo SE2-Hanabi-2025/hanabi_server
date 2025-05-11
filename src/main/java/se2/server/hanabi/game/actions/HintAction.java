@@ -44,6 +44,10 @@ public class HintAction {
             game.getLogger().error("Hint failed - player tried to hint themselves");
             return ActionResult.failure("Cannot give hint to yourself");
         }
+        if (game.getHints() <= 0) {
+            game.getLogger().error("Hint failed - no hint tokens available");
+            return ActionResult.failure("No hint tokens available");
+        }
 
         game.setHints(game.getHints() - 1);
         game.getLogger().info(fromPlayer + " gave a hint to " + toPlayer + ": " + type + " " + value + " (matches at positions " + matchingIndices + ").");

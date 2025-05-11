@@ -52,4 +52,15 @@ public class HintActionTest {
         assertTrue(result.getMessage().contains("Cannot give hint to yourself"));
         assertEquals(2, game.getHints());
     }
+
+    @Test
+    public void testHintFailsWithNoTokens() {
+        game.setHints(0);
+        List<Card> hand = game.getHands().get("Ermin");
+        hand.clear();
+        hand.add(new Card(3, Card.Color.GREEN));
+        ActionResult result = new HintAction(game, "Vlado", "Ermin", HintType.COLOR, Card.Color.GREEN).execute();
+        assertTrue(result.getMessage().contains("No hint tokens available"));
+        assertEquals(0, game.getHints());
+    }
 }
