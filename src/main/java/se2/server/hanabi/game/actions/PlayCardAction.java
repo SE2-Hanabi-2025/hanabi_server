@@ -41,6 +41,16 @@ public class PlayCardAction {
             if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
                 game.setHints(game.getHints() + 1);
             }
+
+            // Check if all cards are played perfectly
+            boolean allPerfect = game.getPlayedCards().values().stream()
+                .allMatch(value -> value == GameRules.MAX_CARD_VALUE);
+            if (allPerfect) {
+                game.setGameOver(true);
+                game.getLogger().info("Perfect game achieved! Game over.");
+                return ActionResult.success("Perfect! You completed the game.");
+            }
+
             game.drawCardToHand(playerId);
             game.advanceTurn();
             return ActionResult.success("You successfully played " + card);
