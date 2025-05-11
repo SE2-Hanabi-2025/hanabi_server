@@ -61,4 +61,48 @@ class GameLoggerTest {
         assertTrue(history.contains("[WARN] Message 2"));
     }
 
+    @Test
+    void testLogEmptyMessage() {
+        logger.info("");
+        List<String> history = logger.getHistory();
+        assertEquals(1, history.size());
+        assertTrue(history.get(0).contains("[INFO] "));
+    }
+
+    @Test
+    void testLogNullMessage() {
+        logger.info(null);
+        List<String> history = logger.getHistory();
+        assertEquals(1, history.size());
+        assertTrue(history.get(0).contains("[INFO] null"));
+    }
+
+    @Test
+    void testLogVeryLongMessage() {
+        String longMessage = "a".repeat(10000);
+        logger.info(longMessage);
+        List<String> history = logger.getHistory();
+        assertEquals(1, history.size());
+        assertTrue(history.get(0).contains(longMessage));
+    }
+
+    @Test
+    void testLogOrder() {
+        logger.info("First message");
+        logger.warn("Second message");
+        logger.error("Third message");
+        List<String> history = logger.getHistory();
+        assertEquals(3, history.size());
+        assertTrue(history.get(0).contains("[INFO] First message"));
+        assertTrue(history.get(1).contains("[WARN] Second message"));
+        assertTrue(history.get(2).contains("[ERROR] Third message"));
+    }
+
+    @Test
+    void testHistoryImmutability() {
+        logger.info("Immutable test");
+        List<String> history = logger.getHistory();
+        assertThrows(UnsupportedOperationException.class, () -> history.add("New entry"));
+    }
+
 }
