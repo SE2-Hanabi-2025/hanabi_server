@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.util.ActionResult;
+import se2.server.hanabi.util.GameRules;
 
 import java.util.List;
 
@@ -42,6 +43,16 @@ public class DiscardCardActionTest {
         hand.add(new Card(3, Card.Color.RED));
         ActionResult result = new DiscardCardAction(game, "Vlado", 0).execute();
         assertTrue(result.getMessage().contains("Game is already over"));
+    }
+
+    @Test
+    public void testDiscardingIncreasesHintTokens() {
+        game.setHints(GameRules.MAX_HINTS - 1);
+        List<Card> hand = game.getHands().get("Vlado");
+        hand.clear();
+        hand.add(new Card(4, Card.Color.BLUE));
+        new DiscardCardAction(game, "Vlado", 0).execute();
+        assertEquals(GameRules.MAX_HINTS, game.getHints());
     }
 
 }
