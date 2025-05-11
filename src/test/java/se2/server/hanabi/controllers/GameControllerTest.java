@@ -1,11 +1,11 @@
 package se2.server.hanabi.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
 import se2.server.hanabi.model.Lobby;
 import se2.server.hanabi.model.Player;
@@ -13,20 +13,29 @@ import se2.server.hanabi.services.LobbyManager;
 
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(GameController.class)
 class GameControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private LobbyManager lobbyManager;
+
+    @TestConfiguration
+    static class MockConfig {
+        @Bean
+        @Primary
+        public LobbyManager lobbyManager() {
+            return mock(LobbyManager.class);
+        }
+    }
 
     @Test
     void testConnect() throws Exception {
@@ -80,12 +89,10 @@ class GameControllerTest {
     void testGetPlayersInLobby() throws Exception {
         String lobbyId = "testLobby";
 
-        // Spieler erzeugen
         Player player1 = new Player("Player1");
         Player player2 = new Player("Player2");
 
-        // Lobby mocken und Spielerliste zurückgeben
-        Lobby mockLobby = Mockito.mock(Lobby.class);
+        Lobby mockLobby = mock(Lobby.class);
         when(mockLobby.getPlayers()).thenReturn(List.of(player1, player2));
         when(lobbyManager.getLobby(lobbyId)).thenReturn(mockLobby);
 
