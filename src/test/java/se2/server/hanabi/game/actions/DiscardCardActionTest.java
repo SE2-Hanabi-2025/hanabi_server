@@ -55,4 +55,14 @@ public class DiscardCardActionTest {
         assertEquals(GameRules.MAX_HINTS, game.getHints());
     }
 
+    @Test
+    public void testDiscardDoesNotExceedMaxHintTokens() {
+        game.setHints(GameRules.MAX_HINTS);
+        List<Card> hand = game.getHands().get("Vlado");
+        hand.clear();
+        hand.add(new Card(4, Card.Color.WHITE));
+        new DiscardCardAction(game, "Vlado", 0).execute();
+        assertEquals(GameRules.MAX_HINTS, game.getHints());
+    }
+
 }
