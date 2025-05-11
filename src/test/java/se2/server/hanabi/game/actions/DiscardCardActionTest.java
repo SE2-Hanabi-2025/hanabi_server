@@ -27,4 +27,11 @@ public class DiscardCardActionTest {
         assertTrue(result.getMessage().contains("Card discarded"));
         assertEquals(1, game.getDiscardPile().size());
     }
+
+    @Test
+    public void testDiscardByNonexistentPlayer() {
+        ActionResult result = new DiscardCardAction(game, "Ena", 0).execute();
+        assertTrue(result.getMessage().contains("Player not found"));
+    }
+
 }
