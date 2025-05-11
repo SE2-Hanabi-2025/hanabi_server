@@ -13,21 +13,21 @@ public class DrawService {
      * Draws a card from the deck and adds it to the player's hand if possible
      * 
      * @param gameManager the game manager containing the game state
-     * @param playerName the name of the player drawing a card
+     * @param playerId the ID of the player drawing a card
      * @return the drawn card or null if no card could be drawn
      */
-    public Card drawCardToPlayerHand(GameManager gameManager, String playerName) {
+    public Card drawCardToPlayerHand(GameManager gameManager, int playerId) {
         Deck deck = gameManager.getDeck();
         
         if (deck.isEmpty()) {
-            gameManager.getLogger().info(playerName + " could not draw a card - deck is empty.");
+            gameManager.getLogger().info("Player " + playerId + " could not draw a card - deck is empty.");
             return null;
         }
         
         Card card = deck.drawCard();
         if (card != null) {
-            gameManager.getHands().get(playerName).add(card);
-            gameManager.getLogger().info(playerName + " drew a new card. " + 
+            gameManager.getHands().get(playerId).add(card);
+            gameManager.getLogger().info("Player " + playerId + " drew a new card. " + 
                 deck.getRemainingCards() + " cards left in deck.");
         }
         
