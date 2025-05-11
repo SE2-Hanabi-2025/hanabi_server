@@ -3,18 +3,32 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
+import se2.server.hanabi.model.Lobby;
+import se2.server.hanabi.model.Player;
+import se2.server.hanabi.services.LobbyManager;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "Game API", description = "Endpoints to manage the game and its operations like starting a game, drawing a card, etc.")
 public class GameController {
-    private Deck deck = new Deck();  
+    private final LobbyManager lobbyManager;
+    private Deck deck = new Deck();
 
-    
+    public GameController(LobbyManager lobbyManager) {
+        this.lobbyManager = lobbyManager;
+    }
+
+
     @GetMapping("/connect")
     @Operation(
             summary = "Establish a connection with the server",
@@ -71,6 +85,26 @@ public class GameController {
     public String drawCard() {
         Card card = deck.drawCard();
         return (card != null) ? "Drew a card: " + card.getValue() : "No more cards in the deck!";
+    }
+
+    @GetMapping("/lobby/{id}/players")
+    @Operation(
+            summary = "Retrieve players in a lobby",
+            description = "Returns the list of players in a specific lobby",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Players successfully recalled"),
+                    @ApiResponse(responseCode = "404", description = "Lobby not found")
+            }
+    )
+    public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
+        Lobby lobby = lobbyManager.getLobby(id);
+        if (lobby == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<String> playerNames = lobby.getPlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(playerNames);
     }
 
     @GetMapping("/status")

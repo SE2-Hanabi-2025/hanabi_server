@@ -1,11 +1,19 @@
 package se2.server.hanabi.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import se2.server.hanabi.model.Lobby;
+import se2.server.hanabi.model.Player;
+import se2.server.hanabi.services.LobbyManager;
 
+import java.util.List;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -16,6 +24,9 @@ class GameControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private LobbyManager lobbyManager;
 
     @Test
     void testConnect() throws Exception {
@@ -63,5 +74,31 @@ class GameControllerTest {
         mockMvc.perform(get("/game/draw"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("No more cards in the deck!"));
+    }
+
+    @Test
+    void testGetPlayersInLobby() throws Exception {
+        String lobbyId = "testLobby";
+
+        // Spieler erzeugen
+        Player player1 = new Player("Player1");
+        Player player2 = new Player("Player2");
+
+        // Lobby mocken und Spielerliste zurückgeben
+        Lobby mockLobby = Mockito.mock(Lobby.class);
+        when(mockLobby.getPlayers()).thenReturn(List.of(player1, player2));
+        when(lobbyManager.getLobby(lobbyId)).thenReturn(mockLobby);
+
+        mockMvc.perform(get("/lobby/" + lobbyId + "/players"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[\"Player1\", \"Player2\"]"));
+    }
+
+    @Test
+    void testGetPlayersInNonExistentLobby() throws Exception {
+        when(lobbyManager.getLobby("nonexistentLobby")).thenReturn(null);
+
+        mockMvc.perform(get("/lobby/nonexistentLobby/players"))
+                .andExpect(status().isNotFound());
     }
 }
