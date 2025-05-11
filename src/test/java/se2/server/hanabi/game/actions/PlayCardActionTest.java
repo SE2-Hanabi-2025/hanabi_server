@@ -27,4 +27,14 @@ public class PlayCardActionTest {
         assertTrue(result.getMessage().startsWith("You successfully played"));
         assertEquals(1, game.getPlayedCards().get(Card.Color.RED));
     }
+
+    @Test
+    public void testInvalidCardCausesStrike() {
+        List<Card> hand = game.getHands().get("Vlado");
+        hand.clear();
+        hand.add(new Card(3, Card.Color.BLUE));
+        ActionResult result = new PlayCardAction(game, "Vlado", 0).execute();
+        assertTrue(result.getMessage().contains("Wrong card"));
+        assertEquals(1, game.getStrikes());
+    }
 }
