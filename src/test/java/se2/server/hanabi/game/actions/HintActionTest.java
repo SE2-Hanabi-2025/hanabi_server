@@ -41,4 +41,15 @@ public class HintActionTest {
         assertEquals(1, game.getHints());
 
     }
+
+    @Test
+    public void testHintCannotBeGivenToSelf() {
+        game.setHints(2);
+        List<Card> hand = game.getHands().get("Vlado");
+        hand.clear();
+        hand.add(new Card(1, Card.Color.WHITE));
+        ActionResult result = new HintAction(game, "Vlado", "Vlado", HintType.COLOR, Card.Color.WHITE).execute();
+        assertTrue(result.getMessage().contains("Cannot give hint to yourself"));
+        assertEquals(2, game.getHints());
+    }
 }
