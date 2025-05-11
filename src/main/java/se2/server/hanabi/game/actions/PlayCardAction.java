@@ -19,8 +19,17 @@ public class PlayCardAction {
     }
 
     public ActionResult execute() {
+        if (game.isGameOver()){
+            return ActionResult.failure("Game is already over");
+        }
         // The validation is now handled by GameManager before calling this method
         List<Card> hand = game.getHands().get(playerName);
+        if (hand == null ) {
+            return ActionResult.failure("Player not found");
+        }
+        if (cardIndex < 0 || cardIndex >=hand.size()) {
+            return ActionResult.failure("Invalid card index");
+        }
         Card card = hand.remove(cardIndex);
         int expected = game.getPlayedCards().get(card.getColor()) + 1;
 
