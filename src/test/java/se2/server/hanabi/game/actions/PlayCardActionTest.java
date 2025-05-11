@@ -86,4 +86,12 @@ public class PlayCardActionTest {
         ActionResult result = new PlayCardAction(game, "Vlado", 0).execute();
         assertTrue(result.getMessage().contains("Game is already over"));
     }
+
+    @Test
+    public void testPlayCardByUnknownPlayer() {
+        ActionResult result = new PlayCardAction(game, "Unknown", 0).execute();
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getMessage().contains("Player not found"));
+    }
 }
