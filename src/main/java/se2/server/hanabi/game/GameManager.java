@@ -20,16 +20,21 @@ public class GameManager {
     private final DrawService drawService = new DrawService();
 
     /**
-     * Factory method to create a new game with player names
-     * @param players List of Player objects
+     * Factory method to create a new game with player IDs
+     * @param playerIds List of player IDs
      * @return A new GameManager instance
      */
-    public static GameManager createNewGame(List<Player> players) {
-        if (players == null || players.isEmpty() || 
-            !GameRules.isPlayerCountValid(players.size())) {
+    public static GameManager createNewGame(List<Integer> playerIds) {
+        if (playerIds == null || playerIds.isEmpty() || 
+            !GameRules.isPlayerCountValid(playerIds.size())) {
             throw new IllegalArgumentException("Invalid number of players: must be between " + 
                 GameRules.MIN_PLAYERS + " and " + GameRules.MAX_PLAYERS);
         }
+
+        // Create Player objects from playerIds
+        List<Player> players = playerIds.stream()
+                                        .map(id -> new Player(id))
+                                        .collect(Collectors.toList());
 
         return new GameManager(players);
     }
@@ -108,31 +113,18 @@ public class GameManager {
      * @return GameStatus object with all relevant game information
      */
     public GameStatus getStatusFor(int playerId) {
-        Map<String, List<Card>> visibleHands = gameState.getVisibleHands(playerId).entrySet().stream()
-            .collect(Collectors.toMap(
-                entry -> gameState.getPlayers().stream()
-                    .filter(player -> player.getId() == entry.getKey())
-                    .findFirst()
-                    .map(Player::getName)
-                    .orElse("Unknown"),
-                Map.Entry::getValue
-            ));
 
-        String currentPlayerName = gameState.getPlayers().stream()
-            .filter(player -> player.getId() == gameState.getCurrentPlayerId())
-            .findFirst()
-            .map(Player::getName)
-            .orElse("Unknown");
+        int currentPlayerId = gameState.getCurrentPlayerId();
 
         return new GameStatus(
             gameState.getPlayers(),
-            visibleHands,
+            gameState.getVisibleHands(currentPlayerId),
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),
             gameState.getHints(),
             gameState.getStrikes(),
             gameState.isGameOver(),
-            currentPlayerName
+            String.valueOf(currentPlayerId) // Pass current player ID as a string
         );
     }
     

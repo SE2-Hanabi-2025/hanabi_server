@@ -16,20 +16,20 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameManagerTest {
 
     private GameManager gameManager;
-    private List<String> players = Arrays.asList("Player1", "Player2", "Player3");
+    private List<Integer> playerIds = Arrays.asList(1, 2, 3);
 
     @BeforeEach
     void setUp() {
-        gameManager = GameManager.createNewGame(players);
+        gameManager = GameManager.createNewGame(playerIds);
     }
 
     @Test
     void testCreateNewGame() {
         // Test factory method
-        GameManager game = GameManager.createNewGame(players);
+        GameManager game = GameManager.createNewGame(playerIds);
         assertNotNull(game);
         assertEquals(3, game.getPlayers().size());
-        assertEquals("Player1", game.getPlayers().get(0).getName());
+        assertEquals(1, game.getPlayers().get(0).getId());
         assertEquals(3, game.getHands().size());
     }
 
@@ -37,13 +37,13 @@ public class GameManagerTest {
     void testInvalidPlayerCount() {
         // Test with too few players
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            GameManager.createNewGame(Arrays.asList("OnlyOne"));
+            GameManager.createNewGame(Arrays.asList(1));
         });
         assertTrue(exception.getMessage().contains("Invalid number of players"));
         
         // Test with too many players
         exception = assertThrows(IllegalArgumentException.class, () -> {
-            GameManager.createNewGame(Arrays.asList("P1", "P2", "P3", "P4", "P5", "P6"));
+            GameManager.createNewGame(Arrays.asList(1, 2, 3, 4, 5, 6));
         });
         assertTrue(exception.getMessage().contains("Invalid number of players"));
     }
@@ -55,11 +55,11 @@ public class GameManagerTest {
         assertEquals(GameRules.MAX_HINTS, gameManager.getHints());
         assertEquals(0, gameManager.getStrikes());
         assertEquals(0, gameManager.getCurrentPlayerIndex());
-        assertEquals("Player1", gameManager.getCurrentPlayerName());
+        assertEquals(1, gameManager.getCurrentPlayerId());
         
         // Test initial hands
-        Map<String, List<Card>> hands = gameManager.getHands();
-        assertEquals(GameRules.HAND_SIZE_SMALL_GROUP, hands.get("Player1").size());
+        Map<Integer, List<Card>> hands = gameManager.getHands();
+        assertEquals(GameRules.HAND_SIZE_SMALL_GROUP, hands.get(1).size());
         
         // Test played cards (all should be 0)
         Map<Card.Color, Integer> playedCards = gameManager.getPlayedCards();
@@ -70,27 +70,27 @@ public class GameManagerTest {
 
     @Test
     void testTurnManagement() {
-        assertEquals("Player1", gameManager.getCurrentPlayerName());
+        assertEquals(1, gameManager.getCurrentPlayerId());
         gameManager.advanceTurn();
-        assertEquals("Player2", gameManager.getCurrentPlayerName());
+        assertEquals(2, gameManager.getCurrentPlayerId());
         gameManager.advanceTurn();
-        assertEquals("Player3", gameManager.getCurrentPlayerName());
+        assertEquals(3, gameManager.getCurrentPlayerId());
         gameManager.advanceTurn();
-        assertEquals("Player1", gameManager.getCurrentPlayerName());
+        assertEquals(1, gameManager.getCurrentPlayerId());
     }
 
     @Test
     void testPlayCardWrongTurn() {
-        // Player2 tries to play when it's Player1's turn
-        ActionResult result = gameManager.playCard("Player2", 0);
+        // Player 2 tries to play when it's Player 1's turn
+        ActionResult result = gameManager.playCard(2, 0);
         assertFalse(result.isSuccess());
         assertEquals("Not your turn or game is over.", result.getMessage());
     }
     
     @Test
     void testGiveHintToSelf() {
-        // Player1 tries to give hint to self
-        ActionResult result = gameManager.giveHint("Player1", "Player1", HintType.COLOR, Card.Color.RED);
+        // Player 1 tries to give hint to self
+        ActionResult result = gameManager.giveHint(1, 1, HintType.COLOR, Card.Color.RED);
         assertFalse(result.isSuccess());
         assertEquals("Cannot give hint to yourself.", result.getMessage());
     }
@@ -101,34 +101,34 @@ public class GameManagerTest {
         gameManager.setGameOver(true);
         
         // Try to perform actions
-        ActionResult playResult = gameManager.playCard("Player1", 0);
+        ActionResult playResult = gameManager.playCard(1, 0);
         assertFalse(playResult.isSuccess());
         
-        ActionResult discardResult = gameManager.discardCard("Player1", 0);
+        ActionResult discardResult = gameManager.discardCard(1, 0);
         assertFalse(discardResult.isSuccess());
         
-        ActionResult hintResult = gameManager.giveHint("Player1", "Player2", HintType.VALUE, 1);
+        ActionResult hintResult = gameManager.giveHint(1, 2, HintType.VALUE, 1);
         assertFalse(hintResult.isSuccess());
     }
 
     @Test
     void testGameStatusForPlayer() {
-        GameStatus status = gameManager.getStatusFor("Player1");
+        GameStatus status = gameManager.getStatusFor(1);
         
         assertNotNull(status);
         assertEquals(3, status.getPlayers().size());
-        assertEquals("Player1", status.getCurrentPlayer());
+        assertEquals(1, status.getCurrentPlayerId());
         
-        // Player1 shouldn't see their own hand in visible hands
-        Map<String, List<Card>> visibleHands = status.getVisibleHands();
-        assertFalse(visibleHands.containsKey("Player1"));
-        assertTrue(visibleHands.containsKey("Player2"));
-        assertTrue(visibleHands.containsKey("Player3"));
+        // Player 1 shouldn't see their own hand in visible hands
+        Map<Integer, List<Card>> visibleHands = status.getVisibleHands();
+        assertFalse(visibleHands.containsKey(1));
+        assertTrue(visibleHands.containsKey(2));
+        assertTrue(visibleHands.containsKey(3));
     }
 
     @Test
     void testGetPlayerHand() {
-        List<Card> hand = gameManager.getPlayerHand("Player1");
+        List<Card> hand = gameManager.getPlayerHand(1);
         assertNotNull(hand);
         assertEquals(GameRules.HAND_SIZE_SMALL_GROUP, hand.size());
     }

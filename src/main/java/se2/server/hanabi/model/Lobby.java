@@ -36,10 +36,16 @@ public class Lobby {
         if (isGameStarted || players.size() < 2) {
             return false;
         }
-        
-        // Create a new GameManager with the current players
-        this.gameManager = GameManager.createNewGame(players);
-        
+
+        // Extract player IDs from the Player objects
+        List<Integer> playerIds = new ArrayList<>();
+        for (Player player : players) {
+            playerIds.add(player.getId());
+        }
+
+        // Create a new GameManager with the player IDs
+        this.gameManager = GameManager.createNewGame(playerIds);
+
         this.isGameStarted = true;
         return true;
     }
