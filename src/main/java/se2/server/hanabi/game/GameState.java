@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class GameState {
     private final List<Player> players;
-    private final Map<String, List<Card>> hands = new HashMap<>();
+    private final Map<Integer, List<Card>> hands = new HashMap<>();
     private final Deck deck;
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
     private final List<Card> discardPile = new ArrayList<>();
@@ -61,49 +61,51 @@ public class GameState {
                 Card card = deck.drawCard();
                 hand.add(card);
             }
-            hands.put(player.getName(), hand);
+            hands.put(player.getId(), hand);
         }
     }
     
     /**
      * Checks if a player is the current player
-     * @param playerName the name of the player to check
+     * @param playerId the ID of the player to check
      * @return true if the player is the current player, false otherwise
      */
-    public boolean isCurrentPlayer(String playerName) {
-        return players.get(currentPlayerIndex).getName().equals(playerName);
+    public boolean isCurrentPlayer(int playerId) {
+        return players.get(currentPlayerIndex).getId() == playerId;
     }
     
     /**
      * Checks if an action is valid
-     * @param playerName the name of the player attempting the action
+     * @param playerId the ID of the player attempting the action
      * @return true if the action is valid, false otherwise
      */
-    public boolean isActionValid(String playerName) {
-        return !gameOver && isCurrentPlayer(playerName);
+    public boolean isActionValid(int playerId) {
+        return !gameOver && isCurrentPlayer(playerId);
     }
     
     /**
      * Check if a card index is valid for a player's hand
      */
-    public boolean isValidCardIndex(String playerName, int cardIndex) {
-        List<Card> hand = hands.get(playerName);
+    public boolean isValidCardIndex(int playerId, int cardIndex) {
+        List<Card> hand = hands.get(playerId);
         return hand != null && cardIndex >= 0 && cardIndex < hand.size();
     }
     
     /**
      * Check if a player exists in the game
+     * @param playerId the ID of the player to check
+     * @return true if the player exists, false otherwise
      */
-    public boolean playerExists(String playerName) {
-        return players.stream().anyMatch(p -> p.getName().equals(playerName));
+    public boolean playerExists(int playerId) {
+        return players.stream().anyMatch(p -> p.getId() == playerId);
     }
 
     /**
-     * Get the current player's name
-     * @return the name of the current player
+     * Get the current player's ID
+     * @return the ID of the current player
      */
-    public String getCurrentPlayerName() {
-        return players.get(currentPlayerIndex).getName();
+    public int getCurrentPlayerId() {
+        return players.get(currentPlayerIndex).getId();
     }
     
     /**
@@ -116,7 +118,7 @@ public class GameState {
         }
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        logger.info("Turn advances to " + getCurrentPlayerName());
+        logger.info("Turn advances to " + getCurrentPlayerId());
         
         // Update final turns counter if we're in final rounds
         if (finalTurnsRemaining > 0) {
@@ -173,13 +175,13 @@ public class GameState {
     
     /**
      * Get all hands except the specified player's
-     * @param viewer Name of the player who should not see their own hand
-     * @return Map of player names to their hand of cards
+     * @param viewerId ID of the player who should not see their own hand
+     * @return Map of player IDs to their hand of cards
      */
-    public Map<String, List<Card>> getVisibleHands(String viewer) {
-        Map<String, List<Card>> copy = new HashMap<>();
-        for (Map.Entry<String, List<Card>> entry : hands.entrySet()) {
-            if (!entry.getKey().equals(viewer)) {
+    public Map<Integer, List<Card>> getVisibleHands(int viewerId) {
+        Map<Integer, List<Card>> copy = new HashMap<>();
+        for (Map.Entry<Integer, List<Card>> entry : hands.entrySet()) {
+            if (entry.getKey() != viewerId) {
                 copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
             }
         }
@@ -191,7 +193,7 @@ public class GameState {
         return players;
     }
 
-    public Map<String, List<Card>> getHands() {
+    public Map<Integer, List<Card>> getHands() {
         return hands;
     }
 
