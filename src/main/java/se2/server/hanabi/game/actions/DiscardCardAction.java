@@ -18,8 +18,16 @@ public class DiscardCardAction {
     }
 
     public ActionResult execute() {
+        if (game.isGameOver()) {
+            game.getLogger().error("Discard failed - Game is already over.");
+            return ActionResult.failure("Game is already over");
+        }
         // The validation is now handled by GameManager before calling this method
         List<Card> hand = game.getHands().get(playerName);
+        if (hand == null) {
+            game.getLogger().error("Discard failed - Unknown player");
+            return ActionResult.failure("Player not found");
+        }
         Card card = hand.remove(cardIndex);
         game.getDiscardPile().add(card);
         game.setHints(game.getHints() + 1);
