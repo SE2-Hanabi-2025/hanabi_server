@@ -63,4 +63,17 @@ public class PlayCardActionTest {
         assertTrue(game.isGameOver());
         assertTrue(result.getMessage().contains("Perfect!"));
     }
+
+    @Test
+    public void testGameOverOnThirdStrike() {
+        game.incrementStrikes();
+        game.incrementStrikes();
+        game.incrementStrikes();
+        List<Card> hand = game.getHands().get("Vlado");
+        hand.clear();
+        hand.add(new Card(3, Card.Color.GREEN));
+        ActionResult result = new PlayCardAction(game, "Vlado", 0).execute();
+        assertTrue(result.getMessage().contains("Game over"));
+        assertTrue(game.isGameOver());
+    }
 }
