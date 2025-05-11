@@ -34,4 +34,31 @@ class GameLoggerTest {
         assertEquals(1, history.size());
         assertTrue(history.get(0).contains("[WARN] This is a warning message."));
     }
+    
+    @Test
+    void testErrorLogging() {
+        logger.error("This is an error message.");
+        List<String> history = logger.getHistory();
+        assertEquals(1, history.size());
+        assertTrue(history.get(0).contains("[ERROR] This is an error message."));
+    }
+
+    @Test
+    void testClearHistory() {
+        logger.info("First message");
+        logger.warn("Second message");
+        logger.clear();
+        assertTrue(logger.getHistory().isEmpty());
+    }
+
+    @Test
+    void testGetHistory() {
+        logger.info("Message 1");
+        logger.warn("Message 2");
+        List<String> history = logger.getHistory();
+        assertEquals(2, history.size());
+        assertTrue(history.contains("[INFO] Message 1"));
+        assertTrue(history.contains("[WARN] Message 2"));
+    }
+
 }
