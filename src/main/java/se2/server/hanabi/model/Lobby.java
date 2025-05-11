@@ -4,7 +4,6 @@ import lombok.Getter;
 import se2.server.hanabi.game.GameManager;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Lobby {
 
@@ -39,11 +38,7 @@ public class Lobby {
         }
         
         // Create a new GameManager with the current players
-        this.gameManager = GameManager.createNewGame(
-            players.stream()
-                .map(Player::getName)
-                .collect(Collectors.toList())
-        );
+        this.gameManager = GameManager.createNewGame(players);
         
         this.isGameStarted = true;
         return true;
