@@ -27,6 +27,18 @@ public class HintActionTest {
         hand.add(new Card(2, Card.Color.BLUE));
         ActionResult result = new HintAction(game, "Vlado", "Ermin", HintType.COLOR, Card.Color.BLUE).execute();
         assertTrue(result.getMessage().contains("Hint given"));
-        asserEquals(3, game.getHints());
+        assertEquals(3, game.getHints());
+    }
+
+    @Test
+    public void testValidValueHintDecreasesTokens() {
+        game.setHints(2);
+        List<Card> hand = game.getHands().get("Ermin");
+        hand.clear();
+        hand.add(new Card(4, Card.Color.RED));
+        ActionResult result = new HintAction(game, "Vlado", "Ermin", HintType.VALUE, 4).execute();
+        assertTrue(result.getMessage().contains("Hint given"));
+        assertEquals(1, game.getHints());
+
     }
 }
