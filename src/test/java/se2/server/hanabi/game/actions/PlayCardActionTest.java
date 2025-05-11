@@ -94,4 +94,15 @@ public class PlayCardActionTest {
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("Player not found"));
     }
+
+    @Test
+    public void testInvalidCardIndexFails() {
+        List<Card> hand = game.getHands().get("Ermin");
+        hand.clear();
+        hand.add(new Card(2, Card.Color.YELLOW));
+
+        ActionResult result = new PlayCardAction(game, "Ermin", 5).execute();
+
+        assertTrue(result.getMessage().contains("Invalid card index"));
+    }
 }
