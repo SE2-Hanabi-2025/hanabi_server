@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.util.ActionResult;
+import se2.server.hanabi.util.GameRules;
 
 
 import java.util.List;
@@ -36,5 +37,16 @@ public class PlayCardActionTest {
         ActionResult result = new PlayCardAction(game, "Vlado", 0).execute();
         assertTrue(result.getMessage().contains("Wrong card"));
         assertEquals(1, game.getStrikes());
+    }
+
+    @Test
+    public void testCompletingStackWithFiveGivesHint() {
+        game.setHints(GameRules.MAX_HINTS - 1);
+        game.getPlayedCards().put(Card.Color.GREEN, 4);
+        List<Card> hand = game.getHands().get("Ermin");
+        hand.clear();
+        hand.add(new Card(5, Card.Color.GREEN));
+        ActionResult result = new PlayCardAction(game, "Ermin", 0).execute();
+        assertEquals(GameRules.MAX_HINTS, game.getHints());
     }
 }
