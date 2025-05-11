@@ -45,7 +45,7 @@ public class HintAction {
         }
 
         game.getLogger().info("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value);
-        game.setHints(game.getHints() - 1);
+        game.setHints(game.getHints() - 1); // Deduct hint tokens only when a valid hint is applied
         game.advanceTurn();
         return ActionResult.success("Hint given");
     }

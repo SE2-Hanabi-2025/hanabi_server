@@ -97,8 +97,13 @@ public class GameManager {
         if (!GameValidator.isValidHintTypeAndValue(type, value)) {
             return ActionResult.invalid("Invalid hint type or value.");
         }
-        logger.info("Player " + fromPlayerId + " attempts to give a " + type + " hint to Player " + toPlayerId + " with value: " + value);
-        return new HintAction(this, fromPlayerId, toPlayerId, type, value).execute();
+
+        ActionResult result = new HintAction(this, fromPlayerId, toPlayerId, type, value).execute();
+        if (!result.isSuccess()) {
+            return ActionResult.failure("Hint failed: " + result.getMessage());
+        }
+
+        return result;
     }
 
     public int getCurrentPlayerId() {
