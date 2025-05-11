@@ -38,7 +38,10 @@ public class HintAction {
         }
 
         if (matchingIndices.isEmpty()) {
-            return ActionResult.invalid("No matching cards found for this hint.");
+            game.setHints(game.getHints() - 1);
+            game.getLogger().info(fromPlayer + " gave a hint to " + toPlayer + ": " + type + " " + value + " (matches at positions " + matchingIndices + ")");
+            game.advanceTurn();
+            return ActionResult.success("Hint given");
         }
         if (fromPlayer.equals(toPlayer)) {
             game.getLogger().error("Hint failed - player tried to hint themselves");

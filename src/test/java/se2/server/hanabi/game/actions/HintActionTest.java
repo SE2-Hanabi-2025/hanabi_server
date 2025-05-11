@@ -63,4 +63,15 @@ public class HintActionTest {
         assertTrue(result.getMessage().contains("No hint tokens available"));
         assertEquals(0, game.getHints());
     }
+
+    @Test
+    public void testHintWithNoMatchingCardsStillWorks() {
+        game.setHints(2);
+        List<Card> hand = game.getHands().get("Ermin");
+        hand.clear();
+        hand.add(new Card(5, Card.Color.YELLOW));
+        ActionResult result = new HintAction(game, "Vlado", "Ermin", HintType.VALUE, 3).execute();
+        assertTrue(result.getMessage().contains("Hint given"));
+        assertEquals(1, game.getHints());
+    }
 }
