@@ -33,7 +33,7 @@ class GameActionControllerTest {
     private GameActionController controller;
 
     private final String LOBBY_ID = "test-lobby";
-    private final String PLAYER_NAME = "player1";
+    private final int PLAYER_ID = 1;
 
     @BeforeEach
     void setUp() {
@@ -45,15 +45,15 @@ class GameActionControllerTest {
     void getGameStatus_Success() {
         // Arrange
         GameStatus mockStatus = mock(GameStatus.class);
-        when(gameManager.getStatusFor(PLAYER_NAME)).thenReturn(mockStatus);
+        when(gameManager.getStatusFor(PLAYER_ID)).thenReturn(mockStatus);
 
         // Act
-        ResponseEntity<GameStatus> response = controller.getGameStatus(LOBBY_ID, PLAYER_NAME);
+        ResponseEntity<GameStatus> response = controller.getGameStatus(LOBBY_ID, PLAYER_ID);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        verify(gameManager).getStatusFor(PLAYER_NAME);
+        verify(gameManager).getStatusFor(PLAYER_ID);
     }
 
     @Test
@@ -62,7 +62,7 @@ class GameActionControllerTest {
         when(lobbyManager.getGameManager(LOBBY_ID)).thenReturn(null);
 
         // Act
-        ResponseEntity<GameStatus> response = controller.getGameStatus(LOBBY_ID, PLAYER_NAME);
+        ResponseEntity<GameStatus> response = controller.getGameStatus(LOBBY_ID, PLAYER_ID);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -73,25 +73,25 @@ class GameActionControllerTest {
     void playCard_Success() {
         // Arrange
         ActionResult successResult = ActionResult.success("Card played successfully");
-        when(gameManager.playCard(PLAYER_NAME, 0)).thenReturn(successResult);
+        when(gameManager.playCard(PLAYER_ID, 0)).thenReturn(successResult);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_NAME, 0);
+        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(successResult, response.getBody());
-        verify(gameManager).playCard(PLAYER_NAME, 0);
+        verify(gameManager).playCard(PLAYER_ID, 0);
     }
 
     @Test
     void playCard_InvalidMove() {
         // Arrange
         ActionResult invalidResult = ActionResult.invalid("Not your turn");
-        when(gameManager.playCard(PLAYER_NAME, 0)).thenReturn(invalidResult);
+        when(gameManager.playCard(PLAYER_ID, 0)).thenReturn(invalidResult);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_NAME, 0);
+        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -104,7 +104,7 @@ class GameActionControllerTest {
         when(lobbyManager.getGameManager(LOBBY_ID)).thenReturn(null);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_NAME, 0);
+        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -114,25 +114,25 @@ class GameActionControllerTest {
     void discardCard_Success() {
         // Arrange
         ActionResult successResult = ActionResult.success("Card discarded successfully");
-        when(gameManager.discardCard(PLAYER_NAME, 0)).thenReturn(successResult);
+        when(gameManager.discardCard(PLAYER_ID, 0)).thenReturn(successResult);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.discardCard(LOBBY_ID, PLAYER_NAME, 0);
+        ResponseEntity<ActionResult> response = controller.discardCard(LOBBY_ID, PLAYER_ID, 0);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(successResult, response.getBody());
-        verify(gameManager).discardCard(PLAYER_NAME, 0);
+        verify(gameManager).discardCard(PLAYER_ID, 0);
     }
 
     @Test
     void discardCard_InvalidMove() {
         // Arrange
         ActionResult invalidResult = ActionResult.invalid("Cannot discard: hint tokens at maximum");
-        when(gameManager.discardCard(PLAYER_NAME, 0)).thenReturn(invalidResult);
+        when(gameManager.discardCard(PLAYER_ID, 0)).thenReturn(invalidResult);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.discardCard(LOBBY_ID, PLAYER_NAME, 0);
+        ResponseEntity<ActionResult> response = controller.discardCard(LOBBY_ID, PLAYER_ID, 0);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -145,7 +145,7 @@ class GameActionControllerTest {
         when(lobbyManager.getGameManager(LOBBY_ID)).thenReturn(null);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.discardCard(LOBBY_ID, PLAYER_NAME, 0);
+        ResponseEntity<ActionResult> response = controller.discardCard(LOBBY_ID, PLAYER_ID, 0);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -154,14 +154,14 @@ class GameActionControllerTest {
     @Test
     void giveHint_SuccessForColor() {
         // Arrange
-        String toPlayer = "player2";
+        int toPlayerId = 2;
         ActionResult successResult = ActionResult.success("Hint given successfully");
-        when(gameManager.giveHint(PLAYER_NAME, toPlayer, HintType.COLOR, Card.Color.RED))
+        when(gameManager.giveHint(PLAYER_ID, toPlayerId, HintType.COLOR, Card.Color.RED))
                 .thenReturn(successResult);
 
         // Act
         ResponseEntity<ActionResult> response = controller.giveHint(
-                LOBBY_ID, PLAYER_NAME, toPlayer, HintType.COLOR, "RED");
+                LOBBY_ID, PLAYER_ID, toPlayerId, HintType.COLOR, "RED");
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -171,14 +171,14 @@ class GameActionControllerTest {
     @Test
     void giveHint_SuccessForNumber() {
         // Arrange
-        String toPlayer = "player2";
+        int toPlayerId = 2;
         ActionResult successResult = ActionResult.success("Hint given successfully");
-        when(gameManager.giveHint(eq(PLAYER_NAME), eq(toPlayer), eq(HintType.VALUE), anyInt()))
+        when(gameManager.giveHint(eq(PLAYER_ID), eq(toPlayerId), eq(HintType.VALUE), anyInt()))
                 .thenReturn(successResult);
 
         // Act
         ResponseEntity<ActionResult> response = controller.giveHint(
-                LOBBY_ID, PLAYER_NAME, toPlayer, HintType.VALUE, "3");
+                LOBBY_ID, PLAYER_ID, toPlayerId, HintType.VALUE, "3");
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -188,11 +188,11 @@ class GameActionControllerTest {
     @Test
     void giveHint_InvalidColorValue() {
         // Arrange
-        String toPlayer = "player2";
+        int toPlayerId = 2;
 
         // Act
         ResponseEntity<ActionResult> response = controller.giveHint(
-                LOBBY_ID, PLAYER_NAME, toPlayer, HintType.COLOR, "INVALID_COLOR");
+                LOBBY_ID, PLAYER_ID, toPlayerId, HintType.COLOR, "INVALID_COLOR");
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -202,11 +202,11 @@ class GameActionControllerTest {
     @Test
     void giveHint_InvalidNumberValue() {
         // Arrange
-        String toPlayer = "player2";
+        int toPlayerId = 2;
 
         // Act
         ResponseEntity<ActionResult> response = controller.giveHint(
-                LOBBY_ID, PLAYER_NAME, toPlayer, HintType.VALUE, "10");
+                LOBBY_ID, PLAYER_ID, toPlayerId, HintType.VALUE, "10");
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -216,11 +216,11 @@ class GameActionControllerTest {
     @Test
     void giveHint_NonNumericValue() {
         // Arrange
-        String toPlayer = "player2";
+        int toPlayerId = 2;
 
         // Act
         ResponseEntity<ActionResult> response = controller.giveHint(
-                LOBBY_ID, PLAYER_NAME, toPlayer, HintType.VALUE, "not-a-number");
+                LOBBY_ID, PLAYER_ID, toPlayerId, HintType.VALUE, "not-a-number");
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -230,14 +230,14 @@ class GameActionControllerTest {
     @Test
     void giveHint_InvalidMove() {
         // Arrange
-        String toPlayer = "player2";
+        int toPlayerId = 2;
         ActionResult invalidResult = ActionResult.invalid("Not enough hint tokens");
-        when(gameManager.giveHint(eq(PLAYER_NAME), eq(toPlayer), eq(HintType.VALUE), anyInt()))
+        when(gameManager.giveHint(eq(PLAYER_ID), eq(toPlayerId), eq(HintType.VALUE), anyInt()))
                 .thenReturn(invalidResult);
 
         // Act
         ResponseEntity<ActionResult> response = controller.giveHint(
-                LOBBY_ID, PLAYER_NAME, toPlayer, HintType.VALUE, "3");
+                LOBBY_ID, PLAYER_ID, toPlayerId, HintType.VALUE, "3");
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -251,7 +251,7 @@ class GameActionControllerTest {
 
         // Act
         ResponseEntity<ActionResult> response = controller.giveHint(
-                LOBBY_ID, PLAYER_NAME, "player2", HintType.VALUE, "3");
+                LOBBY_ID, PLAYER_ID, 2, HintType.VALUE, "3");
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
