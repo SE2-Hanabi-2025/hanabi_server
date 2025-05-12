@@ -55,4 +55,23 @@ public class DeckTest {
         }
         assertTrue(deck.isEmpty());
     }
+
+    @Test
+    void testCardIdsAndDetails() {
+        Card.resetNextID(); // Ensure counter is reset
+        Deck deck = new Deck();
+        Card[] cardsById = new Card[50];
+
+        while (!deck.isEmpty()) {
+            Card card = deck.drawCard();
+            assertNotNull(card, "Card should not be null");
+            assertTrue(card.getId() >= 0 && card.getId() < 50, "Card ID should be between 0 and 49");
+            cardsById[card.getId()] = card;
+        }
+
+        for (int id = 0; id < 50; id++) {
+            assertNotNull(cardsById[id], "Card with ID " + id + " should exist");
+            System.out.println("Card ID " + id + ": " + cardsById[id].toString());
+        }
+    }
 }

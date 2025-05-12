@@ -24,6 +24,10 @@ public class Card {
         return id; // Getter for the unique ID
     }
 
+    public static void resetNextID() {
+        nextID = 0;
+    }
+
     @Override
     public String toString() {
         return "Card{" + "value=" + value + ", color=" + color + ", id=" + id + '}'; // Include ID in toString

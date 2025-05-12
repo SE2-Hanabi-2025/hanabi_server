@@ -11,7 +11,7 @@ public class CardTest {
     void testCardValueAndColorToString() {
         Card card = new Card(3, Card.Color.RED);
         assertEquals(3, card.getValue());
-        assertEquals("Card{value=3, color=RED}", card.toString());
+        assertEquals("Card{value=3, color=RED, id=0}", card.toString()); // Updated expected output to include id
     }
     
 }
