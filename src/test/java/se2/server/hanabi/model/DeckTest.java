@@ -48,6 +48,28 @@ public class DeckTest {
     }
 
     @Test
+    void testDeckCardDistribution() {
+        Card.resetNextID(); // Ensure counter is reset
+        Deck deck = new Deck();
+
+        int[][] cardCounts = new int[Card.Color.values().length][5]; // 5 values (1-5) for each color
+
+        while (!deck.isEmpty()) {
+            Card card = deck.drawCard();
+            assertNotNull(card, "Card should not be null");
+            cardCounts[card.getColor().ordinal()][card.getValue() - 1]++;
+        }
+
+        for (Card.Color color : Card.Color.values()) {
+            assertEquals(3, cardCounts[color.ordinal()][0], "Each color should have 3 cards of value 1");
+            assertEquals(2, cardCounts[color.ordinal()][1], "Each color should have 2 cards of value 2");
+            assertEquals(2, cardCounts[color.ordinal()][2], "Each color should have 2 cards of value 3");
+            assertEquals(2, cardCounts[color.ordinal()][3], "Each color should have 2 cards of value 4");
+            assertEquals(1, cardCounts[color.ordinal()][4], "Each color should have 1 card of value 5");
+        }
+    }
+
+    @Test
     void testIsEmpty() {
         Deck deck = new Deck();
         for (int i = 0; i < 50; i++) {
