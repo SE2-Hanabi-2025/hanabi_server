@@ -5,11 +5,12 @@ import se2.server.hanabi.model.Player;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 public class GameStatus {
 
     private final List<Player> players;
-    private final Map<String, List<Card>> visibleHands;
+    private final Map<Integer, List<Card>> visibleHands;
     private final Map<Card.Color, Integer> playedCards;
     private final List<Card> discardPile;
     private final int hints;
@@ -17,7 +18,7 @@ public class GameStatus {
     private final boolean gameOver;
     private final String currentPlayer;
 
-    public GameStatus(List<Player> players, Map<String, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
+    public GameStatus(List<Player> players, Map<Integer, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
         this.players = players;
         this.visibleHands = visibleHands;
         this.playedCards = playedCards;
@@ -32,8 +33,13 @@ public class GameStatus {
         return players;
     }
 
-    public Map<String, List<Card>> getVisibleHands() {
-        return visibleHands;
+    public Map<Integer, List<Card>> getVisibleHands() {
+        // Convert the keys of the map from String to Integer
+        Map<Integer, List<Card>> convertedHands = new HashMap<>();
+        for (Map.Entry<Integer, List<Card>> entry : visibleHands.entrySet()) {
+            convertedHands.put((entry.getKey()), entry.getValue());
+        }
+        return convertedHands;
     }
 
     public Map<Card.Color, Integer> getPlayedCards() {
@@ -58,5 +64,10 @@ public class GameStatus {
 
     public String getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    public int getCurrentPlayerId() {
+        // Assuming `currentPlayer` is the ID of the current player as a String
+        return Integer.parseInt(currentPlayer);
     }
 }

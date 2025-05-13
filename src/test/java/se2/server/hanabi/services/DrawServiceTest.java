@@ -14,25 +14,25 @@ import static org.junit.jupiter.api.Assertions.*;
 class DrawServiceTest {
     private DrawService drawService;
     private GameManager gameManager;
-    private String playerName;
+    private int playerId;
 
     @BeforeEach
     void setUp() {
         drawService = new DrawService();
-        List<String> players = Arrays.asList("Alice", "Bob");
+        List<Integer> players = Arrays.asList(1, 2); // Using player IDs instead of names
         gameManager = GameManager.createNewGame(players);
-        playerName = "Alice";
+        playerId = 1; // Assigning player ID instead of name
     }
 
     @Test
     void testDrawCardToPlayerHand_success() {
-        int initialHandSize = gameManager.getHands().get(playerName).size();
+        int initialHandSize = gameManager.getHands().get(playerId).size();
         int initialDeckSize = gameManager.getDeck().getRemainingCards();
 
-        Card card = drawService.drawCardToPlayerHand(gameManager, playerName);
+        Card card = drawService.drawCardToPlayerHand(gameManager, playerId);
 
         assertNotNull(card);
-        assertEquals(initialHandSize + 1, gameManager.getHands().get(playerName).size());
+        assertEquals(initialHandSize + 1, gameManager.getHands().get(playerId).size());
         assertEquals(initialDeckSize - 1, gameManager.getDeck().getRemainingCards());
     }
 
@@ -43,11 +43,11 @@ class DrawServiceTest {
             deck.drawCard();
         }
 
-        int initialHandSize = gameManager.getHands().get(playerName).size();
-        Card card = drawService.drawCardToPlayerHand(gameManager, playerName);
+        int initialHandSize = gameManager.getHands().get(playerId).size();
+        Card card = drawService.drawCardToPlayerHand(gameManager, playerId);
 
         assertNull(card);
-        assertEquals(initialHandSize, gameManager.getHands().get(playerName).size());
+        assertEquals(initialHandSize, gameManager.getHands().get(playerId).size());
     }
 
     @Test

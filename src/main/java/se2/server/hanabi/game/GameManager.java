@@ -20,126 +20,135 @@ public class GameManager {
     private final DrawService drawService = new DrawService();
 
     /**
-     * Factory method to create a new game with player names
-     * @param playerNames List of player names
+     * Factory method to create a new game with player IDs
+     * @param playerIds List of player IDs
      * @return A new GameManager instance
      */
-    public static GameManager createNewGame(List<String> playerNames) {
-        if (playerNames == null || playerNames.isEmpty() || 
-            !GameRules.isPlayerCountValid(playerNames.size())) {
+    public static GameManager createNewGame(List<Integer> playerIds) {
+        if (playerIds == null || playerIds.isEmpty() || 
+            !GameRules.isPlayerCountValid(playerIds.size())) {
             throw new IllegalArgumentException("Invalid number of players: must be between " + 
                 GameRules.MIN_PLAYERS + " and " + GameRules.MAX_PLAYERS);
         }
-        
-        List<Player> playerList = playerNames.stream()
-            .map(Player::new)
-            .collect(Collectors.toList());
-            
-        return new GameManager(playerList);
+
+        // Create Player objects from playerIds
+        List<Player> players = playerIds.stream()
+                                        .map(id -> new Player(id))
+                                        .collect(Collectors.toList());
+
+        return new GameManager(players);
     }
 
     public GameManager(List<Player> players) {
         if (!GameRules.isPlayerCountValid(players.size())) {
             throw new IllegalArgumentException("Invalid number of players");
         }
-        
+
         this.gameState = new GameState(players, logger);
-        
+
         logger.info("Starting new game with " + players.size() + " players");
-        logger.info("Players: " + players.stream().map(Player::getName).collect(Collectors.joining(", ")));
+        logger.info("Players: " + players.stream().map(p -> p.getId() + " (" + p.getName() + ")").collect(Collectors.joining(", ")));
 
         gameState.dealInitialCards();
-        
+
         logger.info("Game setup completed. " + gameState.getDeck().getRemainingCards() + " cards left in deck.");
-        logger.info("Player " + gameState.getCurrentPlayerName() + " goes first.");
+        logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
     }
 
-    public ActionResult playCard(String playerName, int cardIndex) {
-        if (!GameValidator.isPlayerTurn(this, playerName)) {
+    public ActionResult playCard(int playerId, int cardIndex) {
+        if (!GameValidator.isPlayerTurn(this, playerId)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        if (!GameValidator.isValidCardIndex(this, playerName, cardIndex)) {
+        if (!GameValidator.isValidCardIndex(this, playerId, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
-        logger.info(playerName + " attempts to play card at index " + cardIndex);
-        return new PlayCardAction(this, playerName, cardIndex).execute();
+        logger.info("Player " + playerId + " attempts to play card at index " + cardIndex);
+        return new PlayCardAction(this, playerId, cardIndex).execute();
     }
 
-    public ActionResult discardCard(String playerName, int cardIndex) {
-        if (!GameValidator.isPlayerTurn(this, playerName)) {
+    public ActionResult discardCard(int playerId, int cardIndex) {
+        if (!GameValidator.isPlayerTurn(this, playerId)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        if (!GameValidator.isValidCardIndex(this, playerName, cardIndex)) {
+        if (!GameValidator.isValidCardIndex(this, playerId, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
         if (!GameValidator.canDiscard(this)) {
-            logger.warn(playerName + " attempted to discard but hints are already at maximum.");
+            logger.warn("Player " + playerId + " attempted to discard but hints are already at maximum.");
             return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINTS + ").");
         }
-        logger.info(playerName + " attempts to discard card at index " + cardIndex);
-        return new DiscardCardAction(this, playerName, cardIndex).execute();
+        logger.info("Player " + playerId + " attempts to discard card at index " + cardIndex);
+        return new DiscardCardAction(this, playerId, cardIndex).execute();
     }
 
-    public ActionResult giveHint(String fromPlayer, String toPlayer, HintType type, Object value) {
-        if (!GameValidator.isPlayerTurn(this, fromPlayer)) {
+    public ActionResult giveHint(int fromPlayerId, int toPlayerId, HintType type, Object value) {
+        if (!GameValidator.isPlayerTurn(this, fromPlayerId)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        if (!GameValidator.isNotSelfHint(fromPlayer, toPlayer)) {
+        if (!GameValidator.isNotSelfHint(fromPlayerId, toPlayerId)) {
             return ActionResult.invalid("Cannot give hint to yourself.");
         }
         if (!GameValidator.hasEnoughHints(this)) {
             return ActionResult.invalid("No hint tokens available.");
         }
-        if (!GameValidator.playerExists(this, toPlayer)) {
+        if (!GameValidator.playerExists(this, toPlayerId)) {
             return ActionResult.invalid("Target player does not exist in this game.");
         }
         if (!GameValidator.isValidHintTypeAndValue(type, value)) {
             return ActionResult.invalid("Invalid hint type or value.");
         }
-        logger.info(fromPlayer + " attempts to give a " + type + " hint to " + toPlayer + " with value: " + value);
-        return new HintAction(this, fromPlayer, toPlayer, type, value).execute();
+
+        ActionResult result = new HintAction(this, fromPlayerId, toPlayerId, type, value).execute();
+        if (!result.isSuccess()) {
+            return ActionResult.failure("Hint failed: " + result.getMessage());
+        }
+
+        return result;
     }
 
-    public String getCurrentPlayerName() {
-        return gameState.getCurrentPlayerName();
+    public int getCurrentPlayerId() {
+        return gameState.getCurrentPlayerId();
     }
 
     // Game state information
     
     /**
      * Get the complete game status for a specific player
-     * @param playerName Name of the player requesting status
+     * @param playerId ID of the player requesting status
      * @return GameStatus object with all relevant game information
      */
-    public GameStatus getStatusFor(String playerName) {
+    public GameStatus getStatusFor(int playerId) {
+
+        int currentPlayerId = gameState.getCurrentPlayerId();
+
         return new GameStatus(
-                gameState.getPlayers(),
-                gameState.getVisibleHands(playerName),
-                gameState.getPlayedCards(),
-                gameState.getDiscardPile(),
-                gameState.getHints(),
-                gameState.getStrikes(),
-                gameState.isGameOver(),
-                gameState.getCurrentPlayerName()
+            gameState.getPlayers(),
+            gameState.getVisibleHands(currentPlayerId),
+            gameState.getPlayedCards(),
+            gameState.getDiscardPile(),
+            gameState.getHints(),
+            gameState.getStrikes(),
+            gameState.isGameOver(),
+            String.valueOf(currentPlayerId) // Pass current player ID as a string
         );
     }
     
     /**
      * Get a specific player's hand
-     * @param playerName Name of the player
+     * @param playerId ID of the player
      * @return List of cards in the player's hand, or null if player not found
      */
-    public List<Card> getPlayerHand(String playerName) {
-        return gameState.getHands().get(playerName);
+    public List<Card> getPlayerHand(int playerId) {
+        return gameState.getHands().get(playerId);
     }
 
     /**
      * Get all hands except the specified player's
-     * @param viewer Name of the player who should not see their own hand
-     * @return Map of player names to their hand of cards
+     * @param viewerId ID of the player who should not see their own hand
+     * @return Map of player IDs to their hand of cards
      */
-    public Map<String, List<Card>> getVisibleHands(String viewer) {
-        return gameState.getVisibleHands(viewer);
+    public Map<Integer, List<Card>> getVisibleHands(int viewerId) {
+        return gameState.getVisibleHands(viewerId);
     }
 
     // Helper functions
@@ -161,11 +170,11 @@ public class GameManager {
     /**
      * Draw a card to a player's hand from the deck
      * 
-     * @param playerName the player who should draw a card
+     * @param playerId the ID of the player who should draw a card
      * @return the drawn card or null if no card was drawn
      */
-    public Card drawCardToHand(String playerName) {
-        return drawService.drawCardToPlayerHand(this, playerName);
+    public Card drawCardToHand(int playerId) {
+        return drawService.drawCardToPlayerHand(this, playerId);
     }
 
     public void incrementStrikes() {
@@ -194,7 +203,7 @@ public class GameManager {
         return gameState.getPlayers();
     }
 
-    public Map<String, List<Card>> getHands() {
+    public Map<Integer, List<Card>> getHands() {
         return gameState.getHands();
     }
 
@@ -229,7 +238,7 @@ public class GameManager {
     public int getCurrentPlayerIndex() {
         return gameState.getPlayers().indexOf(
             gameState.getPlayers().stream()
-                .filter(p -> p.getName().equals(gameState.getCurrentPlayerName()))
+                .filter(p -> p.getId() == gameState.getCurrentPlayerId())
                 .findFirst()
                 .orElse(null)
         );
