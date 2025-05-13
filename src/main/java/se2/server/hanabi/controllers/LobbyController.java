@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se2.server.hanabi.model.Lobby;
+import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyManager;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "Lobby API", description = "Endpoints to manage lobbies, such as creating and joining a lobby.")
@@ -160,6 +164,27 @@ public class LobbyController {
                     .body("Cannot start game: Unknown error");
         }
     }
+
+    @GetMapping("/lobby/{id}/players")
+    @Operation(
+            summary = "Retrieve players in a lobby",
+            description = "Returns the list of players in a specific lobby",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Players successfully recalled"),
+                    @ApiResponse(responseCode = "404", description = "Lobby not found")
+            }
+    )
+    public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
+        Lobby lobby = lobbyManager.getLobby(id);
+        if (lobby == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<String> playerNames = lobby.getPlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(playerNames);
+    }
+
     
     @GetMapping("/lobbies")
     @Operation(
