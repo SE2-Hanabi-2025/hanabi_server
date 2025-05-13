@@ -172,6 +172,22 @@ public class LobbyControllerTest {
     }
 
 
+    @Test
+    void testGetPlayersInLobby() throws Exception {
+        String lobbyId = "testLobby";
+
+        Player player1 = new Player("Player1");
+        Player player2 = new Player("Player2");
+
+        Lobby mockLobby = mock(Lobby.class);
+        when(mockLobby.getPlayers()).thenReturn(List.of(player1, player2));
+        when(lobbyManager.getLobby(lobbyId)).thenReturn(mockLobby);
+
+        mockMvc.perform(get("/lobby/" + lobbyId + "/players"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[\"Player1\", \"Player2\"]"));
+    }
+
     @TestConfiguration
     static class MockConfig {
 

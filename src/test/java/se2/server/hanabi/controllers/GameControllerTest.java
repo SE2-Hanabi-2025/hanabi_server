@@ -7,11 +7,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
-import se2.server.hanabi.model.Lobby;
-import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyManager;
 
-import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -83,22 +80,6 @@ class GameControllerTest {
         mockMvc.perform(get("/game/draw"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("No more cards in the deck!"));
-    }
-
-    @Test
-    void testGetPlayersInLobby() throws Exception {
-        String lobbyId = "testLobby";
-
-        Player player1 = new Player("Player1");
-        Player player2 = new Player("Player2");
-
-        Lobby mockLobby = mock(Lobby.class);
-        when(mockLobby.getPlayers()).thenReturn(List.of(player1, player2));
-        when(lobbyManager.getLobby(lobbyId)).thenReturn(mockLobby);
-
-        mockMvc.perform(get("/lobby/" + lobbyId + "/players"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[\"Player1\", \"Player2\"]"));
     }
 
     @Test

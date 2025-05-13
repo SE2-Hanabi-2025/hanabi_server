@@ -87,25 +87,6 @@ public class GameController {
         return (card != null) ? "Drew a card: " + card.getValue() : "No more cards in the deck!";
     }
 
-    @GetMapping("/lobby/{id}/players")
-    @Operation(
-            summary = "Retrieve players in a lobby",
-            description = "Returns the list of players in a specific lobby",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Players successfully recalled"),
-                    @ApiResponse(responseCode = "404", description = "Lobby not found")
-            }
-    )
-    public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
-        Lobby lobby = lobbyManager.getLobby(id);
-        if (lobby == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        List<String> playerNames = lobby.getPlayers().stream()
-                .map(Player::getName)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(playerNames);
-    }
 
     @GetMapping("/status")
     @Operation(
