@@ -275,5 +275,12 @@ public class GameManager {
     public void setFinalTurnsRemaining(int turns) {
         gameState.setFinalTurnsRemaining(turns);
     }
+
+    /**
+     * Deal initial cards to players
+     */
+    public void dealInitialCards() {
+        gameState.dealInitialCards();
+    }
 }
 

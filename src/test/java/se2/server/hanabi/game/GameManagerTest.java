@@ -7,6 +7,7 @@ import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.util.GameRules;
 
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -204,4 +205,24 @@ public class GameManagerTest {
         assertFalse(result.isSuccess());
         assertEquals("No hint tokens available.", result.getMessage());
     }
+
+
+    @Test
+    void testEmptyDeckScenario() {
+        // Simulate an empty deck
+        while (!gameManager.getDeck().isEmpty()) {
+            gameManager.getDeck().drawCard();
+        }
+
+        // Verify the deck is empty
+        assertTrue(gameManager.getDeck().isEmpty(), "Deck should be empty.");
+
+        // Attempt to play a card when the deck is empty
+        ActionResult result = gameManager.playCard(1, 0);
+
+        // Verify the action fails with the correct message
+        assertFalse(result.isSuccess(), "Playing a card should fail when the deck is empty.");
+        assertEquals("No cards left in the deck.", result.getMessage(), "Expected message for empty deck scenario.");
+    }
+
 }

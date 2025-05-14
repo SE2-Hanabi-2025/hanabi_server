@@ -38,6 +38,7 @@ public class PlayCardAction {
 
         if (card.getValue() == expected) {
             game.getPlayedCards().put(card.getColor(), expected);
+            game.getLogger().info("Played cards state: " + game.getPlayedCards());
             if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
                 game.setHints(game.getHints() + 1);
             }
@@ -51,10 +52,22 @@ public class PlayCardAction {
                 return ActionResult.success("Perfect! You completed the game.");
             }
 
+            if (game.getDeck().isEmpty()) {
+                game.getLogger().warn("Deck is empty. No card drawn.");
+                game.advanceTurn();
+                return ActionResult.failure("No cards left in the deck.");
+            }
+
             game.drawCardToHand(playerId);
             game.advanceTurn();
             return ActionResult.success("You successfully played " + card);
         } else {
+            if (game.getDeck().isEmpty()) {
+                game.getLogger().warn("Deck is empty. No card drawn.");
+                game.advanceTurn();
+                return ActionResult.failure("No cards left in the deck.");
+            }
+
             game.getDiscardPile().add(card);
             game.incrementStrikes();
             if (game.getStrikes() >= GameRules.MAX_STRIKES) {
