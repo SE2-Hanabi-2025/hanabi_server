@@ -270,6 +270,17 @@ public class GameManagerTest {
         GameManager maxGame = GameManager.createNewGame(Arrays.asList(1, 2, 3, 4, 5));
         assertNotNull(maxGame, "Game should initialize with maximum players.");
         assertEquals(5, maxGame.getPlayers().size(), "Game should have 5 players.");
+
+        // Test with invalid player counts
+        Exception tooFewPlayersException = assertThrows(IllegalArgumentException.class, () -> {
+            GameManager.createNewGame(Arrays.asList(1));
+        });
+        assertTrue(tooFewPlayersException.getMessage().contains("Invalid number of players"), "Expected exception for too few players.");
+
+        Exception tooManyPlayersException = assertThrows(IllegalArgumentException.class, () -> {
+            GameManager.createNewGame(Arrays.asList(1, 2, 3, 4, 5, 6));
+        });
+        assertTrue(tooManyPlayersException.getMessage().contains("Invalid number of players"), "Expected exception for too many players.");
     }
 
     @Test
@@ -283,9 +294,12 @@ public class GameManagerTest {
         assertTrue(gameManager.isGameOver(), "Game should be over after reaching maximum strikes.");
     }
 
-        @Test
+    @Test
     void testInvalidCardPlay() {
-        // Attempt to play an invalid card
+        // Simulate a scenario where the card at index 0 is invalid
+        gameManager.getHands().get(1).set(0, new Card(5, Card.Color.RED)); // Set an invalid card
+
+        // Attempt to play the invalid card
         ActionResult result = gameManager.playCard(1, 0);
 
         // Verify the action fails with the correct message

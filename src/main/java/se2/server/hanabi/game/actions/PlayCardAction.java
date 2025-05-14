@@ -23,6 +23,10 @@ public class PlayCardAction {
             game.getLogger().warn("Attempt to play card after game over by player " + playerId);
             return ActionResult.failure("Game is already over");
         }
+        if (game.getDeck().isEmpty()) {
+            game.getLogger().warn("Deck is empty. No card can be played.");
+            return ActionResult.failure("No cards left in the deck.");
+        }
         List<Card> hand = game.getHands().get(playerId);
         if (hand == null) {
             game.getLogger().warn("Player " + playerId + " not found while playing card");
@@ -35,6 +39,11 @@ public class PlayCardAction {
         Card card = hand.remove(cardIndex);
         game.getLogger().info("Player " + playerId + " played card: " + card);
         int expected = game.getPlayedCards().get(card.getColor()) + 1;
+
+        if (card.getValue() != expected) {
+            game.getLogger().warn("Player " + playerId + " played an invalid card: " + card);
+            return ActionResult.failure("Wrong card!");
+        }
 
         if (card.getValue() == expected) {
             game.getPlayedCards().put(card.getColor(), expected);
