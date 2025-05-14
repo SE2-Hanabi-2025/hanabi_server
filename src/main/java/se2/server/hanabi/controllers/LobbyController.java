@@ -151,7 +151,7 @@ public class LobbyController {
                     .body("Game already started");
         }
         
-        if (lobby.getPlayers().size() < 2) {
+        if (lobby.getPlayers().size() <= 1) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Not enough players to start game (minimum 2)");
         }
@@ -198,4 +198,24 @@ public class LobbyController {
         return ResponseEntity.ok(lobbyManager.getAllLobbies());
     }
 
+    @GetMapping("/start-game/{id}/status")
+    @Operation(
+            summary = "Check if the game has started in a lobby",
+            description = "Returns true if the game in the specified lobby has started, false otherwise.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Game status retrieved",
+                            content = @io.swagger.v3.oas.annotations.media.Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(type = "boolean", example = "true")
+                            )),
+                    @ApiResponse(responseCode = "404", description = "Lobby not found")
+            }
+    )
+    public ResponseEntity<Boolean> isGameStarted(@PathVariable String id) {
+        Lobby lobby = lobbyManager.getLobby(id);
+        if (lobby == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(lobby.isGameStarted());
+    }
 }
