@@ -225,4 +225,51 @@ public class GameManagerTest {
         assertEquals("No cards left in the deck.", result.getMessage(), "Expected message for empty deck scenario.");
     }
 
+ 
+
+    @Test
+    void testHintTokenExhaustion() {
+        // Exhaust all hint tokens
+        gameManager.setHints(0);
+
+        // Attempt to give a hint
+        ActionResult result = gameManager.giveHint(1, 2, HintType.COLOR, Card.Color.RED);
+
+        // Verify the action fails with the correct message
+        assertFalse(result.isSuccess(), "Giving a hint should fail when no hint tokens are available.");
+        assertEquals("No hint tokens available.", result.getMessage(), "Expected message for hint token exhaustion.");
+    }
+
+
+    @Test
+    void testTurnAdvancement() {
+        // Verify initial turn
+        assertEquals(1, gameManager.getCurrentPlayerId(), "Initial turn should belong to Player 1.");
+
+        // Advance turn
+        gameManager.advanceTurn();
+        assertEquals(2, gameManager.getCurrentPlayerId(), "Turn should advance to Player 2.");
+
+        // Advance turn again
+        gameManager.advanceTurn();
+        assertEquals(3, gameManager.getCurrentPlayerId(), "Turn should advance to Player 3.");
+
+        // Wrap around to Player 1
+        gameManager.advanceTurn();
+        assertEquals(1, gameManager.getCurrentPlayerId(), "Turn should wrap around to Player 1.");
+    }
+
+    @Test
+    void testGameInitializationEdgeCases() {
+        // Test with minimum players
+        GameManager minGame = GameManager.createNewGame(Arrays.asList(1, 2));
+        assertNotNull(minGame, "Game should initialize with minimum players.");
+        assertEquals(2, minGame.getPlayers().size(), "Game should have 2 players.");
+
+        // Test with maximum players
+        GameManager maxGame = GameManager.createNewGame(Arrays.asList(1, 2, 3, 4, 5));
+        assertNotNull(maxGame, "Game should initialize with maximum players.");
+        assertEquals(5, maxGame.getPlayers().size(), "Game should have 5 players.");
+    }
+
 }
