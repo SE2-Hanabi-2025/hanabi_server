@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import se2.server.hanabi.model.Lobby;
 import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyManager;
+import se2.server.hanabi.util.GameRules;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -151,7 +152,7 @@ public class LobbyController {
                     .body("Game already started");
         }
         
-        if (lobby.getPlayers().size() <= 1) {
+        if (lobby.getPlayers().size() < GameRules.MIN_PLAYERS) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Not enough players to start game (minimum 2)");
         }
