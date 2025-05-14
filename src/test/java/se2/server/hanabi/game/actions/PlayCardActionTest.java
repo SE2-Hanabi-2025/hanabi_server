@@ -57,17 +57,19 @@ public class PlayCardActionTest {
 
     @Test
     public void testPerfectGameEnds() {
-        System.out.println("GameManager strikes before action: " + game.getStrikes());
         for (Card.Color color : Card.Color.values()) {
             game.getPlayedCards().put(color, GameRules.MAX_CARD_VALUE);
         }
         game.getPlayedCards().put(Card.Color.RED, GameRules.MAX_CARD_VALUE - 1);
-        List<Card> hand = game.getHands().get(1); // Using player ID 1
+
+        List<Card> hand = game.getHands().get(1);
         hand.clear();
         hand.add(new Card(5, Card.Color.RED));
-        ActionResult result = new PlayCardAction(game, 1, 0).execute(); // Passing player ID 1
-        assertTrue(game.isGameOver());
-        assertTrue(result.getMessage().contains("Perfect!"));
+
+        ActionResult result = new PlayCardAction(game, 1, 0).execute();
+        assertTrue(result.isSuccess(), "Playing the final card should succeed.");
+        assertTrue(game.isGameOver(), "Game should be marked as over.");
+        assertEquals("Perfect! You completed the game.", result.getMessage(), "Expected message for perfect game.");
     }
 
     @Test
@@ -87,13 +89,15 @@ public class PlayCardActionTest {
 
     @Test
     public void testPlayCardAfterGameOver() {
-        System.out.println("GameManager strikes before action: " + game.getStrikes());
         game.setGameOver(true);
-        List<Card> hand = game.getHands().get(1); // Using player ID 1
+
+        List<Card> hand = game.getHands().get(1);
         hand.clear();
         hand.add(new Card(1, Card.Color.RED));
-        ActionResult result = new PlayCardAction(game, 1, 0).execute(); // Passing player ID 1
-        assertTrue(result.getMessage().contains("Game is already over"));
+
+        ActionResult result = new PlayCardAction(game, 1, 0).execute();
+        assertFalse(result.isSuccess(), "Playing a card after game over should fail.");
+        assertEquals("Game is already over", result.getMessage(), "Expected message for game over scenario.");
     }
 
     @Test
@@ -115,5 +119,39 @@ public class PlayCardActionTest {
         ActionResult result = new PlayCardAction(game, 2, 5).execute(); // Passing invalid card index
 
         assertTrue(result.getMessage().contains("Invalid card index"));
+    }
+
+    @Test
+    public void testPlayCardWithEmptyDeck() {
+        // Simulate an empty deck
+        while (!game.getDeck().isEmpty()) {
+            game.getDeck().drawCard();
+        }
+
+        List<Card> hand = game.getHands().get(1);
+        hand.clear();
+        hand.add(new Card(1, Card.Color.RED));
+
+        ActionResult result = new PlayCardAction(game, 1, 0).execute();
+        assertFalse(result.isSuccess(), "Playing a card should fail when the deck is empty.");
+        assertEquals("No cards left in the deck.", result.getMessage(), "Expected message for empty deck scenario.");
+    }
+
+    @Test
+    public void testPlayCardByInvalidPlayer() {
+        ActionResult result = new PlayCardAction(game, 99, 0).execute(); // Invalid player ID
+        assertFalse(result.isSuccess(), "Playing a card with an invalid player should fail.");
+        assertEquals("Player not found", result.getMessage(), "Expected message for invalid player.");
+    }
+
+    @Test
+    public void testPlayCardWithInvalidIndex() {
+        List<Card> hand = game.getHands().get(1);
+        hand.clear();
+        hand.add(new Card(1, Card.Color.RED));
+
+        ActionResult result = new PlayCardAction(game, 1, -1).execute(); // Invalid index
+        assertFalse(result.isSuccess(), "Playing a card with an invalid index should fail.");
+        assertEquals("Invalid card index", result.getMessage(), "Expected message for invalid card index.");
     }
 }

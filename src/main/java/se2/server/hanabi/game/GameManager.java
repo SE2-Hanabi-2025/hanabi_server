@@ -162,7 +162,7 @@ public class GameManager {
         }
     }
 
-    private void logFinalScore() {
+    public void logFinalScore() {
         int totalScore = gameState.getCurrentScore();
         logger.info("Final score: " + totalScore + " out of " + GameRules.MAX_SCORE);
     }

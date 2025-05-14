@@ -307,4 +307,49 @@ public class GameManagerTest {
         assertEquals("Wrong card!", result.getMessage(), "Expected message for invalid card play.");
     }
 
+    @Test
+    public void testDealInitialCards() {
+        gameManager.dealInitialCards();
+        Map<Integer, List<Card>> hands = gameManager.getHands();
+        for (List<Card> hand : hands.values()) {
+            assertEquals(GameRules.HAND_SIZE_SMALL_GROUP, hand.size(), "Each player should have the correct number of cards.");
+        }
+    }
+
+    @Test
+    public void testSetStrikes() {
+        gameManager.setStrikes(2);
+        assertEquals(2, gameManager.getStrikes(), "Strikes should be updated correctly.");
+    }
+
+    @Test
+    public void testGetGameState() {
+        GameState state = gameManager.getGameState();
+        assertNotNull(state, "GameState should not be null.");
+        assertEquals(gameManager.getStrikes(), state.getStrikes(), "GameState should reflect the correct strikes.");
+    }
+
+    @Test
+    public void testLogFinalScore() {
+        gameManager.getPlayedCards().put(Card.Color.RED, 5);
+        gameManager.getPlayedCards().put(Card.Color.BLUE, 4);
+        gameManager.logFinalScore();
+        // Verify the log contains the correct final score (mock logger or capture output if necessary)
+    }
+
+    @Test
+    public void testDiscardCardWithInvalidIndex() {
+        ActionResult result = gameManager.discardCard(1, -1); // Invalid index
+        assertFalse(result.isSuccess(), "Discarding with an invalid index should fail.");
+        assertEquals("Invalid card index: -1", result.getMessage(), "Expected message for invalid card index.");
+    }
+
+    @Test
+    public void testCannotDiscardWhenHintsAtMaximum() {
+        gameManager.setHints(GameRules.MAX_HINTS);
+        ActionResult result = gameManager.discardCard(1, 0);
+        assertFalse(result.isSuccess(), "Discarding when hints are at maximum should fail.");
+        assertEquals("Cannot discard: hint tokens are already at maximum (8).", result.getMessage(), "Expected message for maximum hints.");
+    }
+
 }
