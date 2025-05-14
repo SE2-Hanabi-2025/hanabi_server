@@ -178,4 +178,19 @@ public class GameManagerTest {
         }
         assertTrue(foundSetupMessage);
     }
+
+    @Test
+    void testPlayCardWithInvalidIndex() {
+
+        ActionResult result = gameManager.playCard(1, -1); 
+
+        assertFalse(result.isSuccess());
+        assertEquals("Invalid card index: -1", result.getMessage());
+
+        result = gameManager.playCard(1, 10); 
+
+       
+        assertFalse(result.isSuccess());
+        assertEquals("Invalid card index: 10", result.getMessage());
+    }
 }
