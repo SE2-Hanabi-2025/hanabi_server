@@ -283,4 +283,14 @@ public class GameManagerTest {
         assertTrue(gameManager.isGameOver(), "Game should be over after reaching maximum strikes.");
     }
 
+        @Test
+    void testInvalidCardPlay() {
+        // Attempt to play an invalid card
+        ActionResult result = gameManager.playCard(1, 0);
+
+        // Verify the action fails with the correct message
+        assertFalse(result.isSuccess(), "Playing an invalid card should fail.");
+        assertEquals("Wrong card!", result.getMessage(), "Expected message for invalid card play.");
+    }
+
 }
