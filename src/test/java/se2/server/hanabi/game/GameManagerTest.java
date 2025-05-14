@@ -193,4 +193,15 @@ public class GameManagerTest {
         assertFalse(result.isSuccess());
         assertEquals("Invalid card index: 10", result.getMessage());
     }
+
+    @Test
+    void testGiveHintWithoutHintsAvailable() {
+        
+        gameManager.setHints(0);
+        
+        ActionResult result = gameManager.giveHint(1, 2, HintType.COLOR, Card.Color.RED);
+
+        assertFalse(result.isSuccess());
+        assertEquals("No hint tokens available.", result.getMessage());
+    }
 }
