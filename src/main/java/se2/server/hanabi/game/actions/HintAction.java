@@ -44,7 +44,7 @@ public class HintAction {
             return ActionResult.failure("No matching cards found");
         }
 
-        game.getLogger().info("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value);
+        game.getLogger().info("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value + "matches at indices " + matchingIndices);
         game.setHints(game.getHints() - 1); // Deduct hint tokens only when a valid hint is applied
         game.advanceTurn();
         return ActionResult.success("Hint given");
