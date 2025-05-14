@@ -1,6 +1,7 @@
 package se2.server.hanabi.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -172,6 +173,22 @@ public class LobbyControllerTest {
     }
 
 
+    @Test
+    void testGetPlayersInLobby() throws Exception {
+        String lobbyId = "testLobby";
+
+        Player player1 = new Player("Player1");
+        Player player2 = new Player("Player2");
+
+        Lobby mockLobby = mock(Lobby.class);
+        when(mockLobby.getPlayers()).thenReturn(List.of(player1, player2));
+        when(lobbyManager.getLobby(lobbyId)).thenReturn(mockLobby);
+
+        mockMvc.perform(get("/lobby/" + lobbyId + "/players"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[\"Player1\", \"Player2\"]"));
+    }
+
     @TestConfiguration
     static class MockConfig {
 
@@ -180,5 +197,37 @@ public class LobbyControllerTest {
         public LobbyManager lobbyManager() {
             return mock(LobbyManager.class);
         }
+    }
+
+    @Test
+    void isGameStarted_shouldReturnTrueIfStarted() throws Exception {
+        String lobbyId = "test123";
+        Lobby mockLobby = Mockito.mock(Lobby.class);
+        when(lobbyManager.getLobby(lobbyId)).thenReturn(mockLobby);
+        when(mockLobby.isGameStarted()).thenReturn(true);
+
+        mockMvc.perform(get("/start-game/{id}/status", lobbyId))
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
+    }
+
+    @Test
+    void isGameStarted_shouldReturnFalseIfNotStarted() throws Exception {
+        String lobbyId = "test123";
+        Lobby mockLobby = Mockito.mock(Lobby.class);
+        when(lobbyManager.getLobby(lobbyId)).thenReturn(mockLobby);
+        when(mockLobby.isGameStarted()).thenReturn(false);
+
+        mockMvc.perform(get("/start-game/{id}/status", lobbyId))
+                .andExpect(status().isOk())
+                .andExpect(content().string("false"));
+    }
+
+    @Test
+    void isGameStarted_shouldReturnNotFoundIfLobbyMissing() throws Exception {
+        when(lobbyManager.getLobby("invalid")).thenReturn(null);
+
+        mockMvc.perform(get("/start-game/{id}/status", "invalid"))
+                .andExpect(status().isNotFound());
     }
 }

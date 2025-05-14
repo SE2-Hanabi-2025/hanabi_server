@@ -2,20 +2,37 @@ package se2.server.hanabi.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
+import se2.server.hanabi.services.LobbyManager;
 
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(GameController.class)
 class GameControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private LobbyManager lobbyManager;
+
+    @TestConfiguration
+    static class MockConfig {
+        @Bean
+        @Primary
+        public LobbyManager lobbyManager() {
+            return mock(LobbyManager.class);
+        }
+    }
 
     @Test
     void testConnect() throws Exception {
@@ -63,5 +80,13 @@ class GameControllerTest {
         mockMvc.perform(get("/game/draw"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("No more cards in the deck!"));
+    }
+
+    @Test
+    void testGetPlayersInNonExistentLobby() throws Exception {
+        when(lobbyManager.getLobby("nonexistentLobby")).thenReturn(null);
+
+        mockMvc.perform(get("/lobby/nonexistentLobby/players"))
+                .andExpect(status().isNotFound());
     }
 }
