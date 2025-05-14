@@ -112,6 +112,16 @@ public class GameManagerTest {
     }
 
     @Test
+    void testDiscardCardAfterGameOver() {
+    
+        gameManager.setGameOver(true);
+        ActionResult result = gameManager.discardCard(1, 0);
+
+        assertFalse(result.isSuccess());
+        assertEquals("Not your turn or game is over.", result.getMessage());
+    }
+
+    @Test
     void testGameStatusForPlayer() {
         GameStatus status = gameManager.getStatusFor(1);
         
