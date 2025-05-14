@@ -272,4 +272,15 @@ public class GameManagerTest {
         assertEquals(5, maxGame.getPlayers().size(), "Game should have 5 players.");
     }
 
+    @Test
+    void testGameOverByMaximumStrikes() {
+        // Simulate reaching maximum strikes
+        for (int i = 0; i < GameRules.MAX_STRIKES; i++) {
+            gameManager.incrementStrikes();
+        }
+
+        // Verify the game is over
+        assertTrue(gameManager.isGameOver(), "Game should be over after reaching maximum strikes.");
+    }
+
 }
