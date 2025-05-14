@@ -48,6 +48,28 @@ public class DeckTest {
     }
 
     @Test
+    void testDeckCardDistribution() {
+        Card.resetNextID(); // Ensure counter is reset
+        Deck deck = new Deck();
+
+        int[][] cardCounts = new int[Card.Color.values().length][5]; // 5 values (1-5) for each color
+
+        while (!deck.isEmpty()) {
+            Card card = deck.drawCard();
+            assertNotNull(card, "Card should not be null");
+            cardCounts[card.getColor().ordinal()][card.getValue() - 1]++;
+        }
+
+        for (Card.Color color : Card.Color.values()) {
+            assertEquals(3, cardCounts[color.ordinal()][0], "Each color should have 3 cards of value 1");
+            assertEquals(2, cardCounts[color.ordinal()][1], "Each color should have 2 cards of value 2");
+            assertEquals(2, cardCounts[color.ordinal()][2], "Each color should have 2 cards of value 3");
+            assertEquals(2, cardCounts[color.ordinal()][3], "Each color should have 2 cards of value 4");
+            assertEquals(1, cardCounts[color.ordinal()][4], "Each color should have 1 card of value 5");
+        }
+    }
+
+    @Test
     void testIsEmpty() {
         Deck deck = new Deck();
         for (int i = 0; i < 50; i++) {
@@ -55,4 +77,72 @@ public class DeckTest {
         }
         assertTrue(deck.isEmpty());
     }
+
+    @Test
+    void testCardIdsAndDetails() {
+        Card.resetNextID(); // Ensure counter is reset
+        Deck deck = new Deck();
+        Card[] cardsById = new Card[50];
+
+        while (!deck.isEmpty()) {
+            Card card = deck.drawCard();
+            assertNotNull(card, "Card should not be null");
+            assertTrue(card.getId() >= 0 && card.getId() < 50, "Card ID should be between 0 and 49");
+            cardsById[card.getId()] = card;
+        }
+
+        for (int id = 0; id < 50; id++) {
+            assertNotNull(cardsById[id], "Card with ID " + id + " should exist");
+            System.out.println("Card ID " + id + ": " + cardsById[id].toString());
+        }
+    }
+
+    @Test
+    void testPrintCardIdsAndDetails() {
+        Card.resetNextID(); // Ensure counter is reset
+        Deck deck = new Deck();
+
+        while (!deck.isEmpty()) {
+            Card card = deck.drawCard();
+            assertNotNull(card, "Card should not be null");
+            System.out.println("Card ID " + card.getId() + ": " + card.toString());
+        }
+    }
+
+    @Test
+    void testPrintCardIdsAndDetailsInRow() {
+        Card.resetNextID(); // Ensure counter is reset
+        Deck deck = new Deck();
+
+        StringBuilder cardDetails = new StringBuilder();
+
+        while (!deck.isEmpty()) {
+            Card card = deck.drawCard();
+            assertNotNull(card, "Card should not be null");
+            cardDetails.append("Card ID ").append(card.getId()).append(": ").append(card.toString()).append(" | ");
+        }
+
+        System.out.println(cardDetails.toString());
+    }
+
+    @Test
+    void testPrintCardIdsInOrder() {
+        Card.resetNextID(); // Ensure counter is reset
+        Deck deck = new Deck();
+        Card[] cardsById = new Card[50];
+
+        // Collect all cards by their IDs
+        while (!deck.isEmpty()) {
+            Card card = deck.drawCard();
+            assertNotNull(card, "Card should not be null");
+            cardsById[card.getId()] = card;
+        }
+
+        // Print cards in order of their IDs
+        for (int id = 0; id < 50; id++) {
+            assertNotNull(cardsById[id], "Card with ID " + id + " should exist");
+            System.out.println("Card ID " + id + ": " + cardsById[id].toString());
+        }
+    }
+
 }
