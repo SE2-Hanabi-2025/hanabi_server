@@ -40,8 +40,20 @@ public class PlayCardAction {
         game.getLogger().info("Player " + playerId + " played card: " + card);
         int expected = game.getPlayedCards().get(card.getColor()) + 1;
 
+        game.getLogger().info("Card value: " + card.getValue() + ", Expected: " + expected);
+
         if (card.getValue() != expected) {
             game.getLogger().warn("Player " + playerId + " played an invalid card: " + card);
+            game.getDiscardPile().add(card);
+            game.incrementStrikes(); // Ensure strikes are incremented for invalid cards
+            if (game.getStrikes() >= GameRules.MAX_STRIKES) {
+                game.setGameOver(true);
+                game.getLogger().error("Wrong card played by player " + playerId + ". Game over.");
+                return ActionResult.failure("Wrong card! Game over.");
+            }
+            game.getLogger().warn("Wrong card played by player " + playerId);
+            game.drawCardToHand(playerId);
+            game.advanceTurn();
             return ActionResult.failure("Wrong card!");
         }
 
@@ -70,25 +82,10 @@ public class PlayCardAction {
             game.drawCardToHand(playerId);
             game.advanceTurn();
             return ActionResult.success("You successfully played " + card);
-        } else {
-            if (game.getDeck().isEmpty()) {
-                game.getLogger().warn("Deck is empty. No card drawn.");
-                game.advanceTurn();
-                return ActionResult.failure("No cards left in the deck.");
-            }
-
-            game.getDiscardPile().add(card);
-            game.incrementStrikes();
-            if (game.getStrikes() >= GameRules.MAX_STRIKES) {
-                game.setGameOver(true);
-                game.getLogger().error("Wrong card played by player " + playerId + ". Game over.");
-                return ActionResult.failure("Wrong card! Game over.");
-            }
-            game.getLogger().warn("Wrong card played by player " + playerId);
-            game.drawCardToHand(playerId);
-            game.advanceTurn();
-            return ActionResult.failure("Wrong card!");
         }
+
+        // Ensure a default return statement for valid card plays
+        return ActionResult.success("Card played successfully.");
     }
 }
 

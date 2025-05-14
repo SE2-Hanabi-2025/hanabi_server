@@ -178,7 +178,9 @@ public class GameManager {
     }
 
     public void incrementStrikes() {
+        logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
+        logger.info("After increment: Strikes = " + gameState.getStrikes());
     }
 
     /**

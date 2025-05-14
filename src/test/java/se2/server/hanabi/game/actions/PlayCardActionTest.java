@@ -20,6 +20,7 @@ public class PlayCardActionTest {
 
     @Test
     public void testCorrectCardAddedToStack() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(1, Card.Color.RED));
@@ -30,16 +31,20 @@ public class PlayCardActionTest {
 
     @Test
     public void testInvalidCardCausesStrike() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(3, Card.Color.BLUE));
+        System.out.println("Before action: Strikes = " + game.getStrikes());
         ActionResult result = new PlayCardAction(game, 1, 0).execute(); // Passing player ID 1
-        assertTrue(result.getMessage().contains("Wrong card"));
-        assertEquals(1, game.getStrikes());
+        System.out.println("After action: Strikes = " + game.getStrikes());
+        assertTrue(result.getMessage().contains("Wrong card"), "Expected 'Wrong card' message.");
+        assertEquals(1, game.getStrikes(), "Strike count should increment to 1.");
     }
 
     @Test
     public void testCompletingStackWithFiveGivesHint() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         game.setHints(GameRules.MAX_HINTS - 1);
         game.getPlayedCards().put(Card.Color.GREEN, 4);
         List<Card> hand = game.getHands().get(2); // Using player ID 2
@@ -52,6 +57,7 @@ public class PlayCardActionTest {
 
     @Test
     public void testPerfectGameEnds() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         for (Card.Color color : Card.Color.values()) {
             game.getPlayedCards().put(color, GameRules.MAX_CARD_VALUE);
         }
@@ -66,19 +72,22 @@ public class PlayCardActionTest {
 
     @Test
     public void testGameOverOnThirdStrike() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         game.incrementStrikes();
         game.incrementStrikes();
-        game.incrementStrikes();
+        System.out.println("Before action: Strikes = " + game.getStrikes());
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(3, Card.Color.GREEN));
         ActionResult result = new PlayCardAction(game, 1, 0).execute(); // Passing player ID 1
-        assertTrue(result.getMessage().contains("Game over"));
-        assertTrue(game.isGameOver());
+        System.out.println("After action: Strikes = " + game.getStrikes());
+        assertTrue(result.getMessage().contains("Game over"), "Expected 'Game over' message.");
+        assertTrue(game.isGameOver(), "Game should be marked as over.");
     }
 
     @Test
     public void testPlayCardAfterGameOver() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         game.setGameOver(true);
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
@@ -89,6 +98,7 @@ public class PlayCardActionTest {
 
     @Test
     public void testPlayCardByUnknownPlayer() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         ActionResult result = new PlayCardAction(game, 3, 0).execute(); // Using non-existent player ID 3
 
         assertFalse(result.isSuccess());
@@ -97,6 +107,7 @@ public class PlayCardActionTest {
 
     @Test
     public void testInvalidCardIndexFails() {
+        System.out.println("GameManager strikes before action: " + game.getStrikes());
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();
         hand.add(new Card(2, Card.Color.YELLOW));
