@@ -1,11 +1,16 @@
 package se2.server.hanabi.model;
 
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CardTest {
+
+    @BeforeEach
+    void resetCardIDs() {
+        Card.resetNextID();
+    }
 
     @Test
     void testCardValueAndColorToString() {
