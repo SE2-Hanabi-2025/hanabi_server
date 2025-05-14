@@ -30,21 +30,21 @@ public class HintAction {
             return ActionResult.failure("Target player not found");
         }
 
-        List<Integer> matchingIndices = new ArrayList<>();
+        List<Integer> matchingCardIds = new ArrayList<>();
         for (int i = 0; i < targetHand.size(); i++) {
             Card card = targetHand.get(i);
             if ((type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) ||
                 (type == HintType.VALUE && card.getValue() == (int) value)) {
-                matchingIndices.add(i);
+                matchingCardIds.add(card.getId());
             }
         }
 
-        if (matchingIndices.isEmpty()) {
+        if (matchingCardIds.isEmpty()) {
             game.getLogger().info("No matching cards found for hint by player " + fromPlayerId);
             return ActionResult.failure("No matching cards found");
         }
 
-        game.getLogger().info("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value);
+        game.getLogger().info("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value + "matching cards " +matchingCardIds);
         game.setHints(game.getHints() - 1); // Deduct hint tokens only when a valid hint is applied
         game.advanceTurn();
         return ActionResult.success("Hint given");
