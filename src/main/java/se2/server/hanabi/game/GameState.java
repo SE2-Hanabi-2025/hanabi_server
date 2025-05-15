@@ -172,10 +172,6 @@ public class GameState {
         logger.info("Incrementing strikes. Current strikes: " + strikes);
         strikes++;
         logger.warn("Strike count increased to " + strikes + " out of " + GameRules.MAX_STRIKES);
-        if (strikes >= GameRules.MAX_STRIKES) {
-            setGameOver(true);
-            logger.error("Maximum strikes reached. Game over.");
-        }
     }
     
     /**

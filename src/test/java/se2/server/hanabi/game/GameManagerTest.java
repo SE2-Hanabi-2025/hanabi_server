@@ -208,26 +208,6 @@ public class GameManagerTest {
 
 
     @Test
-    void testEmptyDeckScenario() {
-        // Simulate an empty deck
-        while (!gameManager.getDeck().isEmpty()) {
-            gameManager.getDeck().drawCard();
-        }
-
-        // Verify the deck is empty
-        assertTrue(gameManager.getDeck().isEmpty(), "Deck should be empty.");
-
-        // Attempt to play a card when the deck is empty
-        ActionResult result = gameManager.playCard(1, 0);
-
-        // Verify the action fails with the correct message
-        assertFalse(result.isSuccess(), "Playing a card should fail when the deck is empty.");
-        assertEquals("No cards left in the deck.", result.getMessage(), "Expected message for empty deck scenario.");
-    }
-
- 
-
-    @Test
     void testHintTokenExhaustion() {
         // Exhaust all hint tokens
         gameManager.setHints(0);
@@ -283,16 +263,6 @@ public class GameManagerTest {
         assertTrue(tooManyPlayersException.getMessage().contains("Invalid number of players"), "Expected exception for too many players.");
     }
 
-    @Test
-    void testGameOverByMaximumStrikes() {
-        // Simulate reaching maximum strikes
-        for (int i = 0; i < GameRules.MAX_STRIKES; i++) {
-            gameManager.incrementStrikes();
-        }
-
-        // Verify the game is over
-        assertTrue(gameManager.isGameOver(), "Game should be over after reaching maximum strikes.");
-    }
 
     @Test
     void testInvalidCardPlay() {
@@ -307,14 +277,6 @@ public class GameManagerTest {
         assertEquals("Wrong card!", result.getMessage(), "Expected message for invalid card play.");
     }
 
-    @Test
-    public void testDealInitialCards() {
-        gameManager.dealInitialCards();
-        Map<Integer, List<Card>> hands = gameManager.getHands();
-        for (List<Card> hand : hands.values()) {
-            assertEquals(GameRules.HAND_SIZE_SMALL_GROUP, hand.size(), "Each player should have the correct number of cards.");
-        }
-    }
 
     @Test
     public void testSetStrikes() {

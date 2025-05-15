@@ -72,20 +72,6 @@ public class PlayCardActionTest {
         assertEquals("Perfect! You completed the game.", result.getMessage(), "Expected message for perfect game.");
     }
 
-    @Test
-    public void testGameOverOnThirdStrike() {
-        System.out.println("GameManager strikes before action: " + game.getStrikes());
-        game.incrementStrikes();
-        game.incrementStrikes();
-        System.out.println("Before action: Strikes = " + game.getStrikes());
-        List<Card> hand = game.getHands().get(1); // Using player ID 1
-        hand.clear();
-        hand.add(new Card(3, Card.Color.GREEN));
-        ActionResult result = new PlayCardAction(game, 1, 0).execute(); // Passing player ID 1
-        System.out.println("After action: Strikes = " + game.getStrikes());
-        assertTrue(result.getMessage().contains("Game over"), "Expected 'Game over' message.");
-        assertTrue(game.isGameOver(), "Game should be marked as over.");
-    }
 
     @Test
     public void testPlayCardAfterGameOver() {

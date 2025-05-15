@@ -23,10 +23,7 @@ public class PlayCardAction {
             game.getLogger().warn("Attempt to play card after game over by player " + playerId);
             return ActionResult.failure("Game is already over");
         }
-        if (game.getDeck().isEmpty()) {
-            game.getLogger().warn("Deck is empty. No card can be played.");
-            return ActionResult.failure("No cards left in the deck.");
-        }
+
         List<Card> hand = game.getHands().get(playerId);
         if (hand == null) {
             game.getLogger().warn("Player " + playerId + " not found while playing card");
@@ -46,11 +43,6 @@ public class PlayCardAction {
             game.getLogger().warn("Player " + playerId + " played an invalid card: " + card);
             game.getDiscardPile().add(card);
             game.incrementStrikes(); // Ensure strikes are incremented for invalid cards
-            if (game.getStrikes() >= GameRules.MAX_STRIKES) {
-                game.setGameOver(true);
-                game.getLogger().error("Wrong card played by player " + playerId + ". Game over.");
-                return ActionResult.failure("Wrong card! Game over.");
-            }
             game.getLogger().warn("Wrong card played by player " + playerId);
             game.drawCardToHand(playerId);
             game.advanceTurn();
