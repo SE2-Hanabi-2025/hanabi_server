@@ -162,7 +162,7 @@ public class GameManager {
         }
     }
 
-    private void logFinalScore() {
+    public void logFinalScore() {
         int totalScore = gameState.getCurrentScore();
         logger.info("Final score: " + totalScore + " out of " + GameRules.MAX_SCORE);
     }
@@ -178,7 +178,9 @@ public class GameManager {
     }
 
     public void incrementStrikes() {
+        logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
+        logger.info("After increment: Strikes = " + gameState.getStrikes());
     }
 
     /**
@@ -275,5 +277,6 @@ public class GameManager {
     public void setFinalTurnsRemaining(int turns) {
         gameState.setFinalTurnsRemaining(turns);
     }
+
 }
 

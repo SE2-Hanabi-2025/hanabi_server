@@ -7,6 +7,7 @@ import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.util.GameRules;
 
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,16 @@ public class GameManagerTest {
     }
 
     @Test
+    void testDiscardCardAfterGameOver() {
+    
+        gameManager.setGameOver(true);
+        ActionResult result = gameManager.discardCard(1, 0);
+
+        assertFalse(result.isSuccess());
+        assertEquals("Not your turn or game is over.", result.getMessage());
+    }
+
+    @Test
     void testGameStatusForPlayer() {
         GameStatus status = gameManager.getStatusFor(1);
         
@@ -168,4 +179,139 @@ public class GameManagerTest {
         }
         assertTrue(foundSetupMessage);
     }
+
+    @Test
+    void testPlayCardWithInvalidIndex() {
+
+        ActionResult result = gameManager.playCard(1, -1); 
+
+        assertFalse(result.isSuccess());
+        assertEquals("Invalid card index: -1", result.getMessage());
+
+        result = gameManager.playCard(1, 10); 
+
+       
+        assertFalse(result.isSuccess());
+        assertEquals("Invalid card index: 10", result.getMessage());
+    }
+
+    @Test
+    void testGiveHintWithoutHintsAvailable() {
+        
+        gameManager.setHints(0);
+        
+        ActionResult result = gameManager.giveHint(1, 2, HintType.COLOR, Card.Color.RED);
+
+        assertFalse(result.isSuccess());
+        assertEquals("No hint tokens available.", result.getMessage());
+    }
+
+
+    @Test
+    void testHintTokenExhaustion() {
+        // Exhaust all hint tokens
+        gameManager.setHints(0);
+
+        // Attempt to give a hint
+        ActionResult result = gameManager.giveHint(1, 2, HintType.COLOR, Card.Color.RED);
+
+        // Verify the action fails with the correct message
+        assertFalse(result.isSuccess(), "Giving a hint should fail when no hint tokens are available.");
+        assertEquals("No hint tokens available.", result.getMessage(), "Expected message for hint token exhaustion.");
+    }
+
+
+    @Test
+    void testTurnAdvancement() {
+        // Verify initial turn
+        assertEquals(1, gameManager.getCurrentPlayerId(), "Initial turn should belong to Player 1.");
+
+        // Advance turn
+        gameManager.advanceTurn();
+        assertEquals(2, gameManager.getCurrentPlayerId(), "Turn should advance to Player 2.");
+
+        // Advance turn again
+        gameManager.advanceTurn();
+        assertEquals(3, gameManager.getCurrentPlayerId(), "Turn should advance to Player 3.");
+
+        // Wrap around to Player 1
+        gameManager.advanceTurn();
+        assertEquals(1, gameManager.getCurrentPlayerId(), "Turn should wrap around to Player 1.");
+    }
+
+    @Test
+    void testGameInitializationEdgeCases() {
+        // Test with minimum players
+        GameManager minGame = GameManager.createNewGame(Arrays.asList(1, 2));
+        assertNotNull(minGame, "Game should initialize with minimum players.");
+        assertEquals(2, minGame.getPlayers().size(), "Game should have 2 players.");
+
+        // Test with maximum players
+        GameManager maxGame = GameManager.createNewGame(Arrays.asList(1, 2, 3, 4, 5));
+        assertNotNull(maxGame, "Game should initialize with maximum players.");
+        assertEquals(5, maxGame.getPlayers().size(), "Game should have 5 players.");
+
+        // Test with invalid player counts
+        Exception tooFewPlayersException = assertThrows(IllegalArgumentException.class, () -> {
+            GameManager.createNewGame(Arrays.asList(1));
+        });
+        assertTrue(tooFewPlayersException.getMessage().contains("Invalid number of players"), "Expected exception for too few players.");
+
+        Exception tooManyPlayersException = assertThrows(IllegalArgumentException.class, () -> {
+            GameManager.createNewGame(Arrays.asList(1, 2, 3, 4, 5, 6));
+        });
+        assertTrue(tooManyPlayersException.getMessage().contains("Invalid number of players"), "Expected exception for too many players.");
+    }
+
+
+    @Test
+    void testInvalidCardPlay() {
+        // Simulate a scenario where the card at index 0 is invalid
+        gameManager.getHands().get(1).set(0, new Card(5, Card.Color.RED)); // Set an invalid card
+
+        // Attempt to play the invalid card
+        ActionResult result = gameManager.playCard(1, 0);
+
+        // Verify the action fails with the correct message
+        assertFalse(result.isSuccess(), "Playing an invalid card should fail.");
+        assertEquals("Wrong card!", result.getMessage(), "Expected message for invalid card play.");
+    }
+
+
+    @Test
+    public void testSetStrikes() {
+        gameManager.setStrikes(2);
+        assertEquals(2, gameManager.getStrikes(), "Strikes should be updated correctly.");
+    }
+
+    @Test
+    public void testGetGameState() {
+        GameState state = gameManager.getGameState();
+        assertNotNull(state, "GameState should not be null.");
+        assertEquals(gameManager.getStrikes(), state.getStrikes(), "GameState should reflect the correct strikes.");
+    }
+
+    @Test
+    public void testLogFinalScore() {
+        gameManager.getPlayedCards().put(Card.Color.RED, 5);
+        gameManager.getPlayedCards().put(Card.Color.BLUE, 4);
+        gameManager.logFinalScore();
+        // Verify the log contains the correct final score (mock logger or capture output if necessary)
+    }
+
+    @Test
+    public void testDiscardCardWithInvalidIndex() {
+        ActionResult result = gameManager.discardCard(1, -1); // Invalid index
+        assertFalse(result.isSuccess(), "Discarding with an invalid index should fail.");
+        assertEquals("Invalid card index: -1", result.getMessage(), "Expected message for invalid card index.");
+    }
+
+    @Test
+    public void testCannotDiscardWhenHintsAtMaximum() {
+        gameManager.setHints(GameRules.MAX_HINTS);
+        ActionResult result = gameManager.discardCard(1, 0);
+        assertFalse(result.isSuccess(), "Discarding when hints are at maximum should fail.");
+        assertEquals("Cannot discard: hint tokens are already at maximum (8).", result.getMessage(), "Expected message for maximum hints.");
+    }
+
 }

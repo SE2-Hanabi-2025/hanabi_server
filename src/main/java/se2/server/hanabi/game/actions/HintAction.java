@@ -53,6 +53,8 @@ public class HintAction {
                           .append(", Color: ").append(card.getColor().name()).append("] ");
             }
         }
+
+    
         
         game.getLogger().info(logMessage.toString());
         game.setHints(game.getHints() - 1); // Deduct hint tokens only when a valid hint is applied

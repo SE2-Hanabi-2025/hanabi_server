@@ -43,4 +43,12 @@ public class Deck {
     public int getRemainingCards() {
         return cards.size();
     }
+
+    public void clear() {
+        cards.clear();
+    }
+
+    public void addCardToTop(Card card) {
+        cards.add(0, card);
+    }
 }

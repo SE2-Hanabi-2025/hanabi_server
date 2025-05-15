@@ -23,6 +23,7 @@ public class PlayCardAction {
             game.getLogger().warn("Attempt to play card after game over by player " + playerId);
             return ActionResult.failure("Game is already over");
         }
+
         List<Card> hand = game.getHands().get(playerId);
         if (hand == null) {
             game.getLogger().warn("Player " + playerId + " not found while playing card");
@@ -36,8 +37,21 @@ public class PlayCardAction {
         game.getLogger().info("Player " + playerId + " played card: " + card);
         int expected = game.getPlayedCards().get(card.getColor()) + 1;
 
+        game.getLogger().info("Card value: " + card.getValue() + ", Expected: " + expected);
+
+        if (card.getValue() != expected) {
+            game.getLogger().warn("Player " + playerId + " played an invalid card: " + card);
+            game.getDiscardPile().add(card);
+            game.incrementStrikes(); // Ensure strikes are incremented for invalid cards
+            game.getLogger().warn("Wrong card played by player " + playerId);
+            game.drawCardToHand(playerId);
+            game.advanceTurn();
+            return ActionResult.failure("Wrong card!");
+        }
+
         if (card.getValue() == expected) {
             game.getPlayedCards().put(card.getColor(), expected);
+            game.getLogger().info("Played cards state: " + game.getPlayedCards());
             if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
                 game.setHints(game.getHints() + 1);
             }
@@ -51,22 +65,19 @@ public class PlayCardAction {
                 return ActionResult.success("Perfect! You completed the game.");
             }
 
+            if (game.getDeck().isEmpty()) {
+                game.getLogger().warn("Deck is empty. No card drawn.");
+                game.advanceTurn();
+                return ActionResult.failure("No cards left in the deck.");
+            }
+
             game.drawCardToHand(playerId);
             game.advanceTurn();
             return ActionResult.success("You successfully played " + card);
-        } else {
-            game.getDiscardPile().add(card);
-            game.incrementStrikes();
-            if (game.getStrikes() >= GameRules.MAX_STRIKES) {
-                game.setGameOver(true);
-                game.getLogger().error("Wrong card played by player " + playerId + ". Game over.");
-                return ActionResult.failure("Wrong card! Game over.");
-            }
-            game.getLogger().warn("Wrong card played by player " + playerId);
-            game.drawCardToHand(playerId);
-            game.advanceTurn();
-            return ActionResult.failure("Wrong card!");
         }
+
+        // Ensure a default return statement for valid card plays
+        return ActionResult.success("Card played successfully.");
     }
 }
 
