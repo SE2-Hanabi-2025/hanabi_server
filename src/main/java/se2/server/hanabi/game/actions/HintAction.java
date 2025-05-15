@@ -42,9 +42,21 @@ public class HintAction {
         if (matchingCardIds.isEmpty()) {
             game.getLogger().info("No matching cards found for hint by player " + fromPlayerId);
             return ActionResult.failure("No matching cards found");
+        }        // Build detailed log message with card positions, values, and colors
+        StringBuilder logMessage = new StringBuilder("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value + ". Matching cards: ");
+        
+        for (int i = 0; i < targetHand.size(); i++) {
+            Card card = targetHand.get(i);
+            if (matchingCardIds.contains(card.getId())) {
+                logMessage.append("[Position: ").append(i).append(", ID: ").append(card.getId())
+                          .append(", Value: ").append(card.getValue())
+                          .append(", Color: ").append(card.getColor().name()).append("] ");
+            }
         }
 
-        game.getLogger().info("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value + "matching cards " +matchingCardIds);
+    
+        
+        game.getLogger().info(logMessage.toString());
         game.setHints(game.getHints() - 1); // Deduct hint tokens only when a valid hint is applied
         game.advanceTurn();
         return ActionResult.success("Hint given");
