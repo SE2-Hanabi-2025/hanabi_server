@@ -219,4 +219,21 @@ public class LobbyController {
         }
         return ResponseEntity.ok(lobby.isGameStarted());
     }
+
+    @GetMapping("/status")
+    @Operation(
+            summary = "Get server status",
+            description = "This endpoint checks the status of the server. Returns a confirmation message.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Server is running",
+                            content = @io.swagger.v3.oas.annotations.media.Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Server is running and ready to accept requests.")
+                            )),
+                    @ApiResponse(responseCode = "500", description = "Server error")
+            }
+    )
+    public String getServerStatus() {
+        return "Server is running and ready to accept requests.";
+    }
 }
