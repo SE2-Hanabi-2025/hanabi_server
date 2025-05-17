@@ -126,7 +126,7 @@ public class GameManager {
             gameState.getVisibleHands(currentPlayerId),
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),
-            gameState.getHints(),
+            gameState.getNumRemainingHintTokens(),
             gameState.getStrikes(),
             gameState.isGameOver(),
             String.valueOf(currentPlayerId) // Pass current player ID as a string
@@ -222,11 +222,11 @@ public class GameManager {
     }
 
     public int getHints() {
-        return gameState.getHints();
+        return gameState.getNumRemainingHintTokens();
     }
 
     public void setHints(int hints) {
-        gameState.setHints(hints);
+        gameState.setNumRemainingHintTokens(hints);
     }
 
     public int getStrikes() {

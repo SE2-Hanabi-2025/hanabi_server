@@ -19,7 +19,7 @@ public class GameState {
     private final Deck deck;
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
     private final List<Card> discardPile = new ArrayList<>();
-    private int hints = GameRules.MAX_HINTS;
+    private int numRemainingHintTokens = GameRules.MAX_HINTS;
     private int strikes = 0;
     private int currentPlayerIndex = 0;
     private boolean gameOver = false;
@@ -210,13 +210,13 @@ public class GameState {
         return discardPile;
     }
 
-    public int getHints() {
-        return hints;
+    public int getNumRemainingHintTokens() {
+        return numRemainingHintTokens;
     }
 
-    public void setHints(int hints) {
-        this.hints = Math.min(hints, GameRules.MAX_HINTS);
-        logger.info("Hint tokens updated to " + this.hints + " out of " + GameRules.MAX_HINTS);
+    public void setNumRemainingHintTokens(int numRemainingHintTokens) {
+        this.numRemainingHintTokens = Math.min(numRemainingHintTokens, GameRules.MAX_HINTS);
+        logger.info("Hint tokens updated to " + this.numRemainingHintTokens + " out of " + GameRules.MAX_HINTS);
     }
 
     public int getStrikes() {

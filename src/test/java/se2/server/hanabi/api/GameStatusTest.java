@@ -71,7 +71,7 @@ class GameStatusTest {
 
     @Test
     void testGetHints() {
-        assertEquals(hints, gameStatus.getHints());
+        assertEquals(hints, gameStatus.getNumRemainingHintTokens());
     }
 
     @Test
