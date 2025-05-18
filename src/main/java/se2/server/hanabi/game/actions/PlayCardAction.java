@@ -10,12 +10,12 @@ import java.util.List;
 public class PlayCardAction {
     private final GameManager game;
     private final int playerId;
-    private final int cardIndex;
+    private final int cardId;
 
-    public PlayCardAction(GameManager game, int playerId, int cardIndex) {
+    public PlayCardAction(GameManager game, int playerId, int cardId) {
         this.game = game;
         this.playerId = playerId;
-        this.cardIndex = cardIndex;
+        this.cardId = cardId;
     }
 
     public ActionResult execute() {
@@ -29,19 +29,28 @@ public class PlayCardAction {
             game.getLogger().warn("Player " + playerId + " not found while playing card");
             return ActionResult.failure("Player not found");
         }
-        if (cardIndex < 0 || cardIndex >= hand.size()) {
-            game.getLogger().warn("Invalid card index " + cardIndex + " by player " + playerId);
-            return ActionResult.failure("Invalid card index");
+
+        Card selectedCard = null;
+        for (Card card : hand) {
+            if (cardId == card.getId()) {
+                selectedCard = card;
+                break;
+            }
         }
-        Card card = hand.remove(cardIndex);
-        game.getLogger().info("Player " + playerId + " played card: " + card);
-        int expected = game.getPlayedCards().get(card.getColor()) + 1;
+        if (selectedCard==null) {
+            game.getLogger().warn("Invalid card id " + cardId + " by player " + playerId);
+            return ActionResult.failure("Incorrect card id");
+        }
 
-        game.getLogger().info("Card value: " + card.getValue() + ", Expected: " + expected);
+        hand.remove(selectedCard);
+        game.getLogger().info("Player " + playerId + " played card: " + selectedCard);
+        int expected = game.getPlayedCards().get(selectedCard.getColor()) + 1;
 
-        if (card.getValue() != expected) {
-            game.getLogger().warn("Player " + playerId + " played an invalid card: " + card);
-            game.getDiscardPile().add(card);
+        game.getLogger().info("Card value: " + selectedCard.getValue() + ", Expected: " + expected);
+
+        if (selectedCard.getValue() != expected) {
+            game.getLogger().warn("Player " + playerId + " played an invalid card: " + selectedCard);
+            game.getDiscardPile().add(selectedCard);
             game.incrementStrikes(); // Ensure strikes are incremented for invalid cards
             game.getLogger().warn("Wrong card played by player " + playerId);
             game.drawCardToHand(playerId);
@@ -49,10 +58,10 @@ public class PlayCardAction {
             return ActionResult.failure("Wrong card!");
         }
 
-        if (card.getValue() == expected) {
-            game.getPlayedCards().put(card.getColor(), expected);
+        if (selectedCard.getValue() == expected) {
+            game.getPlayedCards().put(selectedCard.getColor(), expected);
             game.getLogger().info("Played cards state: " + game.getPlayedCards());
-            if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
+            if (selectedCard.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
                 game.setHints(game.getHints() + 1);
             }
 
@@ -73,7 +82,7 @@ public class PlayCardAction {
 
             game.drawCardToHand(playerId);
             game.advanceTurn();
-            return ActionResult.success("You successfully played " + card);
+            return ActionResult.success("You successfully played " + selectedCard);
         }
 
         // Ensure a default return statement for valid card plays

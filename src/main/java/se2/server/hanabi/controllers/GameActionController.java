@@ -64,14 +64,14 @@ public class GameActionController {
     public ResponseEntity<ActionResult> playCard(
             @PathVariable String lobbyId,
             @RequestParam int playerId,
-            @RequestParam int cardIndex
+            @RequestParam int cardId
     ) {
         GameManager gameManager = lobbyManager.getGameManager(lobbyId);
         if (gameManager == null) {
             return ResponseEntity.notFound().build();
         }
         
-        ActionResult result = gameManager.playCard(playerId, cardIndex);
+        ActionResult result = gameManager.playCard(playerId, cardId);
         
         if (result.getType() == ActionResultType.INVALID_MOVE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);

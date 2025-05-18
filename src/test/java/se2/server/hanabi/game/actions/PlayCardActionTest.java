@@ -23,8 +23,9 @@ public class PlayCardActionTest {
         System.out.println("GameManager strikes before action: " + game.getStrikes());
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
-        hand.add(new Card(1, Card.Color.RED));
-        ActionResult result = new PlayCardAction(game, 1, 0).execute(); // Passing player ID 1
+        Card card = new Card(1, Card.Color.RED);
+        hand.add(card);
+        ActionResult result = new PlayCardAction(game, 1, card.getId()).execute(); // Passing player ID 1
         assertTrue(result.getMessage().startsWith("You successfully played"));
         assertEquals(1, game.getPlayedCards().get(Card.Color.RED));
     }
@@ -34,9 +35,10 @@ public class PlayCardActionTest {
         System.out.println("GameManager strikes before action: " + game.getStrikes());
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
-        hand.add(new Card(3, Card.Color.BLUE));
+        Card card = new Card(3, Card.Color.BLUE);
+        hand.add(card);
         System.out.println("Before action: Strikes = " + game.getStrikes());
-        ActionResult result = new PlayCardAction(game, 1, 0).execute(); // Passing player ID 1
+        ActionResult result = new PlayCardAction(game, 1, card.getId()).execute(); // Passing player ID 1
         System.out.println("After action: Strikes = " + game.getStrikes());
         assertTrue(result.getMessage().contains("Wrong card"), "Expected 'Wrong card' message.");
         assertEquals(1, game.getStrikes(), "Strike count should increment to 1.");
@@ -49,8 +51,9 @@ public class PlayCardActionTest {
         game.getPlayedCards().put(Card.Color.GREEN, 4);
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();
-        hand.add(new Card(5, Card.Color.GREEN));
-        ActionResult result = new PlayCardAction(game, 2, 0).execute(); // Passing player ID 2
+        Card card = new Card(5, Card.Color.GREEN);
+        hand.add(card);
+        ActionResult result = new PlayCardAction(game, 2, card.getId()).execute(); // Passing player ID 2
         assertTrue(result.isSuccess()); // Added assertion to use the result variable
         assertEquals(GameRules.MAX_HINTS, game.getHints());
     }
@@ -64,9 +67,10 @@ public class PlayCardActionTest {
 
         List<Card> hand = game.getHands().get(1);
         hand.clear();
-        hand.add(new Card(5, Card.Color.RED));
+        Card card = new Card(5, Card.Color.RED);
+        hand.add(card);
 
-        ActionResult result = new PlayCardAction(game, 1, 0).execute();
+        ActionResult result = new PlayCardAction(game, 1, card.getId()).execute();
         assertTrue(result.isSuccess(), "Playing the final card should succeed.");
         assertTrue(game.isGameOver(), "Game should be marked as over.");
         assertEquals("Perfect! You completed the game.", result.getMessage(), "Expected message for perfect game.");
@@ -96,15 +100,16 @@ public class PlayCardActionTest {
     }
 
     @Test
-    public void testInvalidCardIndexFails() {
+    public void testIncorrectCardIdFails() {
         System.out.println("GameManager strikes before action: " + game.getStrikes());
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();
-        hand.add(new Card(2, Card.Color.YELLOW));
+        Card card =new Card(2, Card.Color.YELLOW);
+        hand.add(card);
 
-        ActionResult result = new PlayCardAction(game, 2, 5).execute(); // Passing invalid card index
+        ActionResult result = new PlayCardAction(game, 2, card.getId()+1).execute(); // Passing invalid card id
 
-        assertTrue(result.getMessage().contains("Invalid card index"));
+        assertTrue(result.getMessage().contains("Incorrect card id"));
     }
 
     @Test
@@ -116,9 +121,10 @@ public class PlayCardActionTest {
 
         List<Card> hand = game.getHands().get(1);
         hand.clear();
-        hand.add(new Card(1, Card.Color.RED));
+        Card card =new Card(1, Card.Color.RED);
+        hand.add(card);
 
-        ActionResult result = new PlayCardAction(game, 1, 0).execute();
+        ActionResult result = new PlayCardAction(game, 1, card.getId()).execute();
         assertFalse(result.isSuccess(), "Playing a card should fail when the deck is empty.");
         assertEquals("No cards left in the deck.", result.getMessage(), "Expected message for empty deck scenario.");
     }
@@ -128,16 +134,5 @@ public class PlayCardActionTest {
         ActionResult result = new PlayCardAction(game, 99, 0).execute(); // Invalid player ID
         assertFalse(result.isSuccess(), "Playing a card with an invalid player should fail.");
         assertEquals("Player not found", result.getMessage(), "Expected message for invalid player.");
-    }
-
-    @Test
-    public void testPlayCardWithInvalidIndex() {
-        List<Card> hand = game.getHands().get(1);
-        hand.clear();
-        hand.add(new Card(1, Card.Color.RED));
-
-        ActionResult result = new PlayCardAction(game, 1, -1).execute(); // Invalid index
-        assertFalse(result.isSuccess(), "Playing a card with an invalid index should fail.");
-        assertEquals("Invalid card index", result.getMessage(), "Expected message for invalid card index.");
     }
 }

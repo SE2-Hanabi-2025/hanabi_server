@@ -9,9 +9,19 @@ public class GameValidator {
         return !game.isGameOver() && game.getCurrentPlayerId() == playerId;
     }
 
-    public static boolean isValidCardIndex(GameManager game, int playerId, int cardIndex) {
+    public static boolean isValidCardId(GameManager game, int playerId, int cardId) {
         List<Card> hand = game.getHands().get(playerId);
-        return hand != null && cardIndex >= 0 && cardIndex < hand.size();
+        if (hand == null) {
+            return false;
+        }
+        
+        boolean handContainsCard = false;
+        for (Card card : hand) {
+            if (card.getId() == cardId) {
+                handContainsCard =true;
+            }
+        }
+        return handContainsCard;
     }
 
     public static boolean playerExists(GameManager game, int playerId) {

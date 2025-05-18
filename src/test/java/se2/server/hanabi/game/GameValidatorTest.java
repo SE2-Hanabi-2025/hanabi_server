@@ -42,43 +42,34 @@ class GameValidatorTest {
 
     @Test
     void testIsValidCardIndex_Valid() {
-        List<Card> hand = Arrays.asList(mock(Card.class), mock(Card.class));
+        List<Card> hand = new ArrayList<Card>();
         Map<Integer, List<Card>> hands = new HashMap<>();
         hands.put(1, hand);
+        Card card = new Card(4, Card.Color.RED);
+        hands.get(1).add(card);
         when(gameManager.getHands()).thenReturn(hands);
-        assertTrue(GameValidator.isValidCardIndex(gameManager, 1, 1));
+        assertTrue(GameValidator.isValidCardId(gameManager, 1, card.getId()));
     }
 
     @Test
     void testIsValidCardIndex_InvalidIndex() {
-        List<Card> hand = Arrays.asList(mock(Card.class));
+        List<Card> hand = new ArrayList<Card>();
         Map<Integer, List<Card>> hands = new HashMap<>();
         hands.put(1, hand);
+        Card card = new Card(4, Card.Color.RED);
+        hands.get(1).add(card);
         when(gameManager.getHands()).thenReturn(hands);
 
-        assertFalse(GameValidator.isValidCardIndex(gameManager, 1, 1));
-        assertFalse(GameValidator.isValidCardIndex(gameManager, 1, -1));
-        assertFalse(GameValidator.isValidCardIndex(gameManager, 1, 2));
-        assertTrue(GameValidator.isValidCardIndex(gameManager, 1, 0));
-    }
-    
-    @Test
-    void testIsValidCardIndex_ExactBoundaries() {
-        List<Card> hand = Arrays.asList(mock(Card.class), mock(Card.class));
-        Map<Integer, List<Card>> hands = new HashMap<>();
-        hands.put(1, hand);
-        when(gameManager.getHands()).thenReturn(hands);
-        
-        assertTrue(GameValidator.isValidCardIndex(gameManager, 1, 0));
-        assertTrue(GameValidator.isValidCardIndex(gameManager, 1, 1));
-        assertFalse(GameValidator.isValidCardIndex(gameManager, 1, 2));
+        assertFalse(GameValidator.isValidCardId(gameManager, 1, card.getId()+1));
+        assertFalse(GameValidator.isValidCardId(gameManager, 1, -1));
+        assertTrue(GameValidator.isValidCardId(gameManager, 1, card.getId()));
     }
 
     @Test
     void testIsValidCardIndex_NoHand() {
         Map<Integer, List<Card>> hands = new HashMap<>();
         when(gameManager.getHands()).thenReturn(hands);
-        assertFalse(GameValidator.isValidCardIndex(gameManager, 2, 0));
+        assertFalse(GameValidator.isValidCardId(gameManager, 2, 0));
     }
 
     @Test

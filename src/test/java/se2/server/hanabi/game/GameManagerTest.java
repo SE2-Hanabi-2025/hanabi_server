@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import se2.server.hanabi.api.GameStatus;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.model.Card;
+import se2.server.hanabi.model.Player;
 import se2.server.hanabi.util.GameRules;
 
 
@@ -186,13 +187,17 @@ public class GameManagerTest {
         ActionResult result = gameManager.playCard(1, -1); 
 
         assertFalse(result.isSuccess());
-        assertEquals("Invalid card index: -1", result.getMessage());
+        assertEquals("Invalid card id: -1", result.getMessage());
 
-        result = gameManager.playCard(1, 10); 
+        int playerAId = playerIds.get(0);
+        int playerBId = playerIds.get(1);
+        int cardIdFromPlayerB = gameManager.getHands().get(playerBId).get(0).getId();
+
+        result = gameManager.playCard(playerAId, cardIdFromPlayerB); 
 
        
         assertFalse(result.isSuccess());
-        assertEquals("Invalid card index: 10", result.getMessage());
+        assertEquals("Invalid card id: "+cardIdFromPlayerB, result.getMessage());
     }
 
     @Test
@@ -267,10 +272,11 @@ public class GameManagerTest {
     @Test
     void testInvalidCardPlay() {
         // Simulate a scenario where the card at index 0 is invalid
-        gameManager.getHands().get(1).set(0, new Card(5, Card.Color.RED)); // Set an invalid card
+        Card card = new Card(5, Card.Color.RED);
+        gameManager.getHands().get(1).set(0, card); // Set an invalid card
 
         // Attempt to play the invalid card
-        ActionResult result = gameManager.playCard(1, 0);
+        ActionResult result = gameManager.playCard(1, card.getId());
 
         // Verify the action fails with the correct message
         assertFalse(result.isSuccess(), "Playing an invalid card should fail.");
@@ -309,7 +315,11 @@ public class GameManagerTest {
     @Test
     public void testCannotDiscardWhenHintsAtMaximum() {
         gameManager.setHints(GameRules.MAX_HINTS);
-        ActionResult result = gameManager.discardCard(1, 0);
+
+        int playerId = playerIds.get(0);
+        int cardId = gameManager.getHands().get(playerId).get(0).getId();
+
+        ActionResult result = gameManager.discardCard(playerId, cardId);
         assertFalse(result.isSuccess(), "Discarding when hints are at maximum should fail.");
         assertEquals("Cannot discard: hint tokens are already at maximum (8).", result.getMessage(), "Expected message for maximum hints.");
     }

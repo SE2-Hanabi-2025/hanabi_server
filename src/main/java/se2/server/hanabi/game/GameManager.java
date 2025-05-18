@@ -55,22 +55,22 @@ public class GameManager {
         logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
     }
 
-    public ActionResult playCard(int playerId, int cardIndex) {
+    public ActionResult playCard(int playerId, int cardId) {
         if (!GameValidator.isPlayerTurn(this, playerId)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        if (!GameValidator.isValidCardIndex(this, playerId, cardIndex)) {
-            return ActionResult.invalid("Invalid card index: " + cardIndex);
+        if (!GameValidator.isValidCardId(this, playerId, cardId)) {
+            return ActionResult.invalid("Invalid card id: " + cardId);
         }
-        logger.info("Player " + playerId + " attempts to play card at index " + cardIndex);
-        return new PlayCardAction(this, playerId, cardIndex).execute();
+        logger.info("Player " + playerId + " attempts to play card id: " + cardId);
+        return new PlayCardAction(this, playerId, cardId).execute();
     }
 
     public ActionResult discardCard(int playerId, int cardIndex) {
         if (!GameValidator.isPlayerTurn(this, playerId)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
-        if (!GameValidator.isValidCardIndex(this, playerId, cardIndex)) {
+        if (!GameValidator.isValidCardId(this, playerId, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
         if (!GameValidator.canDiscard(this)) {
