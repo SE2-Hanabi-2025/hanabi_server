@@ -123,8 +123,8 @@ public class GameManager {
 
         return new GameStatus(
             gameState.getPlayers(),
-            gameState.getPlayerCardIds(currentPlayerId),
-            gameState.getVisibleHands(currentPlayerId),
+            gameState.getPlayerCardIds(playerId),
+            gameState.getVisibleHands(playerId),
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),
             gameState.getDeck().getNumRemainingCards(),
