@@ -118,9 +118,6 @@ public class GameManager {
      * @return GameStatus object with all relevant game information
      */
     public GameStatus getStatusFor(int playerId) {
-
-        int currentPlayerId = gameState.getCurrentPlayerId();
-
         return new GameStatus(
             gameState.getPlayers(),
             gameState.getPlayerCardIds(playerId),
@@ -131,7 +128,7 @@ public class GameManager {
             gameState.getNumRemainingHintTokens(),
             gameState.getStrikes(),
             gameState.isGameOver(),
-            String.valueOf(currentPlayerId) // Pass current player ID as a string
+            gameState.getCurrentPlayerId()
         );
     }
     

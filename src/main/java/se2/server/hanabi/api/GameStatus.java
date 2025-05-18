@@ -18,7 +18,7 @@ public class GameStatus {
     private final int numRemainingHintTokens;
     private final int strikes;
     private final boolean gameOver;
-    private final String currentPlayer;
+    private final int currentPlayerId;
 
     public GameStatus(
         List<Player> players, 
@@ -30,7 +30,7 @@ public class GameStatus {
         int hints, 
         int strikes, 
         boolean gameOver, 
-        String currentPlayer
+        int currentPlayerId
         ) {
         this.players = players;
         this.playerCardIds = playerCardIds;
@@ -41,7 +41,7 @@ public class GameStatus {
         this.numRemainingHintTokens = hints;
         this.strikes = strikes;
         this.gameOver = gameOver;
-        this.currentPlayer = currentPlayer;
+        this.currentPlayerId = currentPlayerId;
     }
 
     public List<Player> getPlayers() {
@@ -85,12 +85,7 @@ public class GameStatus {
         return gameOver;
     }
 
-    public String getCurrentPlayer() {
-        return currentPlayer;
-    }
-
     public int getCurrentPlayerId() {
-        // Assuming `currentPlayer` is the ID of the current player as a String
-        return Integer.parseInt(currentPlayer);
+        return currentPlayerId;
     }
 }

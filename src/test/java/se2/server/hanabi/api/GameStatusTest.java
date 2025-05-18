@@ -19,7 +19,7 @@ class GameStatusTest {
     private int hints;
     private int strikes;
     private boolean gameOver;
-    private int currentPlayer; // Changed to Integer for playerId
+    private int currentPlayerId;
 
     private GameStatus gameStatus;
 
@@ -50,9 +50,9 @@ class GameStatusTest {
         hints = 5;
         strikes = 1;
         gameOver = false;
-        currentPlayer = 1; // Using playerId
+        currentPlayerId = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, gameOver, String.valueOf(currentPlayer));
+        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, gameOver, currentPlayerId);
     }
 
     @Test
@@ -102,12 +102,12 @@ class GameStatusTest {
 
     @Test
     void testGetCurrentPlayer() {
-        assertEquals(String.valueOf(currentPlayer), gameStatus.getCurrentPlayer());
+        assertEquals(String.valueOf(currentPlayerId), gameStatus.getCurrentPlayerId());
     }
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, true, String.valueOf(currentPlayer));
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, true, currentPlayerId);
         assertTrue(status.isGameOver());
     }
 }
