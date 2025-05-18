@@ -27,7 +27,7 @@ public class GameStatus {
         Map<Card.Color, Integer> playedCards, 
         List<Card> discardPile, 
         int numRemaningCards,
-        int hints, 
+        int numRemainingHintTokens, 
         int strikes, 
         boolean gameOver, 
         int currentPlayerId
@@ -38,7 +38,7 @@ public class GameStatus {
         this.playedCards = playedCards;
         this.discardPile = discardPile;
         this.numRemaningCards = numRemaningCards;
-        this.numRemainingHintTokens = hints;
+        this.numRemainingHintTokens = numRemainingHintTokens;
         this.strikes = strikes;
         this.gameOver = gameOver;
         this.currentPlayerId = currentPlayerId;
