@@ -19,6 +19,8 @@ public class GameState {
     private final Deck deck;
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
     private final List<Card> discardPile = new ArrayList<>();
+    private final Map<Integer, Card.Color> cardsShowingColorHints = new HashMap<>();
+    private final Map<Integer, Integer> cardsShowingValueHints = new HashMap<>();
     private int numRemainingHintTokens = GameRules.MAX_HINTS;
     private int strikes = 0;
     private int currentPlayerIndex = 0;
@@ -107,6 +109,23 @@ public class GameState {
     public int getCurrentPlayerId() {
         return players.get(currentPlayerIndex).getId();
     }
+
+    /**
+     * Get the map of card IDs and their corresponding color hints
+     * @return map of card IDs and their corresponding color hints
+     */
+    public Map<Integer, Card.Color> getCardsShowingColorHints() {
+        return cardsShowingColorHints;
+    }
+
+    /**
+     * Get the map of card IDs and their corresponding value hints
+     * @return map of card IDs and their corresponding color hints
+     */
+    public Map<Integer, Integer> getCardsShowingValueHints() {
+        return cardsShowingValueHints;
+    }
+
     
     /**
      * Advances to the next player's turn

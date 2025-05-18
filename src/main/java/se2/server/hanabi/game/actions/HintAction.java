@@ -33,8 +33,11 @@ public class HintAction {
         List<Integer> matchingCardIds = new ArrayList<>();
         for (int i = 0; i < targetHand.size(); i++) {
             Card card = targetHand.get(i);
-            if ((type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) ||
-                (type == HintType.VALUE && card.getValue() == (int) value)) {
+            if (type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) {
+                game.getGameState().getCardsShowingColorHints().put(card.getId(), (Card.Color)value);
+                matchingCardIds.add(card.getId());
+            } else if (type == HintType.VALUE && card.getValue() == (int) value) {
+                game.getGameState().getCardsShowingValueHints().put(card.getId(), (Integer)value);
                 matchingCardIds.add(card.getId());
             }
         }
