@@ -15,6 +15,8 @@ public class GameStatus {
     private final Map<Card.Color, Integer> playedCards;
     private final List<Card> discardPile;
     private final int numRemaningCards;
+    private final Map<Integer, Card.Color> cardsShowingColorHints;
+    private final Map<Integer, Integer> cardsShowingValueHints;
     private final int numRemainingHintTokens;
     private final int strikes;
     private final boolean gameOver;
@@ -27,6 +29,8 @@ public class GameStatus {
         Map<Card.Color, Integer> playedCards, 
         List<Card> discardPile, 
         int numRemaningCards,
+        Map<Integer, Card.Color> cardsShowingColorHints,
+        Map<Integer, Integer> cardsShowingValueHints,
         int numRemainingHintTokens, 
         int strikes, 
         boolean gameOver, 
@@ -38,6 +42,8 @@ public class GameStatus {
         this.playedCards = playedCards;
         this.discardPile = discardPile;
         this.numRemaningCards = numRemaningCards;
+        this.cardsShowingColorHints = cardsShowingColorHints;
+        this.cardsShowingValueHints = cardsShowingValueHints;
         this.numRemainingHintTokens = numRemainingHintTokens;
         this.strikes = strikes;
         this.gameOver = gameOver;
@@ -71,6 +77,14 @@ public class GameStatus {
 
     public int getNumRemainingCards() {
         return numRemaningCards;
+    }
+    
+    public Map<Integer, Card.Color> getCardsShowingColorHints() {
+        return cardsShowingColorHints;
+    }
+
+    public Map<Integer, Integer> getCardsShowingValueHints() {
+        return cardsShowingValueHints;
     }
 
     public int getNumRemainingHintTokens() {

@@ -125,6 +125,8 @@ public class GameManager {
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),
             gameState.getDeck().getNumRemainingCards(),
+            gameState.getCardsShowingColorHints(),
+            gameState.getCardsShowingValueHints(),
             gameState.getNumRemainingHintTokens(),
             gameState.getStrikes(),
             gameState.isGameOver(),

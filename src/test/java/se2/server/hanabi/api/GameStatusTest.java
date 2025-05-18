@@ -16,6 +16,8 @@ class GameStatusTest {
     private Map<Card.Color, Integer> playedCards;
     private List<Card> discardPile;
     private int numRemaningCards;
+    private final Map<Integer, Card.Color> cardsShowingColorHints = new HashMap<Integer, Card.Color>();
+    private final Map<Integer, Integer> cardsShowingValueHints = new HashMap<Integer, Integer>();
     private int hints;
     private int strikes;
     private boolean gameOver;
@@ -47,12 +49,16 @@ class GameStatusTest {
         playerCardIds.add(1);
         playerCardIds.add(5);
         numRemaningCards = 17;
+        cardsShowingColorHints.put(0, Card.Color.YELLOW);
+        cardsShowingColorHints.put(1, Card.Color.BLUE);
+        cardsShowingValueHints.put(0 , 4);
+        cardsShowingValueHints.put(3 , 2);
         hints = 5;
         strikes = 1;
         gameOver = false;
         currentPlayerId = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, gameOver, currentPlayerId);
+        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, hints, strikes, gameOver, currentPlayerId);
     }
 
     @Test
@@ -107,7 +113,7 @@ class GameStatusTest {
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, true, currentPlayerId);
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, hints, strikes, true, currentPlayerId);
         assertTrue(status.isGameOver());
     }
 }
