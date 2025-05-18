@@ -13,16 +13,28 @@ public class GameStatus {
     private final Map<Integer, List<Card>> visibleHands;
     private final Map<Card.Color, Integer> playedCards;
     private final List<Card> discardPile;
+    private final int numRemaningCards;
     private final int numRemainingHintTokens;
     private final int strikes;
     private final boolean gameOver;
     private final String currentPlayer;
 
-    public GameStatus(List<Player> players, Map<Integer, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
+    public GameStatus(
+        List<Player> players, 
+        Map<Integer, List<Card>> visibleHands, 
+        Map<Card.Color, Integer> playedCards, 
+        List<Card> discardPile, 
+        int numRemaningCards,
+        int hints, 
+        int strikes, 
+        boolean gameOver, 
+        String currentPlayer
+        ) {
         this.players = players;
         this.visibleHands = visibleHands;
         this.playedCards = playedCards;
         this.discardPile = discardPile;
+        this.numRemaningCards = numRemaningCards;
         this.numRemainingHintTokens = hints;
         this.strikes = strikes;
         this.gameOver = gameOver;
@@ -48,6 +60,10 @@ public class GameStatus {
 
     public List<Card> getDiscardPile() {
         return discardPile;
+    }
+
+    public int getNumRemainingCards() {
+        return numRemaningCards;
     }
 
     public int getNumRemainingHintTokens() {

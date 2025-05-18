@@ -51,7 +51,7 @@ public class GameManager {
 
         gameState.dealInitialCards();
 
-        logger.info("Game setup completed. " + gameState.getDeck().getRemainingCards() + " cards left in deck.");
+        logger.info("Game setup completed. " + gameState.getDeck().getNumRemainingCards() + " cards left in deck.");
         logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
     }
 
@@ -126,6 +126,7 @@ public class GameManager {
             gameState.getVisibleHands(currentPlayerId),
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),
+            gameState.getDeck().getNumRemainingCards(),
             gameState.getNumRemainingHintTokens(),
             gameState.getStrikes(),
             gameState.isGameOver(),

@@ -14,6 +14,7 @@ class GameStatusTest {
     private Map<Integer, List<Card>> visibleHands; // Changed key to Integer for playerId
     private Map<Card.Color, Integer> playedCards;
     private List<Card> discardPile;
+    private int numRemaningCards;
     private int hints;
     private int strikes;
     private boolean gameOver;
@@ -41,12 +42,13 @@ class GameStatusTest {
 
         discardPile = Arrays.asList(card1);
 
+        numRemaningCards = 17;
         hints = 5;
         strikes = 1;
         gameOver = false;
         currentPlayer = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, visibleHands, playedCards, discardPile, hints, strikes, gameOver, String.valueOf(currentPlayer));
+        gameStatus = new GameStatus(players, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, gameOver, String.valueOf(currentPlayer));
     }
 
     @Test
@@ -67,6 +69,11 @@ class GameStatusTest {
     @Test
     void testGetDiscardPile() {
         assertEquals(discardPile, gameStatus.getDiscardPile());
+    }
+
+    @Test
+    void testGetNumRemainingCards() {
+        assertEquals(numRemaningCards, gameStatus.getNumRemainingCards());
     }
 
     @Test
@@ -91,7 +98,7 @@ class GameStatusTest {
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, visibleHands, playedCards, discardPile, hints, strikes, true, String.valueOf(currentPlayer));
+        GameStatus status = new GameStatus(players, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, true, String.valueOf(currentPlayer));
         assertTrue(status.isGameOver());
     }
 }

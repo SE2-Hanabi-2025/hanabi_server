@@ -40,7 +40,7 @@ public class Deck {
      * Get the number of cards remaining in the deck
      * @return number of remaining cards
      */
-    public int getRemainingCards() {
+    public int getNumRemainingCards() {
         return cards.size();
     }
 

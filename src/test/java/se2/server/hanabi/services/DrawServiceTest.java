@@ -27,13 +27,13 @@ class DrawServiceTest {
     @Test
     void testDrawCardToPlayerHand_success() {
         int initialHandSize = gameManager.getHands().get(playerId).size();
-        int initialDeckSize = gameManager.getDeck().getRemainingCards();
+        int initialDeckSize = gameManager.getDeck().getNumRemainingCards();
 
         Card card = drawService.drawCardToPlayerHand(gameManager, playerId);
 
         assertNotNull(card);
         assertEquals(initialHandSize + 1, gameManager.getHands().get(playerId).size());
-        assertEquals(initialDeckSize - 1, gameManager.getDeck().getRemainingCards());
+        assertEquals(initialDeckSize - 1, gameManager.getDeck().getNumRemainingCards());
     }
 
     @Test
