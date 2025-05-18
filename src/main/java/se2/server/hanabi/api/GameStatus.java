@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class GameStatus {
 
     private final List<Player> players;
+    private final List<Integer> playerCardIds;
     private final Map<Integer, List<Card>> visibleHands;
     private final Map<Card.Color, Integer> playedCards;
     private final List<Card> discardPile;
@@ -21,6 +22,7 @@ public class GameStatus {
 
     public GameStatus(
         List<Player> players, 
+        List<Integer> playerCardIds,
         Map<Integer, List<Card>> visibleHands, 
         Map<Card.Color, Integer> playedCards, 
         List<Card> discardPile, 
@@ -31,6 +33,7 @@ public class GameStatus {
         String currentPlayer
         ) {
         this.players = players;
+        this.playerCardIds = playerCardIds;
         this.visibleHands = visibleHands;
         this.playedCards = playedCards;
         this.discardPile = discardPile;
@@ -43,6 +46,10 @@ public class GameStatus {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public List<Integer> getPlayerCardIds() {
+        return playerCardIds;
     }
 
     public Map<Integer, List<Card>> getVisibleHands() {

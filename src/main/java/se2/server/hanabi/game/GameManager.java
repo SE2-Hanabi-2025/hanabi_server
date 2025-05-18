@@ -123,6 +123,7 @@ public class GameManager {
 
         return new GameStatus(
             gameState.getPlayers(),
+            gameState.getPlayerCardIds(currentPlayerId),
             gameState.getVisibleHands(currentPlayerId),
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),

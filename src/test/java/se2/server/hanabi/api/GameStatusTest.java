@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 class GameStatusTest {
 
     private List<Player> players;
+    private List<Integer> playerCardIds;
     private Map<Integer, List<Card>> visibleHands; // Changed key to Integer for playerId
     private Map<Card.Color, Integer> playedCards;
     private List<Card> discardPile;
@@ -42,18 +43,26 @@ class GameStatusTest {
 
         discardPile = Arrays.asList(card1);
 
+        playerCardIds = new ArrayList<Integer>();
+        playerCardIds.add(1);
+        playerCardIds.add(5);
         numRemaningCards = 17;
         hints = 5;
         strikes = 1;
         gameOver = false;
         currentPlayer = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, gameOver, String.valueOf(currentPlayer));
+        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, gameOver, String.valueOf(currentPlayer));
     }
 
     @Test
     void testGetPlayers() {
         assertEquals(players, gameStatus.getPlayers());
+    }
+
+    @Test
+    void testGetPlayerCardIds() {
+        assertEquals(playerCardIds, gameStatus.getPlayerCardIds());
     }
 
     @Test
@@ -98,7 +107,7 @@ class GameStatusTest {
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, true, String.valueOf(currentPlayer));
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, hints, strikes, true, String.valueOf(currentPlayer));
         assertTrue(status.isGameOver());
     }
 }

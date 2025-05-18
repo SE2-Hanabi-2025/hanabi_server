@@ -175,6 +175,19 @@ public class GameState {
     }
     
     /**
+     *  Returns the cardIds of the given player
+     * @param playerId ID of the players whose cardIds will be returned
+     * @return List of card IDs
+     */
+    public List<Integer> getPlayerCardIds(int playerId) {
+        List<Integer> cardIds = new ArrayList<Integer>();
+        for (Card card : hands.get(playerId)) {
+            cardIds.add(card.getId());
+        }
+        return cardIds;
+    }
+
+    /**
      * Get all hands except the specified player's
      * @param viewerId ID of the player who should not see their own hand
      * @return Map of player IDs to their hand of cards
