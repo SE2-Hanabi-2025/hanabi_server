@@ -73,25 +73,25 @@ class GameActionControllerTest {
     void playCard_Success() {
         // Arrange
         ActionResult successResult = ActionResult.success("Card played successfully");
-        when(gameManager.playCard(PLAYER_ID, 0)).thenReturn(successResult);
+        when(gameManager.playCard(PLAYER_ID, 0, Card.Color.RED)).thenReturn(successResult);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0);
+        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0, Card.Color.RED);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(successResult, response.getBody());
-        verify(gameManager).playCard(PLAYER_ID, 0);
+        verify(gameManager).playCard(PLAYER_ID, 0, Card.Color.RED);
     }
 
     @Test
     void playCard_InvalidMove() {
         // Arrange
         ActionResult invalidResult = ActionResult.invalid("Not your turn");
-        when(gameManager.playCard(PLAYER_ID, 0)).thenReturn(invalidResult);
+        when(gameManager.playCard(PLAYER_ID, 0, Card.Color.RED)).thenReturn(invalidResult);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0);
+        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0,Card.Color.RED);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -104,7 +104,7 @@ class GameActionControllerTest {
         when(lobbyManager.getGameManager(LOBBY_ID)).thenReturn(null);
 
         // Act
-        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0);
+        ResponseEntity<ActionResult> response = controller.playCard(LOBBY_ID, PLAYER_ID, 0,Card.Color.RED);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

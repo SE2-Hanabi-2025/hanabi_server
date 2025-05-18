@@ -84,7 +84,7 @@ public class GameManagerTest {
     @Test
     void testPlayCardWrongTurn() {
         // Player 2 tries to play when it's Player 1's turn
-        ActionResult result = gameManager.playCard(2, 0);
+        ActionResult result = gameManager.playCard(2, 0, Card.Color.RED);
         assertFalse(result.isSuccess());
         assertEquals("Not your turn or game is over.", result.getMessage());
     }
@@ -103,7 +103,7 @@ public class GameManagerTest {
         gameManager.setGameOver(true);
         
         // Try to perform actions
-        ActionResult playResult = gameManager.playCard(1, 0);
+        ActionResult playResult = gameManager.playCard(1, 0, Card.Color.RED);
         assertFalse(playResult.isSuccess());
         
         ActionResult discardResult = gameManager.discardCard(1, 0);
@@ -184,7 +184,7 @@ public class GameManagerTest {
     @Test
     void testPlayCardWithInvalidIndex() {
 
-        ActionResult result = gameManager.playCard(1, -1); 
+        ActionResult result = gameManager.playCard(1, -1, Card.Color.RED); 
 
         assertFalse(result.isSuccess());
         assertEquals("Invalid card id: -1", result.getMessage());
@@ -193,7 +193,7 @@ public class GameManagerTest {
         int playerBId = playerIds.get(1);
         int cardIdFromPlayerB = gameManager.getHands().get(playerBId).get(0).getId();
 
-        result = gameManager.playCard(playerAId, cardIdFromPlayerB); 
+        result = gameManager.playCard(playerAId, cardIdFromPlayerB, Card.Color.RED); 
 
        
         assertFalse(result.isSuccess());
@@ -276,7 +276,7 @@ public class GameManagerTest {
         gameManager.getHands().get(1).set(0, card); // Set an invalid card
 
         // Attempt to play the invalid card
-        ActionResult result = gameManager.playCard(1, card.getId());
+        ActionResult result = gameManager.playCard(1, card.getId(), Card.Color.RED);
 
         // Verify the action fails with the correct message
         assertFalse(result.isSuccess(), "Playing an invalid card should fail.");

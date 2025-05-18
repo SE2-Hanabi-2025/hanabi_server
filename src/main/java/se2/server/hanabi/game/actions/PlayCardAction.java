@@ -11,11 +11,13 @@ public class PlayCardAction {
     private final GameManager game;
     private final int playerId;
     private final int cardId;
+    private final Card.Color stackColor;
 
-    public PlayCardAction(GameManager game, int playerId, int cardId) {
+    public PlayCardAction(GameManager game, int playerId, int cardId, Card.Color stackColor) {
         this.game = game;
         this.playerId = playerId;
         this.cardId = cardId;
+        this.stackColor = stackColor;
     }
 
     public ActionResult execute() {
@@ -44,11 +46,11 @@ public class PlayCardAction {
 
         hand.remove(selectedCard);
         game.getLogger().info("Player " + playerId + " played card: " + selectedCard);
-        int expected = game.getPlayedCards().get(selectedCard.getColor()) + 1;
+        int expectedValue = game.getPlayedCards().get(stackColor) + 1;
 
-        game.getLogger().info("Card value: " + selectedCard.getValue() + ", Expected: " + expected);
+        game.getLogger().info("Card: " + selectedCard.getColor()+" "+selectedCard.getValue() + ", Expected: " + stackColor + " "+ expectedValue);
 
-        if (selectedCard.getValue() != expected) {
+        if (selectedCard.getValue() != expectedValue || selectedCard.getColor() != stackColor) {
             game.getLogger().warn("Player " + playerId + " played an invalid card: " + selectedCard);
             game.getDiscardPile().add(selectedCard);
             game.incrementStrikes(); // Ensure strikes are incremented for invalid cards
@@ -58,35 +60,31 @@ public class PlayCardAction {
             return ActionResult.failure("Wrong card!");
         }
 
-        if (selectedCard.getValue() == expected) {
-            game.getPlayedCards().put(selectedCard.getColor(), expected);
-            game.getLogger().info("Played cards state: " + game.getPlayedCards());
-            if (selectedCard.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
-                game.setHints(game.getHints() + 1);
-            }
-
-            // Check if all cards are played perfectly
-            boolean allPerfect = game.getPlayedCards().values().stream()
-                .allMatch(value -> value == GameRules.MAX_CARD_VALUE);
-            if (allPerfect) {
-                game.setGameOver(true);
-                game.getLogger().info("Perfect game achieved! Game over.");
-                return ActionResult.success("Perfect! You completed the game.");
-            }
-
-            if (game.getDeck().isEmpty()) {
-                game.getLogger().warn("Deck is empty. No card drawn.");
-                game.advanceTurn();
-                return ActionResult.failure("No cards left in the deck.");
-            }
-
-            game.drawCardToHand(playerId);
-            game.advanceTurn();
-            return ActionResult.success("You successfully played " + selectedCard);
+        // correct card played
+        game.getPlayedCards().put(selectedCard.getColor(), selectedCard.getValue());
+        game.getLogger().info("Played cards state: " + game.getPlayedCards());
+        if (selectedCard.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
+            game.setHints(game.getHints() + 1);
         }
 
-        // Ensure a default return statement for valid card plays
-        return ActionResult.success("Card played successfully.");
+        // Check if all cards are played perfectly
+        boolean allPerfect = game.getPlayedCards().values().stream()
+            .allMatch(value -> value == GameRules.MAX_CARD_VALUE);
+        if (allPerfect) {
+            game.setGameOver(true);
+            game.getLogger().info("Perfect game achieved! Game over.");
+            return ActionResult.success("Perfect! You completed the game.");
+        }
+
+        if (game.getDeck().isEmpty()) {
+            game.getLogger().warn("Deck is empty. No card drawn.");
+            game.advanceTurn();
+            return ActionResult.failure("No cards left in the deck.");
+        }
+
+        game.drawCardToHand(playerId);
+        game.advanceTurn();
+        return ActionResult.success("You successfully played " + selectedCard);
     }
 }
 

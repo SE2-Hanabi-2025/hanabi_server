@@ -55,7 +55,7 @@ public class GameManager {
         logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
     }
 
-    public ActionResult playCard(int playerId, int cardId) {
+    public ActionResult playCard(int playerId, int cardId, Card.Color stackColor) {
         if (!GameValidator.isPlayerTurn(this, playerId)) {
             return ActionResult.invalid("Not your turn or game is over.");
         }
@@ -63,7 +63,7 @@ public class GameManager {
             return ActionResult.invalid("Invalid card id: " + cardId);
         }
         logger.info("Player " + playerId + " attempts to play card id: " + cardId);
-        return new PlayCardAction(this, playerId, cardId).execute();
+        return new PlayCardAction(this, playerId, cardId, stackColor).execute();
     }
 
     public ActionResult discardCard(int playerId, int cardIndex) {
