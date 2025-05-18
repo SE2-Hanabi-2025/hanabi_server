@@ -108,7 +108,7 @@ class GameStatusTest {
 
     @Test
     void testGetCurrentPlayer() {
-        assertEquals(String.valueOf(currentPlayerId), gameStatus.getCurrentPlayerId());
+        assertEquals(currentPlayerId, gameStatus.getCurrentPlayerId());
     }
 
     @Test
