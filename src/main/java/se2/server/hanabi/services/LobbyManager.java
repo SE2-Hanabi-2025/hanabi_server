@@ -31,7 +31,7 @@ public class LobbyManager {
         return lobbies.get(id);
     }
 
-    public boolean joinLobby(String id, String playerName) {
+    public boolean joinLobby(String id, String playerName, int avatarResID) {
         Lobby lobby = lobbies.get(id);
         if (lobby == null || lobby.isGameStarted()) {
             return false;
@@ -42,7 +42,7 @@ public class LobbyManager {
             return false;
         }
 
-        players.add(new Player(playerName));
+        players.add(new Player(playerName, avatarResID));
         return true;
     }
 
