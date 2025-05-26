@@ -10,6 +10,9 @@ import se2.server.hanabi.model.Player;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.util.GameRules;
 import se2.server.hanabi.services.DrawService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -110,9 +113,8 @@ public class GameManager {
         return gameState.getCurrentPlayerId();
     }
 
-    // Game state information
-    
-    /**
+// Game state information
+      /**
      * Get the complete game status for a specific player
      * @param playerId ID of the player requesting status
      * @return GameStatus object with all relevant game information
@@ -120,16 +122,34 @@ public class GameManager {
     public GameStatus getStatusFor(int playerId) {
 
         int currentPlayerId = gameState.getCurrentPlayerId();
+        
+        // Convert player's hand from List<Card> to List<Integer> using card IDs
+        List<Card> playerCards = getPlayerHand(playerId);
+        List<Integer> playersHand = new ArrayList<>();
+        if (playerCards != null) {
+            for (Card card : playerCards) {
+                playersHand.add(card.getId());
+            }
+        }
+        
+        // Get remaining cards count
+        int numRemainingCard = gameState.getDeck().getRemainingCards();
+        
+        // Simplified shownHints for now
+        Map<Integer, Object> shownHints = new HashMap<>();
 
         return new GameStatus(
-            gameState.getPlayers(),
-            gameState.getVisibleHands(currentPlayerId),
-            gameState.getPlayedCards(),
-            gameState.getDiscardPile(),
-            gameState.getHints(),
-            gameState.getStrikes(),
-            gameState.isGameOver(),
-            String.valueOf(currentPlayerId) // Pass current player ID as a string
+            gameState.getPlayers(),                   // players
+            playersHand,                              // playersHand as List<Integer>
+            gameState.getVisibleHands(playerId),      // visibleHands (other players' hands)
+            gameState.getPlayedCards(),               // playedCards
+            gameState.getDiscardPile(),               // discardPile
+            numRemainingCard,                         // numRemainingCard
+            shownHints,                               // shownHints
+            gameState.getHints(),                     // hintTokens
+            gameState.getStrikes(),                   // strikes
+            gameState.isGameOver(),                   // gameOver
+            currentPlayerId                           // currentPlayer as int
         );
     }
     

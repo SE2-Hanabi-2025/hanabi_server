@@ -10,27 +10,35 @@ import java.util.HashMap;
 public class GameStatus {
 
     private final List<Player> players;
+    private final List<Integer> playersHand;
     private final Map<Integer, List<Card>> visibleHands;
     private final Map<Card.Color, Integer> playedCards;
     private final List<Card> discardPile;
-    private final int hints;
+    private final int numRemainingCard;
+    private final Map<Integer, Object> shownHints; // Simplified for now
+    private final int hintTokens;
     private final int strikes;
     private final boolean gameOver;
-    private final String currentPlayer;
-
-    public GameStatus(List<Player> players, Map<Integer, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
+    private final int currentPlayer;    public GameStatus(List<Player> players, List<Integer> playersHand, Map<Integer, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int numRemainingCard, Map<Integer, Object> shownHints, int hintTokens, int strikes, boolean gameOver, int currentPlayer) {
         this.players = players;
+        this.playersHand = playersHand;
         this.visibleHands = visibleHands;
         this.playedCards = playedCards;
         this.discardPile = discardPile;
-        this.hints = hints;
+        this.numRemainingCard = numRemainingCard;
+        this.shownHints = shownHints;
+        this.hintTokens = hintTokens;
         this.strikes = strikes;
         this.gameOver = gameOver;
         this.currentPlayer = currentPlayer;
-    }
-
+    }    
+    
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public List<Integer> getPlayersHand() {
+        return playersHand;
     }
 
     public Map<Integer, List<Card>> getVisibleHands() {
@@ -50,8 +58,16 @@ public class GameStatus {
         return discardPile;
     }
 
-    public int getHints() {
-        return hints;
+    public int getNumRemainingCard() {
+        return numRemainingCard;
+    }
+
+    public Map<Integer, Object> getShownHints() {
+        return shownHints;
+    }
+
+    public int getHintTokens() {
+        return hintTokens;
     }
 
     public int getStrikes() {
@@ -62,12 +78,11 @@ public class GameStatus {
         return gameOver;
     }
 
-    public String getCurrentPlayer() {
+    public int getCurrentPlayer() {
         return currentPlayer;
     }
 
     public int getCurrentPlayerId() {
-        // Assuming `currentPlayer` is the ID of the current player as a String
-        return Integer.parseInt(currentPlayer);
+        return currentPlayer;
     }
 }
