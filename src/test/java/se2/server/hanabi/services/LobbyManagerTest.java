@@ -10,6 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
     private LobbyManager lobbyManager;
 
+    private static final int Red = 2131230890;
+     private static final int Blue = 2131230891;
+     private static final int Green = 2131230892;
+     private static final int Yellow = 2131230893;
+     private static final int White = 0; // default avatar
     @BeforeEach
     void setUp() {
         lobbyManager = new LobbyManager();
@@ -34,10 +39,10 @@ import static org.junit.jupiter.api.Assertions.*;
         Lobby lobby = lobbyManager.getLobby(lobbyId);
 
         for (int i = 0; i < 5; i++) {
-            lobbyManager.joinLobby(lobbyId, "Player" + i);
+            lobbyManager.joinLobby(lobbyId, "Player" + i, Red + i);
         }
 
-        boolean result = lobbyManager.joinLobby(lobbyId, "Player6");
+        boolean result = lobbyManager.joinLobby(lobbyId, "Player6", White);
 
         assertFalse(result, "Lobby should not allow more than 5 players");
     }
@@ -47,15 +52,15 @@ import static org.junit.jupiter.api.Assertions.*;
         String lobbyId = lobbyManager.createLobby();
         
         // Add the minimum required players to start a game (2 players)
-        lobbyManager.joinLobby(lobbyId, "Player1");
-        lobbyManager.joinLobby(lobbyId, "Player2");
+        lobbyManager.joinLobby(lobbyId, "Player1",Red);
+        lobbyManager.joinLobby(lobbyId, "Player2", Blue);
         
         // Start the game properly through the lobbyManager
         boolean gameStarted = lobbyManager.startGame(lobbyId);
         assertTrue(gameStarted, "Game should start successfully with 2 players");
 
         // Now try to join after game is started
-        boolean result = lobbyManager.joinLobby(lobbyId, "NewPlayer");
+        boolean result = lobbyManager.joinLobby(lobbyId, "NewPlayer", White);
 
         assertFalse(result, "No player should be able to join once the game has started");
     }
@@ -63,9 +68,22 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void joinLobby_SuccessfulJoin() {
         String lobbyId = lobbyManager.createLobby();
-        boolean result = lobbyManager.joinLobby(lobbyId, "Player1");
+        boolean result = lobbyManager.joinLobby(lobbyId, "Player1", Red);
 
         assertTrue(result, "Player should be able to join the lobby");
+    }
+
+    @Test
+    void joinLobby_AvatarPersist(){
+        String lobbyId = lobbyManager.createLobby();
+
+        lobbyManager.joinLobby(lobbyId, "Player1", Red);
+        lobbyManager.joinLobby(lobbyId, "Player2", Blue);
+
+        Lobby lobby = lobbyManager.getLobby(lobbyId);
+
+        assertEquals(Red, lobby.getPlayers().get(0).getAvatarResID(), "Player1 should have red avatar");
+        assertEquals(Blue, lobby.getPlayers().get(1).getAvatarResID(), "Player2 should have blue avatar");
     }
 
     @Test
@@ -99,8 +117,8 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void startGame_ReturnsFalseIfGameAlreadyStarted() {
         String lobbyId = lobbyManager.createLobby();
-        lobbyManager.joinLobby(lobbyId, "Player1");
-        lobbyManager.joinLobby(lobbyId, "Player2");
+        lobbyManager.joinLobby(lobbyId, "Player1", Red);
+        lobbyManager.joinLobby(lobbyId, "Player2", Blue);
         assertTrue(lobbyManager.startGame(lobbyId), "First startGame should succeed");
         assertFalse(lobbyManager.startGame(lobbyId), "Second startGame should fail");
     }
@@ -119,8 +137,8 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void getGameManager_ReturnsGameManagerIfGameStarted() {
         String lobbyId = lobbyManager.createLobby();
-        lobbyManager.joinLobby(lobbyId, "Player1");
-        lobbyManager.joinLobby(lobbyId, "Player2");
+        lobbyManager.joinLobby(lobbyId, "Player1", Red);
+        lobbyManager.joinLobby(lobbyId, "Player2", Blue);
         lobbyManager.startGame(lobbyId);
         assertNotNull(lobbyManager.getGameManager(lobbyId), "Should return GameManager if game started");
     }
