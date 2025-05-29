@@ -31,19 +31,20 @@ public class LobbyManager {
         return lobbies.get(id);
     }
 
-    public boolean joinLobby(String id, String playerName) {
+    public int joinLobby(String id, String playerName, int avatarResID) {
         Lobby lobby = lobbies.get(id);
         if (lobby == null || lobby.isGameStarted()) {
-            return false;
+            return -1;
         }
 
         List<Player> players = lobby.getPlayers();
         if (players.size() >= 5) {
-            return false;
+            return -1;
         }
 
-        players.add(new Player(playerName));
-        return true;
+        Player newPlayer = new Player(playerName, avatarResID);
+        players.add(newPlayer);
+        return newPlayer.getId();
     }
 
     public Collection<Lobby> getAllLobbies() {

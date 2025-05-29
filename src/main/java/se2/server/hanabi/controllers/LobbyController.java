@@ -21,6 +21,9 @@ import se2.server.hanabi.util.GameRules;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.util.Map;
+import java.util.HashMap;
+
 @RestController
 @Tag(name = "Lobby API", description = "Endpoints to manage lobbies, such as creating and joining a lobby.")
 public class LobbyController {
@@ -55,13 +58,15 @@ public class LobbyController {
             description = "This endpoint allows a player to join an existing lobby using the lobby ID. If the lobby is full or the game has already started, it returns appropriate error messages.",
             parameters = {
                     @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH),
-                    @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous")
+                    @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
+
+                    @Parameter(name = "avatarResID", description = "The avatar resource ID of the player", required = false, example = "2131230890")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully joined the lobby",
                             content = @io.swagger.v3.oas.annotations.media.Content(
                                     mediaType = "text/plain",
-                                    schema = @Schema(type = "string", example = "Joined lobby: abc123")
+                                    schema = @Schema(type = "string", example = "Joined lobby: abc123 PlayerID: 4")
                             )),
                     @ApiResponse(responseCode = "404", description = "Lobby not found",
                             content = @io.swagger.v3.oas.annotations.media.Content(
@@ -87,7 +92,8 @@ public class LobbyController {
     )
     public ResponseEntity<String> joinLobby(
             @PathVariable String id,
-            @RequestParam(defaultValue = "Anonymous") String name
+            @RequestParam(defaultValue = "Anonymous") String name,
+            @RequestParam(defaultValue = "0") int avatarResID
     ) {
         Lobby lobby = lobbyManager.getLobby(id);
 
@@ -106,9 +112,9 @@ public class LobbyController {
                     .body("Lobby is full.");
         }
 
-        boolean success = lobbyManager.joinLobby(id, name);
-        if (success) {
-            return ResponseEntity.ok("Joined lobby: " + id);
+        int playerId = lobbyManager.joinLobby(id, name, avatarResID);
+        if (playerId != -1) {
+            return ResponseEntity.ok("Joined lobby: "+id+" PlayerID: "+Integer.toString(playerId));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Unknown error while joining lobby.");
@@ -175,15 +181,27 @@ public class LobbyController {
                     @ApiResponse(responseCode = "404", description = "Lobby not found")
             }
     )
-    public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
+    //public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
+    public ResponseEntity<List<Map<String, Object>>> getPlayersInLobby(@PathVariable String id) {
         Lobby lobby = lobbyManager.getLobby(id);
         if (lobby == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        List<String> playerNames = lobby.getPlayers().stream()
-                .map(Player::getName)
+    //    List<String> playerNames = lobby.getPlayers().stream()
+    //            .map(Player::getName)
+    //            .collect(Collectors.toList());
+    //    return ResponseEntity.ok(playerNames);
+    //}
+        List<Map<String, Object>> players = lobby.getPlayers().stream()
+                .map(player -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("name", player.getName());
+                    map.put("avatarResID", player.getAvatarResID());
+                    return map;
+                })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(playerNames);
+
+        return ResponseEntity.ok(players);
     }
 
     
