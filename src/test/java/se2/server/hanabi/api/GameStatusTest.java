@@ -3,8 +3,11 @@ package se2.server.hanabi.api;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se2.server.hanabi.model.Card;
+import se2.server.hanabi.model.Card.Color;
 import se2.server.hanabi.model.Player;
 import java.util.*;
+import java.util.Map.Entry;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -18,7 +21,7 @@ class GameStatusTest {
     private int numRemaningCards;
     private final Map<Integer, Card.Color> cardsShowingColorHints = new HashMap<Integer, Card.Color>();
     private final Map<Integer, Integer> cardsShowingValueHints = new HashMap<Integer, Integer>();
-    private int hints;
+    private int numRemainingHintTokens;
     private int strikes;
     private boolean gameOver;
     private int currentPlayerId;
@@ -50,16 +53,21 @@ class GameStatusTest {
         playerCardIds.add(1);
         playerCardIds.add(5);
         numRemaningCards = 17;
-        cardsShowingColorHints.put(0, Card.Color.YELLOW);
-        cardsShowingColorHints.put(1, Card.Color.BLUE);
-        cardsShowingValueHints.put(0 , 4);
-        cardsShowingValueHints.put(3 , 2);
-        hints = 5;
+
+        int colorHintId = 1;
+        Card.Color hintColor = Card.Color.YELLOW;
+        cardsShowingColorHints.put(colorHintId, hintColor);
+
+        int valueHintId = 1;
+        int hintValue = 4;
+        cardsShowingValueHints.put(valueHintId , hintValue);
+
+        numRemainingHintTokens = 5;
         strikes = 1;
         gameOver = false;
         currentPlayerId = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, hints, strikes, gameOver, currentPlayerId);
+        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, currentPlayerId);
     }
 
     @Test
@@ -93,8 +101,18 @@ class GameStatusTest {
     }
 
     @Test
-    void testGetHints() {
-        assertEquals(hints, gameStatus.getNumRemainingHintTokens());
+    void testGetCardsShowingColorHints() {
+        assertEquals(cardsShowingColorHints, gameStatus.getCardsShowingColorHints());
+    }
+
+    @Test
+    void testGetCardsShowingValueHints() {
+        assertEquals(cardsShowingValueHints, gameStatus.getCardsShowingValueHints());
+    }
+
+    @Test
+    void testGetNumRemainingHintTokens() {
+        assertEquals(numRemainingHintTokens, gameStatus.getNumRemainingHintTokens());
     }
 
     @Test
@@ -112,7 +130,7 @@ class GameStatusTest {
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, hints, strikes, true, currentPlayerId);
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, true, currentPlayerId);
         assertTrue(status.isGameOver());
     }
 }
