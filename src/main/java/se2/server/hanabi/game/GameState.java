@@ -277,4 +277,9 @@ public class GameState {
     public void setFinalTurnsRemaining(int turns) {
         this.finalTurnsRemaining = turns;
     }
+
+    public void removeCardFromShownHints(int cardId) {
+        cardsShowingColorHints.remove(cardId);
+        cardsShowingValueHints.remove(cardId);
+    }
 }

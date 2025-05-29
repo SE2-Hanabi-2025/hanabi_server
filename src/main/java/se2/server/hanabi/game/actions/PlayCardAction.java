@@ -71,6 +71,7 @@ public class PlayCardAction {
                 return ActionResult.failure("No cards left in the deck.");
             }
 
+            game.removeCardFromShownHints(card.getId());
             game.drawCardToHand(playerId);
             game.advanceTurn();
             return ActionResult.success("You successfully played " + card);

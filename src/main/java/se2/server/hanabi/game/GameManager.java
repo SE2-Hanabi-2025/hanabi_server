@@ -281,5 +281,9 @@ public class GameManager {
         gameState.setFinalTurnsRemaining(turns);
     }
 
+    public void removeCardFromShownHints(int cardId) {
+        gameState.removeCardFromShownHints(cardId);
+    }
+
 }
 
