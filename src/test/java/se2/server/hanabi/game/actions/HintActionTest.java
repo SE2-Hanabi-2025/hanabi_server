@@ -16,6 +16,7 @@ public class HintActionTest {
     private GameManager game;
     private Player player1 = new Player("alice");
     private Player player2 = new Player("bob");
+    private Player player3 = new Player("charli");
 
     @BeforeEach
     public void setup() {
@@ -86,5 +87,14 @@ public class HintActionTest {
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("No matching cards found"));
         assertEquals(2, game.getHints()); // Hint tokens should remain unchanged
+    }
+
+    @Test
+    public void testGiveHintToInvalidPlayer() {
+        ActionResult result = new HintAction(game, player1.getId(), player3.getId(), HintType.VALUE, 3).execute(); // Using GameManager.giveHint
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getMessage().contains("Target player not found"));
+        assertEquals(8, game.getHints()); // Hint tokens should remain full
     }
 }
