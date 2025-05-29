@@ -19,7 +19,9 @@ public class GameState {
     private final Deck deck;
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
     private final List<Card> discardPile = new ArrayList<>();
-    private int hints = GameRules.MAX_HINTS;
+    private final Map<Integer, Card.Color> cardsShowingColorHints = new HashMap<>();
+    private final Map<Integer, Integer> cardsShowingValueHints = new HashMap<>();
+    private int numRemainingHintTokens = GameRules.MAX_HINTS;
     private int strikes = 0;
     private int currentPlayerIndex = 0;
     private boolean gameOver = false;
@@ -107,6 +109,23 @@ public class GameState {
     public int getCurrentPlayerId() {
         return players.get(currentPlayerIndex).getId();
     }
+
+    /**
+     * Get the map of card IDs and their corresponding color hints
+     * @return map of card IDs and their corresponding color hints
+     */
+    public Map<Integer, Card.Color> getCardsShowingColorHints() {
+        return cardsShowingColorHints;
+    }
+
+    /**
+     * Get the map of card IDs and their corresponding value hints
+     * @return map of card IDs and their corresponding color hints
+     */
+    public Map<Integer, Integer> getCardsShowingValueHints() {
+        return cardsShowingValueHints;
+    }
+
     
     /**
      * Advances to the next player's turn
@@ -175,6 +194,19 @@ public class GameState {
     }
     
     /**
+     *  Returns the cardIds of the given player
+     * @param playerId ID of the players whose cardIds will be returned
+     * @return List of card IDs
+     */
+    public List<Integer> getPlayerCardIds(int playerId) {
+        List<Integer> cardIds = new ArrayList<Integer>();
+        for (Card card : hands.get(playerId)) {
+            cardIds.add(card.getId());
+        }
+        return cardIds;
+    }
+
+    /**
      * Get all hands except the specified player's
      * @param viewerId ID of the player who should not see their own hand
      * @return Map of player IDs to their hand of cards
@@ -210,13 +242,13 @@ public class GameState {
         return discardPile;
     }
 
-    public int getHints() {
-        return hints;
+    public int getNumRemainingHintTokens() {
+        return numRemainingHintTokens;
     }
 
-    public void setHints(int hints) {
-        this.hints = Math.min(hints, GameRules.MAX_HINTS);
-        logger.info("Hint tokens updated to " + this.hints + " out of " + GameRules.MAX_HINTS);
+    public void setNumRemainingHintTokens(int numRemainingHintTokens) {
+        this.numRemainingHintTokens = Math.min(numRemainingHintTokens, GameRules.MAX_HINTS);
+        logger.info("Hint tokens updated to " + this.numRemainingHintTokens + " out of " + GameRules.MAX_HINTS);
     }
 
     public int getStrikes() {

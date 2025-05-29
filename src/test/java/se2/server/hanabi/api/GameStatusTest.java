@@ -8,17 +8,20 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class GameStatusTest {    private List<Player> players;
-    private List<Integer> playersHand; // New field for player's hand as integers
+class GameStatusTest {
+
+    private List<Player> players;
+    private List<Integer> playerCardIds;
     private Map<Integer, List<Card>> visibleHands; // Changed key to Integer for playerId
     private Map<Card.Color, Integer> playedCards;
     private List<Card> discardPile;
-    private int numRemainingCard; // New field for remaining cards
-    private Map<Integer, Object> shownHints; // New field for shown hints
-    private int hintTokens; // Renamed from hints
+    private int numRemaningCards;
+    private final Map<Integer, Card.Color> cardsShowingColorHints = new HashMap<Integer, Card.Color>();
+    private final Map<Integer, Integer> cardsShowingValueHints = new HashMap<Integer, Integer>();
+    private int hints;
     private int strikes;
     private boolean gameOver;
-    private int currentPlayer; // Changed to Integer for playerId
+    private int currentPlayerId;
 
     private GameStatus gameStatus;    @BeforeEach
     void setUp() {
@@ -29,7 +32,7 @@ class GameStatusTest {    private List<Player> players;
         players = Arrays.asList(player1, player2);
 
         // Mock player's hand as list of integers (card IDs)
-        playersHand = Arrays.asList(1, 2, 3); // Sample card IDs
+        playerCardIds = Arrays.asList(1, 2, 3); // Sample card IDs
 
         Card card1 = mock(Card.class);
         Card card2 = mock(Card.class);
@@ -43,19 +46,30 @@ class GameStatusTest {    private List<Player> players;
 
         discardPile = Arrays.asList(card1);
 
-        numRemainingCard = 25; // Sample remaining cards count
-        shownHints = new HashMap<>(); // Empty hints map for testing
-        hintTokens = 5; // Renamed from hints
+        playerCardIds = new ArrayList<Integer>();
+        playerCardIds.add(1);
+        playerCardIds.add(5);
+        numRemaningCards = 17;
+        cardsShowingColorHints.put(0, Card.Color.YELLOW);
+        cardsShowingColorHints.put(1, Card.Color.BLUE);
+        cardsShowingValueHints.put(0 , 4);
+        cardsShowingValueHints.put(3 , 2);
+        hints = 5;
         strikes = 1;
         gameOver = false;
-        currentPlayer = 1; // Using playerId
+        currentPlayerId = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, playersHand, visibleHands, playedCards, discardPile, numRemainingCard, shownHints, hintTokens, strikes, gameOver, currentPlayer);
+        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, hints, strikes, gameOver, currentPlayerId);
     }
 
     @Test
     void testGetPlayers() {
         assertEquals(players, gameStatus.getPlayers());
+    }
+
+    @Test
+    void testGetPlayerCardIds() {
+        assertEquals(playerCardIds, gameStatus.getPlayerCardIds());
     }
 
     @Test
@@ -71,24 +85,16 @@ class GameStatusTest {    private List<Player> players;
     @Test
     void testGetDiscardPile() {
         assertEquals(discardPile, gameStatus.getDiscardPile());
-    }    @Test
-    void testGetHintTokens() {
-        assertEquals(hintTokens, gameStatus.getHintTokens());
     }
 
     @Test
-    void testGetPlayersHand() {
-        assertEquals(playersHand, gameStatus.getPlayersHand());
+    void testGetNumRemainingCards() {
+        assertEquals(numRemaningCards, gameStatus.getNumRemainingCards());
     }
 
     @Test
-    void testGetNumRemainingCard() {
-        assertEquals(numRemainingCard, gameStatus.getNumRemainingCard());
-    }
-
-    @Test
-    void testGetShownHints() {
-        assertEquals(shownHints, gameStatus.getShownHints());
+    void testGetHints() {
+        assertEquals(hints, gameStatus.getNumRemainingHintTokens());
     }
 
     @Test
@@ -101,12 +107,12 @@ class GameStatusTest {    private List<Player> players;
         assertEquals(gameOver, gameStatus.isGameOver());
     }    @Test
     void testGetCurrentPlayer() {
-        assertEquals(currentPlayer, gameStatus.getCurrentPlayer());
+        assertEquals(currentPlayerId, gameStatus.getCurrentPlayerId());
     }
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, playersHand, visibleHands, playedCards, discardPile, numRemainingCard, shownHints, hintTokens, strikes, true, currentPlayer);
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, hints, strikes, true, currentPlayerId);
         assertTrue(status.isGameOver());
     }
 }

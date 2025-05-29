@@ -54,7 +54,7 @@ public class GameManager {
 
         gameState.dealInitialCards();
 
-        logger.info("Game setup completed. " + gameState.getDeck().getRemainingCards() + " cards left in deck.");
+        logger.info("Game setup completed. " + gameState.getDeck().getNumRemainingCards() + " cards left in deck.");
         logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
     }
 
@@ -120,36 +120,19 @@ public class GameManager {
      * @return GameStatus object with all relevant game information
      */
     public GameStatus getStatusFor(int playerId) {
-
-        int currentPlayerId = gameState.getCurrentPlayerId();
-        
-        // Convert player's hand from List<Card> to List<Integer> using card IDs
-        List<Card> playerCards = getPlayerHand(playerId);
-        List<Integer> playersHand = new ArrayList<>();
-        if (playerCards != null) {
-            for (Card card : playerCards) {
-                playersHand.add(card.getId());
-            }
-        }
-        
-        // Get remaining cards count
-        int numRemainingCard = gameState.getDeck().getRemainingCards();
-        
-        // Simplified shownHints for now
-        Map<Integer, Object> shownHints = new HashMap<>();
-
         return new GameStatus(
-            gameState.getPlayers(),                   // players
-            playersHand,                              // playersHand as List<Integer>
-            gameState.getVisibleHands(playerId),      // visibleHands (other players' hands)
-            gameState.getPlayedCards(),               // playedCards
-            gameState.getDiscardPile(),               // discardPile
-            numRemainingCard,                         // numRemainingCard
-            shownHints,                               // shownHints
-            gameState.getHints(),                     // hintTokens
-            gameState.getStrikes(),                   // strikes
-            gameState.isGameOver(),                   // gameOver
-            currentPlayerId                           // currentPlayer as int
+            gameState.getPlayers(),
+            gameState.getPlayerCardIds(playerId),
+            gameState.getVisibleHands(playerId),
+            gameState.getPlayedCards(),
+            gameState.getDiscardPile(),
+            gameState.getDeck().getNumRemainingCards(),
+            gameState.getCardsShowingColorHints(),
+            gameState.getCardsShowingValueHints(),
+            gameState.getNumRemainingHintTokens(),
+            gameState.getStrikes(),
+            gameState.isGameOver(),
+            gameState.getCurrentPlayerId()
         );
     }
     
@@ -242,11 +225,11 @@ public class GameManager {
     }
 
     public int getHints() {
-        return gameState.getHints();
+        return gameState.getNumRemainingHintTokens();
     }
 
     public void setHints(int hints) {
-        gameState.setHints(hints);
+        gameState.setNumRemainingHintTokens(hints);
     }
 
     public int getStrikes() {
