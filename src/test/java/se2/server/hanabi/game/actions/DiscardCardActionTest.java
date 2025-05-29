@@ -25,17 +25,17 @@ public class DiscardCardActionTest {
 
     @Test
     public void testDiscardingCardAddsToDiscardPile() {
-        List<Card> hand = game.getHands().get(1); // Using player ID 1
+        List<Card> hand = game.getHands().get(player1.getId()); 
         hand.clear();
         hand.add(new Card(2, Card.Color.GREEN));
-        ActionResult result = new DiscardCardAction(game, 1, 0).execute(); // Passing player ID 1
+        ActionResult result = new DiscardCardAction(game, player1.getId(), 0).execute(); 
         assertTrue(result.getMessage().contains("Card discarded"));
         assertEquals(1, game.getDiscardPile().size());
     }
 
     @Test
     public void testDiscardByNonexistentPlayer() {
-        ActionResult result = new DiscardCardAction(game, player3.getId(), 0).execute(); // Using non-existent player ID 3
+        ActionResult result = new DiscardCardAction(game, player3.getId(), 0).execute();
         assertTrue(result.getMessage().contains("Player not found"));
     }
 
