@@ -2,7 +2,11 @@ package se2.server.hanabi.game;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
 import se2.server.hanabi.api.GameStatus;
+import se2.server.hanabi.game.actions.DiscardCardAction;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Player;
@@ -10,10 +14,12 @@ import se2.server.hanabi.util.GameRules;
 
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 public class GameManagerTest {
 
@@ -21,6 +27,7 @@ public class GameManagerTest {
     private Player player1 = new Player("alice");
     private Player player2 = new Player("bob");
     private Player player3 = new Player("charlie");
+    private Player player4 = new Player("david");
 
     @BeforeEach
     void setUp() {
@@ -172,6 +179,34 @@ public class GameManagerTest {
     }
 
     @Test
+    void testGiveHint() {
+  
+        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.COLOR, Card.Color.RED);
+
+        assertTrue(result.isSuccess());
+        assertEquals("Hint given", result.getMessage());
+    }
+
+    @Test
+    void testGiveHintToInvalidPlayer() {
+  
+        ActionResult result = game.giveHint(player1.getId(), player4.getId(), HintType.COLOR, Card.Color.RED);
+
+        assertFalse(result.isSuccess());
+        assertEquals("Target player does not exist in this game.", result.getMessage());
+    }
+
+    @Test
+    void testGiveInvalidHintType() {
+
+        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.COLOR, "notvalid");
+
+        assertFalse(result.isSuccess());
+        assertEquals("Invalid hint type or value.", result.getMessage());
+    }        
+
+
+    @Test
     void testGiveHintWithoutHintTokensAvailable() {
         
         game.setNumRemainingHintTokens(0);
@@ -275,6 +310,13 @@ public class GameManagerTest {
         // Verify the log contains the correct final score (mock logger or capture output if necessary)
     }
 
+    @Test 
+    public void testDiscardCard() {        
+        game.setNumRemainingHintTokens(0);
+        ActionResult result = game.discardCard(player1.getId(), 0);
+        assertTrue(result.isSuccess());
+    }
+
     @Test
     public void testDiscardCardWithInvalidIndex() {
         ActionResult result = game.discardCard(player1.getId(), -1); // Invalid index
@@ -290,4 +332,16 @@ public class GameManagerTest {
         assertEquals("Cannot discard: hint tokens are already at maximum (8).", result.getMessage(), "Expected message for maximum hints.");
     }
 
+    @Test
+    public void testCreateGameInvalidNumberOfPlayers() {
+        assertThrows(IllegalArgumentException.class, () -> GameManager.createNewGame(List.of(player1)));
+    }
+
+    @Test
+    public void testGetVisibleHands() {
+        Map<Integer, List<Card>> visibleHands = game.getVisibleHands(player1.getId());
+        Map<Integer, List<Card>> expected = new HashMap<>(game.getHands());
+        expected.remove(player1.getId());
+        assertEquals(visibleHands, expected );
+    }
 }
