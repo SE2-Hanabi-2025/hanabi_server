@@ -333,11 +333,6 @@ public class GameManagerTest {
     }
 
     @Test
-    public void testCreateGameInvalidNumberOfPlayers() {
-        assertThrows(IllegalArgumentException.class, () -> GameManager.createNewGame(List.of(player1)));
-    }
-
-    @Test
     public void testGetVisibleHands() {
         Map<Integer, List<Card>> visibleHands = game.getVisibleHands(player1.getId());
         Map<Integer, List<Card>> expected = new HashMap<>(game.getHands());

@@ -35,10 +35,7 @@ public class GameManager {
         return new GameManager(players);
     }
 
-    public GameManager(List<Player> players) {
-        if (!GameRules.isPlayerCountValid(players.size())) {
-            throw new IllegalArgumentException("Invalid number of players");
-        }
+    private GameManager(List<Player> players) {
 
         this.gameState = new GameState(players, logger);
 
