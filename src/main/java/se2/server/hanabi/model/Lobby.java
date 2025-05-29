@@ -37,14 +37,8 @@ public class Lobby {
             return false;
         }
 
-        // Extract player IDs from the Player objects
-        List<Integer> playerIds = new ArrayList<>();
-        for (Player player : players) {
-            playerIds.add(player.getId());
-        }
-
-        // Create a new GameManager with the player IDs
-        this.gameManager = GameManager.createNewGame(playerIds);
+        // Create a new GameManager with the players
+        this.gameManager = GameManager.createNewGame(players);
 
         this.isGameStarted = true;
         return true;

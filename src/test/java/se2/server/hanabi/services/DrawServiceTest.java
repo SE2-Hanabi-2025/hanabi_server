@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
+import se2.server.hanabi.model.Player;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,9 +19,10 @@ class DrawServiceTest {
     @BeforeEach
     void setUp() {
         drawService = new DrawService();
-        List<Integer> players = Arrays.asList(1, 2); // Using player IDs instead of names
-        gameManager = GameManager.createNewGame(players);
-        playerId = 1; // Assigning player ID instead of name
+        Player player1 = new Player("alice");
+        Player player2 = new Player("bob");
+        gameManager = GameManager.createNewGame(List.of(player1, player2));
+        playerId = player1.getId(); // Assigning player ID instead of name
     }
 
     @Test

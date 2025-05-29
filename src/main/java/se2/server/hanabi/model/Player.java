@@ -10,11 +10,6 @@ public class Player {
         this.id = nextId++;
     }
 
-    public Player(int id) {
-        this.id = id;
-        this.name = "Player" + id; // Default name based on ID
-    }
-
     public String getName() {
         return name;
     }

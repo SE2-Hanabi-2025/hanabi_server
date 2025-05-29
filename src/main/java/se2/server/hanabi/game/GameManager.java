@@ -11,8 +11,6 @@ import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.util.GameRules;
 import se2.server.hanabi.services.DrawService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,17 +25,12 @@ public class GameManager {
      * @param playerIds List of player IDs
      * @return A new GameManager instance
      */
-    public static GameManager createNewGame(List<Integer> playerIds) {
-        if (playerIds == null || playerIds.isEmpty() || 
-            !GameRules.isPlayerCountValid(playerIds.size())) {
+    public static GameManager createNewGame(List<Player> players) {
+        if (players == null || players.isEmpty() || 
+            !GameRules.isPlayerCountValid(players.size())) {
             throw new IllegalArgumentException("Invalid number of players: must be between " + 
                 GameRules.MIN_PLAYERS + " and " + GameRules.MAX_PLAYERS);
         }
-
-        // Create Player objects from playerIds
-        List<Player> players = playerIds.stream()
-                                        .map(id -> new Player(id))
-                                        .collect(Collectors.toList());
 
         return new GameManager(players);
     }

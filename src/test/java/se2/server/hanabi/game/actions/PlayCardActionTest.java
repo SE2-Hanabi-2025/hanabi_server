@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.model.Card;
+import se2.server.hanabi.model.Player;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.util.GameRules;
 
@@ -15,7 +16,9 @@ public class PlayCardActionTest {
 
     @BeforeEach
     public void setup() {
-        game = GameManager.createNewGame(List.of(1, 2)); // Using player IDs instead of names
+        Player player1 = new Player("alice");
+        Player player2 = new Player("bob");
+        game = GameManager.createNewGame(List.of(player1, player2));
     }
 
     @Test
