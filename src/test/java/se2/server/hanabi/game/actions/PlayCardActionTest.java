@@ -45,7 +45,7 @@ public class PlayCardActionTest {
     @Test
     public void testCompletingStackWithFiveGivesHint() {
         System.out.println("GameManager strikes before action: " + game.getStrikes());
-        game.setHints(GameRules.MAX_HINTS - 1);
+        game.setNumRemainingHintTokens(GameRules.MAX_HINTS - 1);
         game.getPlayedCards().put(Card.Color.GREEN, 4);
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();

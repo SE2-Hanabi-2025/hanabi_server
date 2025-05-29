@@ -47,7 +47,7 @@ public class DiscardCardActionTest {
 
     @Test
     public void testDiscardingIncreasesHintTokens() {
-        game.setHints(GameRules.MAX_HINTS - 1);
+        game.setNumRemainingHintTokens(GameRules.MAX_HINTS - 1);
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(4, Card.Color.BLUE));
@@ -57,7 +57,7 @@ public class DiscardCardActionTest {
 
     @Test
     public void testDiscardDoesNotExceedMaxHintTokens() {
-        game.setHints(GameRules.MAX_HINTS);
+        game.setNumRemainingHintTokens(GameRules.MAX_HINTS);
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(4, Card.Color.WHITE));

@@ -21,7 +21,7 @@ public class HintActionTest {
 
     @Test
     public void testValidColorHintDecreasesTokens() {
-        game.setHints(4);
+        game.setNumRemainingHintTokens(4);
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();
         hand.add(new Card(2, Card.Color.BLUE));
@@ -32,7 +32,7 @@ public class HintActionTest {
 
     @Test
     public void testValidValueHintDecreasesTokens() {
-        game.setHints(2);
+        game.setNumRemainingHintTokens(2);
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();
         hand.add(new Card(4, Card.Color.RED));
@@ -44,7 +44,7 @@ public class HintActionTest {
 
     @Test
     public void testHintCannotBeGivenToSelf() {
-        game.setHints(2);
+        game.setNumRemainingHintTokens(2);
         List<Card> hand = game.getHands().get(1); // Using player ID 1
         hand.clear();
         hand.add(new Card(1, Card.Color.WHITE));
@@ -58,7 +58,7 @@ public class HintActionTest {
 
     @Test
     public void testHintFailsWithNoTokens() {
-        game.setHints(0);
+        game.setNumRemainingHintTokens(0);
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();
         hand.add(new Card(3, Card.Color.GREEN));
@@ -72,7 +72,7 @@ public class HintActionTest {
 
     @Test
     public void testHintWithNoMatchingCardsStillFails() {
-        game.setHints(2);
+        game.setNumRemainingHintTokens(2);
         List<Card> hand = game.getHands().get(2); // Using player ID 2
         hand.clear();
         hand.add(new Card(5, Card.Color.YELLOW));

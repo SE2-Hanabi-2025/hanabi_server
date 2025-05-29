@@ -228,7 +228,7 @@ public class GameManager {
         return gameState.getNumRemainingHintTokens();
     }
 
-    public void setHints(int hints) {
+    public void setNumRemainingHintTokens(int hints) {
         gameState.setNumRemainingHintTokens(hints);
     }
 

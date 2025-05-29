@@ -53,7 +53,7 @@ public class PlayCardAction {
             game.getPlayedCards().put(card.getColor(), expected);
             game.getLogger().info("Played cards state: " + game.getPlayedCards());
             if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
-                game.setHints(game.getHints() + 1);
+                game.setNumRemainingHintTokens(game.getHints() + 1);
             }
 
             // Check if all cards are played perfectly
