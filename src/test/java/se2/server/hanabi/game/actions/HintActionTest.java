@@ -14,21 +14,22 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HintActionTest {
 
     private GameManager game;
+    private Player player1 = new Player("alice");
+    private Player player2 = new Player("bob");
 
     @BeforeEach
     public void setup() {
-        Player player1 = new Player("alice");
-        Player player2 = new Player("bob");
+
         game = GameManager.createNewGame(List.of(player1, player2));
     }
 
     @Test
     public void testValidColorHintDecreasesTokens() {
         game.setNumRemainingHintTokens(4);
-        List<Card> hand = game.getHands().get(2); // Using player ID 2
+        List<Card> hand = game.getHands().get(player2.getId());
         hand.clear();
         hand.add(new Card(2, Card.Color.BLUE));
-        ActionResult result = new HintAction(game, 1, 2, HintType.COLOR, Card.Color.BLUE).execute(); // Passing player IDs 1 and 2
+        ActionResult result = new HintAction(game, player1.getId(), player2.getId(), HintType.COLOR, Card.Color.BLUE).execute(); // Passing player IDs 1 and 2
         assertTrue(result.getMessage().contains("Hint given"));
         assertEquals(3, game.getHints());
     }
@@ -36,10 +37,10 @@ public class HintActionTest {
     @Test
     public void testValidValueHintDecreasesTokens() {
         game.setNumRemainingHintTokens(2);
-        List<Card> hand = game.getHands().get(2); // Using player ID 2
+        List<Card> hand = game.getHands().get(player2.getId()); // Using player ID 2
         hand.clear();
         hand.add(new Card(4, Card.Color.RED));
-        ActionResult result = new HintAction(game, 1, 2, HintType.VALUE, 4).execute(); // Passing player IDs 1 and 2
+        ActionResult result = new HintAction(game, player1.getId(), player2.getId(), HintType.VALUE, 4).execute(); // Passing player IDs 1 and 2
         assertTrue(result.getMessage().contains("Hint given"));
         assertEquals(1, game.getHints());
 
@@ -48,11 +49,11 @@ public class HintActionTest {
     @Test
     public void testHintCannotBeGivenToSelf() {
         game.setNumRemainingHintTokens(2);
-        List<Card> hand = game.getHands().get(1); // Using player ID 1
+        List<Card> hand = game.getHands().get(player1.getId()); // Using player ID 1
         hand.clear();
         hand.add(new Card(1, Card.Color.WHITE));
 
-        ActionResult result = game.giveHint(1, 1, HintType.COLOR, Card.Color.WHITE); // Using GameManager.giveHint
+        ActionResult result = game.giveHint(player1.getId(), player1.getId(), HintType.COLOR, Card.Color.WHITE); // Using GameManager.giveHint
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("Cannot give hint to yourself"));
@@ -62,11 +63,11 @@ public class HintActionTest {
     @Test
     public void testHintFailsWithNoTokens() {
         game.setNumRemainingHintTokens(0);
-        List<Card> hand = game.getHands().get(2); // Using player ID 2
+        List<Card> hand = game.getHands().get(player2.getId()); // Using player ID 2
         hand.clear();
         hand.add(new Card(3, Card.Color.GREEN));
 
-        ActionResult result = game.giveHint(1, 2, HintType.COLOR, Card.Color.GREEN); // Using GameManager.giveHint
+        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.COLOR, Card.Color.GREEN); // Using GameManager.giveHint
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("No hint tokens available"));
@@ -76,11 +77,11 @@ public class HintActionTest {
     @Test
     public void testHintWithNoMatchingCardsStillFails() {
         game.setNumRemainingHintTokens(2);
-        List<Card> hand = game.getHands().get(2); // Using player ID 2
+        List<Card> hand = game.getHands().get(player2.getId()); // Using player ID 2
         hand.clear();
         hand.add(new Card(5, Card.Color.YELLOW));
 
-        ActionResult result = game.giveHint(1, 2, HintType.VALUE, 3); // Using GameManager.giveHint
+        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.VALUE, 3); // Using GameManager.giveHint
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("No matching cards found"));
