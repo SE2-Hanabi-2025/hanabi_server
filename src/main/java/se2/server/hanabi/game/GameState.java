@@ -32,7 +32,7 @@ public class GameState {
     /**
      * Constructor for the game state
      * @param players the list of players
-     * @param numTurnsHintsLast the number of turns before hints will disappear
+     * @param numTurnsHintsLast the number of turns before hints will disappear, set to -1 for persistant hints
      * @param logger the game logger for logging game events
      */
     public GameState(List<Player> players, int numTurnsHintsLast, GameLogger logger) {
@@ -332,7 +332,7 @@ public class GameState {
     public void removeExpiredShownHints() {
         List<Integer> colorHintsToBeRemoved = new ArrayList<Integer>();
         cardsShowingColorHintsAndRemainingTurns.forEach((cardId, colorHintAndRemainingTurns) -> {
-            if (colorHintAndRemainingTurns.getNumTurns()<=0) {
+            if (colorHintAndRemainingTurns.getNumTurns()==0) {
                 colorHintsToBeRemoved.add(cardId);
             }
         });
@@ -342,7 +342,7 @@ public class GameState {
         
         List<Integer> valueHintsToBeRemoved = new ArrayList<Integer>();
         cardsShowingValueHintsAndRemainingTurns.forEach((cardId, valueHintAndRemainingTurns) -> {
-            if (valueHintAndRemainingTurns.getNumTurns()<=0) {
+            if (valueHintAndRemainingTurns.getNumTurns()==0) {
                 valueHintsToBeRemoved.add(cardId);
             }
         });
