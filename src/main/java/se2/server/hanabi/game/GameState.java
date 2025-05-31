@@ -19,7 +19,7 @@ public class GameState {
     private final Deck deck;
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
     private final List<Card> discardPile = new ArrayList<>();
-    private final int numTurnsHintsLast = 3;
+    private final int numTurnsHintsLast;
     private final Map<Integer, ColorHintAndRemainingTurns> cardsShowingColorHintsAndRemainingTurns = new HashMap<>();
     private final Map<Integer, ValueHintAndRemainingTurns> cardsShowingValueHintsAndRemainingTurns = new HashMap<>();
     private int numRemainingHintTokens = GameRules.MAX_HINTS;
@@ -32,14 +32,25 @@ public class GameState {
     /**
      * Constructor for the game state
      * @param players the list of players
+     * @param numTurnsHintsLast the number of turns before hints will disappear
      * @param logger the game logger for logging game events
      */
-    public GameState(List<Player> players, GameLogger logger) {
+    public GameState(List<Player> players, int numTurnsHintsLast, GameLogger logger) {
         this.players = players;
+        this.numTurnsHintsLast = numTurnsHintsLast;
         this.logger = logger;
         this.deck = new Deck();
         
         initializePlayedCards();
+    }
+
+    /**
+     * Constructor for the game state
+     * @param players the list of players
+     * @param logger the game logger for logging game events
+     */
+    public GameState(List<Player> players, GameLogger logger) {
+        this(players, 1, logger);
     }
     
     /**
