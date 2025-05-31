@@ -43,7 +43,7 @@ public class GameManagerTest {
     void testInitialGameState() {
         // Test initial state values
         assertFalse(game.isGameOver());
-        assertEquals(GameRules.MAX_HINTS, game.getHints());
+        assertEquals(GameRules.MAX_HINT_TOKENS, game.getHints());
         assertEquals(0, game.getStrikes());
         assertEquals(0, game.getCurrentPlayerIndex());
         assertEquals(player1.getId(), game.getCurrentPlayerId());
@@ -125,8 +125,8 @@ public class GameManagerTest {
 
     @Test
     void testSetHintsWithinMaximum() {
-        game.setNumRemainingHintTokens(GameRules.MAX_HINTS + 2); // Try to set hints beyond max
-        assertEquals(GameRules.MAX_HINTS, game.getHints()); // Should be capped at max
+        game.setNumRemainingHintTokens(GameRules.MAX_HINT_TOKENS + 2); // Try to set hints beyond max
+        assertEquals(GameRules.MAX_HINT_TOKENS, game.getHints()); // Should be capped at max
     }
 
     @Test
@@ -322,7 +322,7 @@ public class GameManagerTest {
 
     @Test
     public void testCannotDiscardWhenHintsAtMaximum() {
-        game.setNumRemainingHintTokens(GameRules.MAX_HINTS);
+        game.setNumRemainingHintTokens(GameRules.MAX_HINT_TOKENS);
         ActionResult result = game.discardCard(player1.getId(), 0);
         assertFalse(result.isSuccess(), "Discarding when hints are at maximum should fail.");
         assertEquals("Cannot discard: hint tokens are already at maximum (8).", result.getMessage(), "Expected message for maximum hints.");

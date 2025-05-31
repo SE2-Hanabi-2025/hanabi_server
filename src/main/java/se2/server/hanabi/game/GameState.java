@@ -22,7 +22,7 @@ public class GameState {
     private final int numTurnsHintsLast;
     private final Map<Integer, ColorHintAndRemainingTurns> cardsShowingColorHintsAndRemainingTurns = new HashMap<>();
     private final Map<Integer, ValueHintAndRemainingTurns> cardsShowingValueHintsAndRemainingTurns = new HashMap<>();
-    private int numRemainingHintTokens = GameRules.MAX_HINTS;
+    private int numRemainingHintTokens = GameRules.MAX_HINT_TOKENS;
     private int strikes = 0;
     private int currentPlayerIndex = 0;
     private boolean gameOver = false;
@@ -50,7 +50,7 @@ public class GameState {
      * @param logger the game logger for logging game events
      */
     public GameState(List<Player> players, GameLogger logger) {
-        this(players, 1, logger);
+        this(players, GameRules.TURNS_HINTS_LAST_DEFAULT, logger);
     }
     
     /**
@@ -293,8 +293,8 @@ public class GameState {
     }
 
     public void setNumRemainingHintTokens(int numRemainingHintTokens) {
-        this.numRemainingHintTokens = Math.min(numRemainingHintTokens, GameRules.MAX_HINTS);
-        logger.info("Hint tokens updated to " + this.numRemainingHintTokens + " out of " + GameRules.MAX_HINTS);
+        this.numRemainingHintTokens = Math.min(numRemainingHintTokens, GameRules.MAX_HINT_TOKENS);
+        logger.info("Hint tokens updated to " + this.numRemainingHintTokens + " out of " + GameRules.MAX_HINT_TOKENS);
     }
 
     public int getStrikes() {

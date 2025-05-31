@@ -52,7 +52,7 @@ public class PlayCardAction {
         if (card.getValue() == expected) {
             game.getPlayedCards().put(card.getColor(), expected);
             game.getLogger().info("Played cards state: " + game.getPlayedCards());
-            if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
+            if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINT_TOKENS) {
                 game.setNumRemainingHintTokens(game.getHints() + 1);
             }
 

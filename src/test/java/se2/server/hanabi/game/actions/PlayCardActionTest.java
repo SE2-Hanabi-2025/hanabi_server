@@ -50,14 +50,14 @@ public class PlayCardActionTest {
     @Test
     public void testCompletingStackWithFiveGivesHint() {
         System.out.println("GameManager strikes before action: " + game.getStrikes());
-        game.setNumRemainingHintTokens(GameRules.MAX_HINTS - 1);
+        game.setNumRemainingHintTokens(GameRules.MAX_HINT_TOKENS - 1);
         game.getPlayedCards().put(Card.Color.GREEN, 4);
         List<Card> hand = game.getHands().get(player2.getId());
         hand.clear();
         hand.add(new Card(5, Card.Color.GREEN));
         ActionResult result = new PlayCardAction(game, player2.getId(), 0).execute(); 
         assertTrue(result.isSuccess()); // Added assertion to use the result variable
-        assertEquals(GameRules.MAX_HINTS, game.getHints());
+        assertEquals(GameRules.MAX_HINT_TOKENS, game.getHints());
     }
 
     @Test

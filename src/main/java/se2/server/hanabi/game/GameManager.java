@@ -68,7 +68,7 @@ public class GameManager {
         }
         if (!GameValidator.canDiscard(this)) {
             logger.warn("Player " + playerId + " attempted to discard but hints are already at maximum.");
-            return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINTS + ").");
+            return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINT_TOKENS + ").");
         }
         logger.info("Player " + playerId + " attempts to discard card at index " + cardIndex);
         return new DiscardCardAction(this, playerId, cardIndex).execute();
