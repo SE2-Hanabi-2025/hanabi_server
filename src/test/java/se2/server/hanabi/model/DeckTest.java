@@ -156,7 +156,7 @@ public class DeckTest {
         deck.clear(); // Clear the deck to ensure it starts empty
         Card card = new Card(1, Card.Color.RED);
         deck.addCardToTop(card);
-        assertEquals(1, deck.getRemainingCards(), "Deck should have one card after adding a card to the top");
+        assertEquals(1, deck.getNumRemainingCards(), "Deck should have one card after adding a card to the top");
         assertEquals(card, deck.drawCard(), "The card added to the top should be the first card drawn");
     }
 }

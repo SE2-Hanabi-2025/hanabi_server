@@ -28,7 +28,7 @@ public class DrawService {
         if (card != null) {
             gameManager.getHands().get(playerId).add(card);
             gameManager.getLogger().info("Player " + playerId + " drew a new card. " + 
-                deck.getRemainingCards() + " cards left in deck.");
+                deck.getNumRemainingCards() + " cards left in deck.");
         }
         
         return card;

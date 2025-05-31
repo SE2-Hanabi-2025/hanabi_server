@@ -42,9 +42,9 @@ import static org.junit.jupiter.api.Assertions.*;
             lobbyManager.joinLobby(lobbyId, "Player" + i, Red + i);
         }
 
-        boolean result = lobbyManager.joinLobby(lobbyId, "Player6", White);
+        int result = lobbyManager.joinLobby(lobbyId, "Player6", White);
 
-        assertFalse(result, "Lobby should not allow more than 5 players");
+        assertEquals(result, -1, "Lobby should not allow more than 5 players");
     }
 
     @Test
@@ -60,17 +60,17 @@ import static org.junit.jupiter.api.Assertions.*;
         assertTrue(gameStarted, "Game should start successfully with 2 players");
 
         // Now try to join after game is started
-        boolean result = lobbyManager.joinLobby(lobbyId, "NewPlayer", White);
+        int result = lobbyManager.joinLobby(lobbyId, "NewPlayer", White);
 
-        assertFalse(result, "No player should be able to join once the game has started");
+        assertEquals(result, -1,"No player should be able to join once the game has started");
     }
 
     @Test
     void joinLobby_SuccessfulJoin() {
         String lobbyId = lobbyManager.createLobby();
-        boolean result = lobbyManager.joinLobby(lobbyId, "Player1", Red);
+        int result = lobbyManager.joinLobby(lobbyId, "Player1", Red);
 
-        assertTrue(result, "Player should be able to join the lobby");
+        assertNotEquals(result, -1,"Player should be able to join the lobby");
     }
 
     @Test

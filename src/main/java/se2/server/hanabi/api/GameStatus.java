@@ -10,27 +10,52 @@ import java.util.HashMap;
 public class GameStatus {
 
     private final List<Player> players;
+    private final List<Integer> playerCardIds;
     private final Map<Integer, List<Card>> visibleHands;
     private final Map<Card.Color, Integer> playedCards;
     private final List<Card> discardPile;
-    private final int hints;
+    private final int numRemaningCards;
+    private final Map<Integer, Card.Color> cardsShowingColorHints;
+    private final Map<Integer, Integer> cardsShowingValueHints;
+    private final int numRemainingHintTokens;
     private final int strikes;
     private final boolean gameOver;
-    private final String currentPlayer;
+    private final int currentPlayerId;
 
-    public GameStatus(List<Player> players, Map<Integer, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
+    public GameStatus(
+        List<Player> players, 
+        List<Integer> playerCardIds,
+        Map<Integer, List<Card>> visibleHands, 
+        Map<Card.Color, Integer> playedCards, 
+        List<Card> discardPile, 
+        int numRemaningCards,
+        Map<Integer, Card.Color> cardsShowingColorHints,
+        Map<Integer, Integer> cardsShowingValueHints,
+        int numRemainingHintTokens, 
+        int strikes, 
+        boolean gameOver, 
+        int currentPlayerId
+        ) {
         this.players = players;
+        this.playerCardIds = playerCardIds;
         this.visibleHands = visibleHands;
         this.playedCards = playedCards;
         this.discardPile = discardPile;
-        this.hints = hints;
+        this.numRemaningCards = numRemaningCards;
+        this.cardsShowingColorHints = cardsShowingColorHints;
+        this.cardsShowingValueHints = cardsShowingValueHints;
+        this.numRemainingHintTokens = numRemainingHintTokens;
         this.strikes = strikes;
         this.gameOver = gameOver;
-        this.currentPlayer = currentPlayer;
+        this.currentPlayerId = currentPlayerId;
     }
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public List<Integer> getPlayerCardIds() {
+        return playerCardIds;
     }
 
     public Map<Integer, List<Card>> getVisibleHands() {
@@ -50,8 +75,20 @@ public class GameStatus {
         return discardPile;
     }
 
-    public int getHints() {
-        return hints;
+    public int getNumRemainingCards() {
+        return numRemaningCards;
+    }
+    
+    public Map<Integer, Card.Color> getCardsShowingColorHints() {
+        return cardsShowingColorHints;
+    }
+
+    public Map<Integer, Integer> getCardsShowingValueHints() {
+        return cardsShowingValueHints;
+    }
+
+    public int getNumRemainingHintTokens() {
+        return numRemainingHintTokens;
     }
 
     public int getStrikes() {
@@ -62,12 +99,7 @@ public class GameStatus {
         return gameOver;
     }
 
-    public String getCurrentPlayer() {
-        return currentPlayer;
-    }
-
     public int getCurrentPlayerId() {
-        // Assuming `currentPlayer` is the ID of the current player as a String
-        return Integer.parseInt(currentPlayer);
+        return currentPlayerId;
     }
 }
