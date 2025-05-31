@@ -3,10 +3,8 @@ package se2.server.hanabi.api;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se2.server.hanabi.model.Card;
-import se2.server.hanabi.model.Card.Color;
 import se2.server.hanabi.model.Player;
 import java.util.*;
-import java.util.Map.Entry;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

@@ -2,11 +2,8 @@ package se2.server.hanabi.game;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import se2.server.hanabi.api.GameStatus;
-import se2.server.hanabi.game.actions.DiscardCardAction;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Player;
@@ -19,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 public class GameManagerTest {
 
