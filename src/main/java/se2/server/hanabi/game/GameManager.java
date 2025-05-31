@@ -271,6 +271,10 @@ public class GameManager {
         gameState.setFinalTurnsRemaining(turns);
     }
 
+    public int getNumTurnsHintsLast() {
+        return gameState.getNumTurnsHintsLast();
+    }
+
     public void removeCardFromShownHints(int cardId) {
         gameState.removeCardFromShownHints(cardId);
     }

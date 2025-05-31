@@ -1,8 +1,10 @@
 package se2.server.hanabi.game.actions;
 
+import se2.server.hanabi.game.ColorHintAndRemainingTurns;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.game.HintType;
+import se2.server.hanabi.game.ValueHintAndRemainingTurns;
 import se2.server.hanabi.model.Card;
 
 import java.util.ArrayList;
@@ -34,10 +36,12 @@ public class HintAction {
         for (int i = 0; i < targetHand.size(); i++) {
             Card card = targetHand.get(i);
             if (type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) {
-                game.getGameState().getCardsShowingColorHints().put(card.getId(), (Card.Color)value);
+                ColorHintAndRemainingTurns colorHintAndTurns = new ColorHintAndRemainingTurns(card.getColor(), game.getNumTurnsHintsLast());
+                game.getGameState().getCardsShowingColorHintsAndRemainingTurns().put(card.getId(), colorHintAndTurns);
                 matchingCardIds.add(card.getId());
             } else if (type == HintType.VALUE && card.getValue() == (int) value) {
-                game.getGameState().getCardsShowingValueHints().put(card.getId(), (Integer)value);
+                ValueHintAndRemainingTurns valueHintAndTurns = new ValueHintAndRemainingTurns(card.getValue(), game.getNumTurnsHintsLast());
+                game.getGameState().getCardsShowingValueHintsAndRemainingTurns().put(card.getId(), valueHintAndTurns);
                 matchingCardIds.add(card.getId());
             }
         }
