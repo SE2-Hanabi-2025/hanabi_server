@@ -90,7 +90,7 @@ class GameStateTest {
     void testAdvanceTurnFinalRoundsCounter(){
         gameState.setFinalTurnsRemaining(2);
         gameState.advanceTurn();
-        assertEquals(3, gameState.getFinalTurnsRemaining());
+        assertEquals(1, gameState.getFinalTurnsRemaining());
     }
 
     @Test

@@ -176,8 +176,10 @@ public class GameManagerTest {
 
     @Test
     void testGiveHint() {
-  
-        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.COLOR, Card.Color.RED);
+        int hintFrom = game.getCurrentPlayerId();
+        int hintTo = (hintFrom+1) % game.getPlayers().size();
+        Card card = game.getHands().get(hintTo).get(0);
+        ActionResult result = game.giveHint(hintFrom, hintTo, HintType.COLOR, card.getColor());
 
         assertTrue(result.isSuccess());
         assertEquals("Hint given", result.getMessage());
