@@ -113,13 +113,13 @@ class GameValidatorTest {
 
     @Test
     void testCanDiscard_True() {
-        when(gameManager.getHints()).thenReturn(GameRules.MAX_HINTS - 1);
+        when(gameManager.getHints()).thenReturn(GameRules.MAX_HINT_TOKENS - 1);
         assertTrue(GameValidator.canDiscard(gameManager));
     }
 
     @Test
     void testCanDiscard_False() {
-        when(gameManager.getHints()).thenReturn(GameRules.MAX_HINTS);
+        when(gameManager.getHints()).thenReturn(GameRules.MAX_HINT_TOKENS);
         assertFalse(GameValidator.canDiscard(gameManager));
     }
 

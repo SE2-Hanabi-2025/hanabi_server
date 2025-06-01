@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se2.server.hanabi.model.Lobby;
-import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyManager;
 import se2.server.hanabi.util.GameRules;
 
@@ -66,7 +65,7 @@ public class LobbyController {
                     @ApiResponse(responseCode = "200", description = "Successfully joined the lobby",
                             content = @io.swagger.v3.oas.annotations.media.Content(
                                     mediaType = "text/plain",
-                                    schema = @Schema(type = "string", example = "Joined lobby: abc123")
+                                    schema = @Schema(type = "string", example = "Joined lobby: abc123 PlayerID: 4")
                             )),
                     @ApiResponse(responseCode = "404", description = "Lobby not found",
                             content = @io.swagger.v3.oas.annotations.media.Content(
@@ -112,9 +111,9 @@ public class LobbyController {
                     .body("Lobby is full.");
         }
 
-        boolean success = lobbyManager.joinLobby(id, name, avatarResID);
-        if (success) {
-            return ResponseEntity.ok("Joined lobby: " + id);
+        int playerId = lobbyManager.joinLobby(id, name, avatarResID);
+        if (playerId != -1) {
+            return ResponseEntity.ok("Joined lobby: "+id+" PlayerID: "+Integer.toString(playerId));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Unknown error while joining lobby.");

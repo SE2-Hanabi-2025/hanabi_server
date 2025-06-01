@@ -3,7 +3,6 @@ package se2.server.hanabi;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class SSHConnector {
     private String username;

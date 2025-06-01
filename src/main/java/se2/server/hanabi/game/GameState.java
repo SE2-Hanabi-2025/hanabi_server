@@ -19,7 +19,10 @@ public class GameState {
     private final Deck deck;
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
     private final List<Card> discardPile = new ArrayList<>();
-    private int hints = GameRules.MAX_HINTS;
+    private final int numTurnsHintsLast;
+    private final Map<Integer, ColorHintAndRemainingTurns> cardsShowingColorHintsAndRemainingTurns = new HashMap<>();
+    private final Map<Integer, ValueHintAndRemainingTurns> cardsShowingValueHintsAndRemainingTurns = new HashMap<>();
+    private int numRemainingHintTokens = GameRules.MAX_HINT_TOKENS;
     private int strikes = 0;
     private int currentPlayerIndex = 0;
     private boolean gameOver = false;
@@ -29,14 +32,25 @@ public class GameState {
     /**
      * Constructor for the game state
      * @param players the list of players
+     * @param numTurnsHintsLast the number of turns before hints will disappear, set to -1 for persistant hints
      * @param logger the game logger for logging game events
      */
-    public GameState(List<Player> players, GameLogger logger) {
+    public GameState(List<Player> players, int numTurnsHintsLast, GameLogger logger) {
         this.players = players;
+        this.numTurnsHintsLast = numTurnsHintsLast;
         this.logger = logger;
         this.deck = new Deck();
         
         initializePlayedCards();
+    }
+
+    /**
+     * Constructor for the game state
+     * @param players the list of players
+     * @param logger the game logger for logging game events
+     */
+    public GameState(List<Player> players, GameLogger logger) {
+        this(players, GameRules.TURNS_HINTS_LAST_DEFAULT, logger);
     }
     
     /**
@@ -107,7 +121,55 @@ public class GameState {
     public int getCurrentPlayerId() {
         return players.get(currentPlayerIndex).getId();
     }
-    
+
+    /**
+     * Get the number of turns that a hint will last until it disapears
+     * @return the number of turns that a hint will last until it disapears
+     */
+    public int getNumTurnsHintsLast() {
+        return numTurnsHintsLast;
+    }
+
+    /**
+     * Get the map of card IDs along with their corresponding color hints and the number of turns until they are removed
+     * @return map of card IDs along with their corresponding color hints and the number of turns until they are removed
+     */
+    public Map<Integer, ColorHintAndRemainingTurns> getCardsShowingColorHintsAndRemainingTurns() {
+        return cardsShowingColorHintsAndRemainingTurns;
+    }
+
+    /**
+     * Get the map of card IDs along with their corresponding value hints and the number of turns until they are removed
+     * @return map of card IDs along with their corresponding value hints and the number of turns until they are removed
+     */
+    public Map<Integer, ValueHintAndRemainingTurns> getCardsShowingValueHintsAndRemainingTurns() {
+        return cardsShowingValueHintsAndRemainingTurns;
+    }
+
+    /**
+     * Get a map of card IDs and their corresponding color hints
+     * @return map of card IDs and their corresponding color hints
+     */
+    public Map<Integer, Card.Color> getCardsShowingColorHints() {
+        Map<Integer, Card.Color> cardsShowingColorHints = new HashMap<>();
+        cardsShowingColorHintsAndRemainingTurns.forEach((cardId, colorHintAndRemainingTurns) -> 
+            cardsShowingColorHints.put(cardId, colorHintAndRemainingTurns.getColor())
+        );
+        return cardsShowingColorHints;
+    }
+
+    /**
+     * Get a map of card IDs and their corresponding value hints
+     * @return map of card IDs and their corresponding color hints
+     */
+    public Map<Integer, Integer> getCardsShowingValueHints() {
+        Map<Integer, Integer> cardsShowingValueHints = new HashMap<>();
+        cardsShowingValueHintsAndRemainingTurns.forEach((cardId, ValueHintAndRemainingTurns) -> 
+            cardsShowingValueHints.put(cardId, ValueHintAndRemainingTurns.getValue())
+        );
+        return cardsShowingValueHints;
+    }
+
     /**
      * Advances to the next player's turn
      * @return true if the turn was advanced, false if the game is over
@@ -119,6 +181,9 @@ public class GameState {
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         logger.info("Turn advances to " + getCurrentPlayerId());
+
+        removeExpiredShownHints();
+        decrementHintsRemainingTurns();
         
         // Update final turns counter if we're in final rounds
         if (finalTurnsRemaining > 0) {
@@ -175,6 +240,19 @@ public class GameState {
     }
     
     /**
+     *  Returns the cardIds of the given player
+     * @param playerId ID of the players whose cardIds will be returned
+     * @return List of card IDs
+     */
+    public List<Integer> getPlayerCardIds(int playerId) {
+        List<Integer> cardIds = new ArrayList<Integer>();
+        for (Card card : hands.get(playerId)) {
+            cardIds.add(card.getId());
+        }
+        return cardIds;
+    }
+
+    /**
      * Get all hands except the specified player's
      * @param viewerId ID of the player who should not see their own hand
      * @return Map of player IDs to their hand of cards
@@ -210,13 +288,13 @@ public class GameState {
         return discardPile;
     }
 
-    public int getHints() {
-        return hints;
+    public int getNumRemainingHintTokens() {
+        return numRemainingHintTokens;
     }
 
-    public void setHints(int hints) {
-        this.hints = Math.min(hints, GameRules.MAX_HINTS);
-        logger.info("Hint tokens updated to " + this.hints + " out of " + GameRules.MAX_HINTS);
+    public void setNumRemainingHintTokens(int numRemainingHintTokens) {
+        this.numRemainingHintTokens = Math.min(numRemainingHintTokens, GameRules.MAX_HINT_TOKENS);
+        logger.info("Hint tokens updated to " + this.numRemainingHintTokens + " out of " + GameRules.MAX_HINT_TOKENS);
     }
 
     public int getStrikes() {
@@ -244,5 +322,47 @@ public class GameState {
     
     public void setFinalTurnsRemaining(int turns) {
         this.finalTurnsRemaining = turns;
+    }
+
+    public void removeCardFromShownHints(int cardId) {
+        cardsShowingColorHintsAndRemainingTurns.remove(cardId);
+        cardsShowingValueHintsAndRemainingTurns.remove(cardId);
+    }
+
+    public void removeExpiredShownHints() {
+        List<Integer> colorHintsToBeRemoved = new ArrayList<Integer>();
+        cardsShowingColorHintsAndRemainingTurns.forEach((cardId, colorHintAndRemainingTurns) -> {
+            if (colorHintAndRemainingTurns.getNumTurns()==0) {
+                colorHintsToBeRemoved.add(cardId);
+            }
+        });
+        colorHintsToBeRemoved.forEach((cardId) -> {
+            cardsShowingColorHintsAndRemainingTurns.remove(cardId);
+        });
+        
+        List<Integer> valueHintsToBeRemoved = new ArrayList<Integer>();
+        cardsShowingValueHintsAndRemainingTurns.forEach((cardId, valueHintAndRemainingTurns) -> {
+            if (valueHintAndRemainingTurns.getNumTurns()==0) {
+                valueHintsToBeRemoved.add(cardId);
+            }
+        });
+        valueHintsToBeRemoved.forEach((cardId) -> {
+            cardsShowingValueHintsAndRemainingTurns.remove(cardId);
+        });
+
+        int numHintsRemoved = colorHintsToBeRemoved.size()+valueHintsToBeRemoved.size();
+        logger.info(numHintsRemoved+" hints removed.");
+    }
+
+    public void decrementHintsRemainingTurns() {
+        cardsShowingColorHintsAndRemainingTurns.forEach((cardId, colorHintAndRemainingTurns) -> {
+            colorHintAndRemainingTurns.setNumTurns(colorHintAndRemainingTurns.getNumTurns() -1);
+        });
+        cardsShowingValueHintsAndRemainingTurns.forEach((cardId, valueHintAndRemainingTurns) -> {
+            valueHintAndRemainingTurns.setNumTurns(valueHintAndRemainingTurns.getNumTurns() -1);
+        });
+
+        int numHintsShown = cardsShowingColorHintsAndRemainingTurns.size() + cardsShowingValueHintsAndRemainingTurns.size();
+        logger.info("Remaining turns for shown hints decremented. "+numHintsShown+" hints are shown");
     }
 }

@@ -49,11 +49,11 @@ public class LobbyControllerTest {
     void joinLobby_successful() throws Exception {
         Lobby mockLobby = new Lobby("test123");
         when(lobbyManager.getLobby("test123")).thenReturn(mockLobby);
-        when(lobbyManager.joinLobby("test123", "Alice", White)).thenReturn(true);
+        when(lobbyManager.joinLobby("test123", "Alice", White)).thenReturn(15);
 
         mockMvc.perform(get("/join-lobby/test123").param("name", "Alice"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Joined lobby: test123"));
+                .andExpect(content().string("Joined lobby: test123 PlayerID: 15"));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class LobbyControllerTest {
     void joinLobby_unknownJoinError() throws Exception {
         Lobby lobby = new Lobby("error");
         when(lobbyManager.getLobby("errorLobby")).thenReturn(lobby);
-        when(lobbyManager.joinLobby("errorLobby", "Buggy", White)).thenReturn(false);
+        when(lobbyManager.joinLobby("errorLobby", "Buggy", White)).thenReturn(-1);
 
         mockMvc.perform(get("/join-lobby/errorLobby").param("name", "Buggy"))
                 .andExpect(status().isInternalServerError())

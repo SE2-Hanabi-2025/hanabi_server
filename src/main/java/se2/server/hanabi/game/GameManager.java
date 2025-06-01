@@ -10,6 +10,7 @@ import se2.server.hanabi.model.Player;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.util.GameRules;
 import se2.server.hanabi.services.DrawService;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,29 +21,21 @@ public class GameManager {
     private final DrawService drawService = new DrawService();
 
     /**
-     * Factory method to create a new game with player IDs
-     * @param playerIds List of player IDs
+     * Factory method to create a new game with players
+     * @param players List of players
      * @return A new GameManager instance
      */
-    public static GameManager createNewGame(List<Integer> playerIds) {
-        if (playerIds == null || playerIds.isEmpty() || 
-            !GameRules.isPlayerCountValid(playerIds.size())) {
+    public static GameManager createNewGame(List<Player> players) {
+        if (players == null || players.isEmpty() || 
+            !GameRules.isPlayerCountValid(players.size())) {
             throw new IllegalArgumentException("Invalid number of players: must be between " + 
                 GameRules.MIN_PLAYERS + " and " + GameRules.MAX_PLAYERS);
         }
 
-        // Create Player objects from playerIds
-        List<Player> players = playerIds.stream()
-                                        .map(id -> new Player(id))
-                                        .collect(Collectors.toList());
-
         return new GameManager(players);
     }
 
-    public GameManager(List<Player> players) {
-        if (!GameRules.isPlayerCountValid(players.size())) {
-            throw new IllegalArgumentException("Invalid number of players");
-        }
+    private GameManager(List<Player> players) {
 
         this.gameState = new GameState(players, logger);
 
@@ -51,7 +44,7 @@ public class GameManager {
 
         gameState.dealInitialCards();
 
-        logger.info("Game setup completed. " + gameState.getDeck().getRemainingCards() + " cards left in deck.");
+        logger.info("Game setup completed. " + gameState.getDeck().getNumRemainingCards() + " cards left in deck.");
         logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
     }
 
@@ -75,7 +68,7 @@ public class GameManager {
         }
         if (!GameValidator.canDiscard(this)) {
             logger.warn("Player " + playerId + " attempted to discard but hints are already at maximum.");
-            return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINTS + ").");
+            return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINT_TOKENS + ").");
         }
         logger.info("Player " + playerId + " attempts to discard card at index " + cardIndex);
         return new DiscardCardAction(this, playerId, cardIndex).execute();
@@ -110,26 +103,26 @@ public class GameManager {
         return gameState.getCurrentPlayerId();
     }
 
-    // Game state information
-    
-    /**
+// Game state information
+      /**
      * Get the complete game status for a specific player
      * @param playerId ID of the player requesting status
      * @return GameStatus object with all relevant game information
      */
     public GameStatus getStatusFor(int playerId) {
-
-        int currentPlayerId = gameState.getCurrentPlayerId();
-
         return new GameStatus(
             gameState.getPlayers(),
-            gameState.getVisibleHands(currentPlayerId),
+            gameState.getPlayerCardIds(playerId),
+            gameState.getVisibleHands(playerId),
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),
-            gameState.getHints(),
+            gameState.getDeck().getNumRemainingCards(),
+            gameState.getCardsShowingColorHints(),
+            gameState.getCardsShowingValueHints(),
+            gameState.getNumRemainingHintTokens(),
             gameState.getStrikes(),
             gameState.isGameOver(),
-            String.valueOf(currentPlayerId) // Pass current player ID as a string
+            gameState.getCurrentPlayerId()
         );
     }
     
@@ -222,11 +215,11 @@ public class GameManager {
     }
 
     public int getHints() {
-        return gameState.getHints();
+        return gameState.getNumRemainingHintTokens();
     }
 
-    public void setHints(int hints) {
-        gameState.setHints(hints);
+    public void setNumRemainingHintTokens(int hints) {
+        gameState.setNumRemainingHintTokens(hints);
     }
 
     public int getStrikes() {
@@ -276,6 +269,14 @@ public class GameManager {
      */
     public void setFinalTurnsRemaining(int turns) {
         gameState.setFinalTurnsRemaining(turns);
+    }
+
+    public int getNumTurnsHintsLast() {
+        return gameState.getNumTurnsHintsLast();
+    }
+
+    public void removeCardFromShownHints(int cardId) {
+        gameState.removeCardFromShownHints(cardId);
     }
 
 }
