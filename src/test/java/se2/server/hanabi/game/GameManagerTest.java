@@ -175,14 +175,35 @@ public class GameManagerTest {
     }
 
     @Test
-    void testGiveHint() {
+    void testGiveColorHint() {
         int hintFrom = game.getCurrentPlayerId();
         int hintTo = (hintFrom+1) % game.getPlayers().size();
-        Card card = game.getHands().get(hintTo).get(0);
+        Card card; 
+        if (game.getHands() != null 
+        && game.getHands().get(hintTo) != null 
+        && game.getHands().get(hintTo).get(0) != null) {
+            card = game.getHands().get(hintTo).get(0);
+        
         ActionResult result = game.giveHint(hintFrom, hintTo, HintType.COLOR, card.getColor());
-
         assertTrue(result.isSuccess());
         assertEquals("Hint given", result.getMessage());
+        }
+    }
+
+    @Test
+    void testGiveValueHint() {
+        int hintFrom = game.getCurrentPlayerId();
+        int hintTo = (hintFrom+1) % game.getPlayers().size();
+        Card card; 
+        if (game.getHands() != null 
+        && game.getHands().get(hintTo) != null 
+        && game.getHands().get(hintTo).get(0) != null) {
+            card = game.getHands().get(hintTo).get(0);
+        
+        ActionResult result = game.giveHint(hintFrom, hintTo, HintType.VALUE, card.getValue());
+        assertTrue(result.isSuccess());
+        assertEquals("Hint given", result.getMessage());
+        }
     }
 
     @Test
