@@ -13,6 +13,7 @@ import se2.server.hanabi.services.LobbyManager;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.game.HintType;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,7 +30,7 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         // Session parameters should include lobbyId and playerId
         Map<String, String> parameters = extractParameters(session.getUri().getQuery());
         String lobbyId = parameters.get("lobbyId");
@@ -46,27 +47,27 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
         String payload = message.getPayload();
         logger.info("Received from client: " + payload);
         
         try {
             GameActionMessage actionMessage = objectMapper.readValue(payload, GameActionMessage.class);
             processGameAction(session, actionMessage);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Error processing message: " + e.getMessage());
             session.sendMessage(new TextMessage("{\"error\": \"Invalid message format\"}"));
         }
     }
     
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws IOException {
         // Remove session from our map
         sessions.values().removeIf(s -> s.getId().equals(session.getId()));
         logger.info("WebSocket connection closed with status: " + status);
     }
       
-    private void processGameAction(WebSocketSession session, GameActionMessage actionMessage) throws Exception {
+    private void processGameAction(WebSocketSession session, GameActionMessage actionMessage) throws IOException  {
         String lobbyId = actionMessage.getLobbyId();
         GameManager gameManager = lobbyManager.getGameManager(lobbyId);
         
