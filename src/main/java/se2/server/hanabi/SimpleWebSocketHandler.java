@@ -14,6 +14,7 @@ import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.game.HintType;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,9 +31,24 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // Session parameters should include lobbyId and playerId
-        Map<String, String> parameters = extractParameters(session.getUri().getQuery());
+
+        URI uri = session.getUri();
+        if (uri == null) {
+            logger.error("WebSocket connection (Session ID: {}) rejected: Session URI is null." + session.getId());
+            session.close(CloseStatus.SERVER_ERROR.withReason("Internal server error: Missing URI"));
+            return;
+        }
+
+        String query = uri.getQuery();
+        if (query == null || query.trim().isEmpty()) {
+            logger.error("WebSocket connection (Session ID: {}) rejected: Missing query parameters in URI."+ session.getId());
+            session.close(CloseStatus.BAD_DATA.withReason("lobbyId and playerId are required query parameters."));
+            return;
+        }
+
+        Map<String, String> parameters = extractParameters(query);
         String lobbyId = parameters.get("lobbyId");
         String playerId = parameters.get("playerId");
         
@@ -44,10 +60,11 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
             logger.error("WebSocket connection rejected: missing lobbyId or playerId");
             session.close(CloseStatus.BAD_DATA);
         }
+    
     }
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         logger.info("Received from client: " + payload);
         
