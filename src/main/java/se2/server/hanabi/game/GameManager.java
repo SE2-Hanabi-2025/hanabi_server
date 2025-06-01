@@ -21,8 +21,8 @@ public class GameManager {
     private final DrawService drawService = new DrawService();
 
     /**
-     * Factory method to create a new game with player IDs
-     * @param playerIds List of player IDs
+     * Factory method to create a new game with players
+     * @param players List of players
      * @return A new GameManager instance
      */
     public static GameManager createNewGame(List<Player> players) {
