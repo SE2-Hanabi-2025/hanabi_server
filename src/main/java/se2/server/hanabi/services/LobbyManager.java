@@ -87,6 +87,16 @@ public class LobbyManager {
     public boolean removeLobby(String lobbyId) {
         return lobbies.remove(lobbyId) != null;
     }
+
+    public boolean leaveLobby(String lobbyId, int playerId){
+        Lobby lobby = lobbies.get(lobbyId);
+        if (lobby == null){
+            return false;
+        }
+        boolean removed = lobby.removePlayerId(playerId);
+        return removed;
+    }
+
 }
 
 

@@ -3,6 +3,7 @@ package se2.server.hanabi.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -119,6 +120,33 @@ public class LobbyController {
                     .body("Unknown error while joining lobby.");
         }
     }
+    @GetMapping("/leave-lobby/{lobbyId}/{playerId}")
+    @Operation(
+            summary = "Player leaves lobby",
+            description = "Player leaves lobby; Server removes player from the list",
+            parameters = {
+                    @Parameter(name = "lobbyId", description = "Lobby ID", required = true, in = ParameterIn.PATH),
+                            @Parameter(name = "playerID", description = "Player ID", required = true, in = ParameterIn.PATH, schema = @Schema(type = "integer"))
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Left lobby successfully"),
+                    @ApiResponse(responseCode = "404", description = "Lobby/Player not found")
+            }
+    )
+
+    public ResponseEntity<String> leaveLobby(
+            @PathVariable String lobbyId,
+            @PathVariable int playerId
+    ) {
+        boolean success = lobbyManager.leaveLobby(lobbyId, playerId);
+        if (success){
+            return ResponseEntity.ok("Player" + playerId + "left lobby successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to leave lobby");
+        }
+    }
+
+
     @GetMapping("/start-game/{id}")
     @Operation(
             summary = "Start a game in a lobby",
