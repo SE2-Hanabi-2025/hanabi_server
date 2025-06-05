@@ -2,6 +2,7 @@ package se2.server.hanabi.model;
 
 import lombok.Getter;
 import se2.server.hanabi.game.GameManager;
+import java.util.*;
 
 import java.util.*;
 
@@ -42,5 +43,9 @@ public class Lobby {
 
         this.isGameStarted = true;
         return true;
+    }
+
+    public boolean removePlayerId(int playerId){
+        return this.players.removeIf(player -> player.getId() == playerId);
     }
 }

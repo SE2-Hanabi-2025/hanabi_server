@@ -259,4 +259,23 @@ public class LobbyControllerTest {
         mockMvc.perform(get("/start-game/{id}/status", "invalid"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void leaveLobby_successful() throws Exception {
+        when(lobbyManager.leaveLobby("lobbyId", 1)).thenReturn(true);
+
+        mockMvc.perform(get("/leave-lobby/lobbyId/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Player1left lobby successfully"));
+    }
+
+    @Test
+    void leaveLobby_failed()throws Exception {
+        when(lobbyManager.leaveLobby("wrongLobby",1)).thenReturn(false);
+
+        mockMvc.perform(get("/leave-lobby/wrongLobby/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Failed to leave lobby"));
+    }
+
 }

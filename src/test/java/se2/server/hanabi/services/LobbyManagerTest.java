@@ -155,4 +155,33 @@ import static org.junit.jupiter.api.Assertions.*;
         assertFalse(lobbyManager.removeLobby("nonexistent"), "Should return false for nonexistent lobby");
     }
 
+    @Test
+     void leaveLobby_RemovesPlayer(){
+        String lobbyId = lobbyManager.createLobby();
+        int player1 = lobbyManager.joinLobby(lobbyId, "Player1", Red);
+        int player2 = lobbyManager.joinLobby(lobbyId, "Player 2", Blue);
+
+        assertEquals(2, lobbyManager.getLobby(lobbyId).getPlayers().size(), "2 players");
+
+                boolean removed = lobbyManager.leaveLobby(lobbyId, player1);
+        assertTrue(removed, "Player 1 is removed");
+        assertEquals(1, lobbyManager.getLobby(lobbyId).getPlayers().size(), "1 player left");
+        assertEquals(player2, lobbyManager.getLobby(lobbyId).getPlayers().get(0).getId());
+
+    }
+
+    @Test
+     void leaveLobby_ReturnNoLobby(){
+        boolean removed = lobbyManager.leaveLobby("wrongLobby", 123);
+        assertFalse(removed, "Return false if lobby doesnt exist");
+    }
+
+    @Test
+     void leaveLobby_ReturnNoPlayer(){
+        String lobbyId = lobbyManager.createLobby();
+        lobbyManager.joinLobby(lobbyId, "Player 1", Red);
+        boolean removed = lobbyManager.leaveLobby(lobbyId, 12345);
+        assertFalse(removed, "Return false if player doesnt exist");
+    }
+
 }
