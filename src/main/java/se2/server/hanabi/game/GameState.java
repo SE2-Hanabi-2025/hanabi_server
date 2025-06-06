@@ -26,6 +26,7 @@ public class GameState {
     private int strikes = 0;
     private int currentPlayerIndex = 0;
     private boolean gameOver = false;
+    private boolean gameLost = false;
     private int finalTurnsRemaining = -1;
     private final GameLogger logger;
 
@@ -201,10 +202,12 @@ public class GameState {
     public boolean checkEndCondition() {
         if (strikes >= GameRules.MAX_STRIKES) {
             gameOver = true;
+            gameLost = true;
             logger.error("Game over: maximum strikes reached (" + strikes + ")");
             return true;
         }
 
+        gameLost = false;
         boolean isPerfect = playedCards.values().stream().allMatch(v -> v == GameRules.MAX_CARD_VALUE);
 
         if (isPerfect) {
@@ -227,7 +230,12 @@ public class GameState {
      * @return current score as sum of all played cards' values
      */
     public int getCurrentScore() {
-        return playedCards.values().stream().mapToInt(Integer::intValue).sum();
+        if (gameLost) {
+            return 0;
+        } else {
+            return playedCards.values().stream().mapToInt(Integer::intValue).sum();
+        }
+        
     }
     
     /**
@@ -315,7 +323,15 @@ public class GameState {
             logger.info("Game is now marked as over.");
         }
     }
-    
+
+    public boolean isGameLost() {
+        return gameLost;
+    }
+
+    public void setGameLost(boolean gameLost) {
+        this.gameLost = gameLost;
+    }
+
     public int getFinalTurnsRemaining() {
         return finalTurnsRemaining;
     }

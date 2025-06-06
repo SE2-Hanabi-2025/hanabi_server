@@ -122,6 +122,8 @@ public class GameManager {
             gameState.getNumRemainingHintTokens(),
             gameState.getStrikes(),
             gameState.isGameOver(),
+            gameState.isGameLost(),
+            gameState.getCurrentScore(),
             gameState.getCurrentPlayerId()
         );
     }
