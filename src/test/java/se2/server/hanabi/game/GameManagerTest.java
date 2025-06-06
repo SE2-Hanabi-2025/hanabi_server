@@ -270,6 +270,21 @@ public class GameManagerTest {
     }
 
     @Test
+    void testAdvanceTurnEndCheck() {
+        game.setStrikes(GameRules.MAX_STRIKES);
+        game.advanceTurn();
+        assertTrue(game.isGameOver());
+    }
+
+    @Test
+    void testFailedAdvanceTurnWhenGameOVer() {
+        game.setGameOver(true);
+        int currentPlayerId = game.getCurrentPlayerId();
+        game.advanceTurn();
+        assertEquals(currentPlayerId, game.getCurrentPlayerId());
+    }
+
+    @Test
     void testGameInitializationEdgeCases() {
         // Test with minimum players
         GameManager minGame = GameManager.createNewGame(Arrays.asList(player1,player2));

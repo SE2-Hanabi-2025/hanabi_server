@@ -65,6 +65,8 @@ class GameStatusTest {
         numRemainingHintTokens = 5;
         strikes = 1;
         gameOver = false;
+        gameLost = false;
+        currentScore = 17;
         currentPlayerId = 1; // Using playerId
 
         gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentScore, currentPlayerId);
@@ -123,7 +125,19 @@ class GameStatusTest {
     @Test
     void testIsGameOver() {
         assertEquals(gameOver, gameStatus.isGameOver());
-    }    @Test
+    }    
+
+    @Test
+    void testIsGameLost() {
+        assertEquals(gameLost, gameStatus.isGameLost());
+    }  
+
+    @Test
+    void testGetCurrentScore() {
+        assertEquals(currentScore, gameStatus.getCurrentScore());
+    }  
+    
+    @Test
     void testGetCurrentPlayer() {
         assertEquals(currentPlayerId, gameStatus.getCurrentPlayerId());
     }
