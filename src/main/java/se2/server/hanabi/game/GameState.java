@@ -230,7 +230,12 @@ public class GameState {
      * @return current score as sum of all played cards' values
      */
     public int getCurrentScore() {
-        return playedCards.values().stream().mapToInt(Integer::intValue).sum();
+        if (gameLost) {
+            return 0;
+        } else {
+            return playedCards.values().stream().mapToInt(Integer::intValue).sum();
+        }
+        
     }
     
     /**

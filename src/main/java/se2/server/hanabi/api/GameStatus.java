@@ -21,6 +21,7 @@ public class GameStatus {
     private final int strikes;
     private final boolean gameOver;
     private final boolean gameLost;
+    private final int currentScore;
     private final int currentPlayerId;
 
     public GameStatus(
@@ -36,6 +37,7 @@ public class GameStatus {
         int strikes, 
         boolean gameOver, 
         boolean gameLost,
+        int currentScore,
         int currentPlayerId
         ) {
         this.players = players;
@@ -50,6 +52,7 @@ public class GameStatus {
         this.strikes = strikes;
         this.gameOver = gameOver;
         this.gameLost = gameLost;
+        this.currentScore = currentScore;
         this.currentPlayerId = currentPlayerId;
     }
 
@@ -104,6 +107,10 @@ public class GameStatus {
 
     public boolean isGameLost() {
         return gameLost;
+    }
+
+    public int getCurrentScore() {
+        return currentScore;
     }
 
     public int getCurrentPlayerId() {

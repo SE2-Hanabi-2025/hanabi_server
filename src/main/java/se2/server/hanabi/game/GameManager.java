@@ -123,6 +123,7 @@ public class GameManager {
             gameState.getStrikes(),
             gameState.isGameOver(),
             gameState.isGameLost(),
+            gameState.getCurrentScore(),
             gameState.getCurrentPlayerId()
         );
     }

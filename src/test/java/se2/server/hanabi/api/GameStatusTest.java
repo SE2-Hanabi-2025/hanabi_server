@@ -23,6 +23,7 @@ class GameStatusTest {
     private int strikes;
     private boolean gameOver;
     private boolean gameLost;
+    private int currentScore;
     private int currentPlayerId;
 
     private GameStatus gameStatus;    @BeforeEach
@@ -66,7 +67,7 @@ class GameStatusTest {
         gameOver = false;
         currentPlayerId = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentPlayerId);
+        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentScore, currentPlayerId);
     }
 
     @Test
@@ -129,7 +130,7 @@ class GameStatusTest {
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, true, gameLost, currentPlayerId);
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, true, gameLost, currentScore, currentPlayerId);
         assertTrue(status.isGameOver());
     }
 }
