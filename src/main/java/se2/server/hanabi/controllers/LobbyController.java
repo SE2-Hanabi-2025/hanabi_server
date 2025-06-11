@@ -152,7 +152,8 @@ public class LobbyController {
             summary = "Start a game in a lobby",
             description = "Starts a new game with all players currently in the lobby. Requires at least 2 players.",
             parameters = {
-                    @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH)
+                    @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH),
+                    @Parameter(name = "isCasualMode", description = "Decides the game mode", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "true"),
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Game started successfully",
@@ -172,7 +173,10 @@ public class LobbyController {
                             ))
             }
     )
-    public ResponseEntity<String> startGame(@PathVariable String id) {
+    public ResponseEntity<String> startGame(
+        @PathVariable String id, 
+        @RequestParam Boolean isCasualMode
+    ) {
         Lobby lobby = lobbyManager.getLobby(id);
         
         if (lobby == null) {
@@ -189,8 +193,8 @@ public class LobbyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Not enough players to start game (minimum 2)");
         }
-        
-        boolean success = lobbyManager.startGame(id);
+
+        boolean success = lobbyManager.startGame(id, isCasualMode);
         if (success) {
             return ResponseEntity.ok("Game started successfully");
         } else {
