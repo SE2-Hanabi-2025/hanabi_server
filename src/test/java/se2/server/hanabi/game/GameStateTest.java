@@ -120,6 +120,8 @@ class GameStateTest {
     void testSetGameOver() {
         gameState.setGameOver(true);
         assertTrue(gameState.isGameOver());
+        gameState.setGameOver(false);
+        assertFalse(gameState.isGameOver());
     }
 
     @Test
@@ -145,4 +147,20 @@ class GameStateTest {
         gameState.removeExpiredShownHints();
         assertTrue(gameState.getCardsShowingValueHintsAndRemainingTurns().isEmpty());
     }
+
+    @Test 
+    void testGetCurrentScore() {
+        gameState.getPlayedCards().put(Card.Color.BLUE, 3);
+        assertEquals(3, gameState.getCurrentScore());
+        gameState.setGameOver(true);
+        gameState.setGameLost(true);
+        assertEquals(0, gameState.getCurrentScore());
+    }
+
+    @Test 
+    void testSetGameLost() {
+        gameState.setGameLost(true);
+        assertTrue(gameState.isGameLost());
+    }
+
 }
