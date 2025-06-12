@@ -10,6 +10,7 @@ public class GameRules {
 
     // Hinweise & Strikes
     public static final int TURNS_HINTS_LAST_DEFAULT = 1;
+    public static final int TURNS_HINTS_LAST_CASUAL = -1; // persistent
     public static final int MAX_HINT_TOKENS = 8;
     public static final int MAX_STRIKES = 3;
 

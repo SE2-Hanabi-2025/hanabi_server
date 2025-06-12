@@ -31,18 +31,27 @@ public class Lobby {
     
     /**
      * Start the game by creating a GameManager instance with the current players
+     * @param isCasualMode sets the game mode
      * @return true if game was successfully started, false otherwise
      */
-    public boolean startGame() {
+    public boolean startGame(Boolean isCasualMode) {
         if (isGameStarted || players.size() < 2) {
             return false;
         }
 
         // Create a new GameManager with the players
-        this.gameManager = GameManager.createNewGame(players);
+        this.gameManager = GameManager.createNewGame(players, isCasualMode);
 
         this.isGameStarted = true;
         return true;
+    }
+
+    /**
+     * Start the game by creating a GameManager instance with the current players
+     * @return true if game was successfully started, false otherwise
+     */
+    public boolean startGame() {
+        return startGame(false);
     }
 
     public boolean removePlayerId(int playerId){

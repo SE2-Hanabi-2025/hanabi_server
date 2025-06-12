@@ -22,22 +22,33 @@ public class GameManager {
 
     /**
      * Factory method to create a new game with players
+     * @param isCasualMode sets the game mode
      * @param players List of players
      * @return A new GameManager instance
      */
-    public static GameManager createNewGame(List<Player> players) {
+    public static GameManager createNewGame(List<Player> players, Boolean isCasualMode) {
         if (players == null || players.isEmpty() || 
             !GameRules.isPlayerCountValid(players.size())) {
             throw new IllegalArgumentException("Invalid number of players: must be between " + 
                 GameRules.MIN_PLAYERS + " and " + GameRules.MAX_PLAYERS);
         }
 
-        return new GameManager(players);
+        return new GameManager(players, isCasualMode);
     }
 
-    private GameManager(List<Player> players) {
+    /**
+     * Factory method to create a new game with players
+     * @param players List of players
+     * @return A new GameManager instance
+     */
+    public static GameManager createNewGame(List<Player> players) {
+        return createNewGame(players, false);
+    }
 
-        this.gameState = new GameState(players, logger);
+    private GameManager(List<Player> players, Boolean isCasualMode) {
+
+        int numTurnsHintsLast = (isCasualMode)? GameRules.TURNS_HINTS_LAST_CASUAL : GameRules.TURNS_HINTS_LAST_DEFAULT;
+        this.gameState = new GameState(players, numTurnsHintsLast, logger);
 
         logger.info("Starting new game with " + players.size() + " players");
         logger.info("Players: " + players.stream().map(p -> p.getId() + " (" + p.getName() + ")").collect(Collectors.joining(", ")));

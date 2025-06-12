@@ -112,9 +112,9 @@ public class LobbyControllerTest {
         lobby.getPlayers().add(new Player("P1", Red));
         lobby.getPlayers().add(new Player("P2", Blue));
         when(lobbyManager.getLobby("game123")).thenReturn(lobby);
-        when(lobbyManager.startGame("game123")).thenReturn(true);
+        when(lobbyManager.startGame("game123", true)).thenReturn(true);
 
-        mockMvc.perform(get("/start-game/game123"))
+        mockMvc.perform(get("/start-game/game123").param("isCasualMode", "true"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Game started successfully"));
     }
@@ -123,7 +123,7 @@ public class LobbyControllerTest {
     void startGame_lobbyNotFound() throws Exception {
         when(lobbyManager.getLobby("notfound")).thenReturn(null);
 
-        mockMvc.perform(get("/start-game/notfound"))
+        mockMvc.perform(get("/start-game/notfound").param("isCasualMode", "true"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Lobby not found"));
     }
@@ -136,7 +136,7 @@ public class LobbyControllerTest {
         lobby.startGame();
         when(lobbyManager.getLobby("alreadyStarted")).thenReturn(lobby);
 
-        mockMvc.perform(get("/start-game/alreadyStarted"))
+        mockMvc.perform(get("/start-game/alreadyStarted").param("isCasualMode", "false"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Game already started"));
     }
@@ -147,7 +147,7 @@ public class LobbyControllerTest {
         lobby.getPlayers().add(new Player("P1", Red));
         when(lobbyManager.getLobby("fewPlayers")).thenReturn(lobby);
 
-        mockMvc.perform(get("/start-game/fewPlayers"))
+        mockMvc.perform(get("/start-game/fewPlayers").param("isCasualMode", "false"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Not enough players to start game (minimum 2)"));
     }
@@ -160,7 +160,7 @@ public class LobbyControllerTest {
         when(lobbyManager.getLobby("unknownError")).thenReturn(lobby);
         when(lobbyManager.startGame("unknownError")).thenReturn(false);
 
-        mockMvc.perform(get("/start-game/unknownError"))
+        mockMvc.perform(get("/start-game/unknownError").param("isCasualMode", "false"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Cannot start game: Unknown error"));
     }
