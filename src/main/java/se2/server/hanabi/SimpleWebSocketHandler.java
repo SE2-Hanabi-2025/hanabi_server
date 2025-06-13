@@ -138,6 +138,9 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                     value
                 );
                 break;
+            case DEFUSE:
+                result = gameManager.defuseStrike(actionMessage.getPlayerId());
+                break;
             default:
                 session.sendMessage(new TextMessage("{\"error\": \"Unknown action type\"}"));
                 return;

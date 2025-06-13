@@ -110,6 +110,18 @@ public class GameManager {
         return result;
     }
 
+    public ActionResult defuseStrike(int playerId) {
+        int strikes = getStrikes();
+        if (strikes > 0) {
+            setStrikes(strikes - 1);
+            logger.info("[CHEAT] Player " + playerId + " defused a strike! (strikes now: " + (strikes - 1) + ")");
+            return ActionResult.success("Strike defused!");
+        } else {
+            logger.info("[CHEAT] Player " + playerId + " tried to defuse a strike, but none left.");
+            return ActionResult.invalid("No strikes to defuse.");
+        }
+    }
+
     public int getCurrentPlayerId() {
         return gameState.getCurrentPlayerId();
     }
