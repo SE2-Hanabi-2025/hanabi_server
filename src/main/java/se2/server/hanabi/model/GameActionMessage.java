@@ -12,7 +12,8 @@ public class GameActionMessage {
         PLAY,
         DISCARD,
         HINT,
-        DEFUSE // Added for cheat action
+        DEFUSE, 
+        ADD_STRIKE 
     }
     
     @JsonProperty("type")

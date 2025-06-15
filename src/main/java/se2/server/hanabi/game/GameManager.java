@@ -111,14 +111,31 @@ public class GameManager {
     }
 
     public ActionResult defuseStrike(int playerId) {
+        if (!gameState.isCurrentPlayer(playerId)) {
+            return ActionResult.invalid("You can only defuse on your turn.");
+        }
         int strikes = getStrikes();
         if (strikes > 0) {
             setStrikes(strikes - 1);
             logger.info("[CHEAT] Player " + playerId + " defused a strike! (strikes now: " + (strikes - 1) + ")");
+            advanceTurn();
             return ActionResult.success("Strike defused!");
         } else {
             logger.info("[CHEAT] Player " + playerId + " tried to defuse a strike, but none left.");
             return ActionResult.invalid("No strikes to defuse.");
+        }
+    }
+
+    public ActionResult addStrikeCheat(int playerId) {
+        int strikes = getStrikes();
+        if (strikes > 0) {
+            setStrikes(strikes + 1);
+            logger.info("[CHEAT] Player " + playerId + " triggered a failed defuse! (strikes now: " + (strikes + 1) + ")");
+            advanceTurn();
+            return ActionResult.success("Defuse failed, strike added!");
+        } else {
+            logger.info("[CHEAT] Player " + playerId + " tried to add a strike, but no strikes present.");
+            return ActionResult.invalid("No strikes present, cannot add another.");
         }
     }
 
