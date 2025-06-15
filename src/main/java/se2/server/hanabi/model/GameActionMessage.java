@@ -13,7 +13,8 @@ public class GameActionMessage {
         DISCARD,
         HINT,
         DEFUSE, 
-        ADD_STRIKE 
+        ADD_STRIKE,
+        DEFUSE_ATTEMPT // New action type for cheat validation
     }
     
     @JsonProperty("type")
@@ -40,6 +41,12 @@ public class GameActionMessage {
     
     @JsonProperty("hintValue")
     private String hintValue;
+    
+    @JsonProperty("sequence")
+    private java.util.List<String> sequence;
+
+    @JsonProperty("proximity")
+    private String proximity;
 
     // Default constructor for JSON deserialization
     public GameActionMessage() {
@@ -108,5 +115,21 @@ public class GameActionMessage {
 
     public void setHintValue(String hintValue) {
         this.hintValue = hintValue;
+    }
+
+    public java.util.List<String> getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(java.util.List<String> sequence) {
+        this.sequence = sequence;
+    }
+
+    public String getProximity() {
+        return proximity;
+    }
+
+    public void setProximity(String proximity) {
+        this.proximity = proximity;
     }
 }

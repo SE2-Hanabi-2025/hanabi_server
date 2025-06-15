@@ -139,6 +139,22 @@ public class GameManager {
         }
     }
 
+    // Handle DEFUSE_ATTEMPT cheat logic
+    public ActionResult handleDefuseAttempt(Integer playerId, java.util.List<String> sequence, String proximity) {
+        // Correct sequence: DOWN, DOWN, UP, DOWN
+        java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
+        String requiredProximity = "DARK";
+
+        if (sequence == null || proximity == null) {
+            return ActionResult.invalid("Missing sequence or proximity for defuse attempt.");
+        }
+        if (sequence.equals(correctSequence) && requiredProximity.equalsIgnoreCase(proximity)) {
+            return defuseStrike(playerId);
+        } else {
+            return addStrikeCheat(playerId);
+        }
+    }
+
     public int getCurrentPlayerId() {
         return gameState.getCurrentPlayerId();
     }
