@@ -135,7 +135,8 @@ public class GameManager {
             gameState.isGameOver(),
             gameState.isGameLost(),
             gameState.getCurrentScore(),
-            gameState.getCurrentPlayerId()
+            gameState.getCurrentPlayerId(),
+            gameState.getHands().get(playerId) // send real hand for this player
         );
     }
     
