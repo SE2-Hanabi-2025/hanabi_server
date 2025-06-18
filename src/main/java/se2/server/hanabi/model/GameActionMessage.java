@@ -11,7 +11,8 @@ public class GameActionMessage {
     public enum ActionType {
         PLAY,
         DISCARD,
-        HINT
+        HINT,
+        CHEAT // Added CHEAT action type
     }
     
     @JsonProperty("type")
