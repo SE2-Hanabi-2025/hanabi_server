@@ -184,9 +184,15 @@ public class GameManager {
         return drawService.drawCardToPlayerHand(this, playerId);
     }
 
-    public ActionResult incrementStrikes() {
+    public synchronized ActionResult incrementStrikes() {
+        int currentTurn = gameState.getTurnCounter();
+        if (gameState.getLastStrikeTurn() == currentTurn) {
+            logger.info("Strike already given for this turn (" + currentTurn + "). Ignoring duplicate CHEAT action.");
+            return ActionResult.failure("Strike already given for this round.");
+        }
         logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
+        gameState.setLastStrikeTurn(currentTurn);
         logger.info("After increment: Strikes = " + gameState.getStrikes());
         gameState.checkEndCondition(); // Ensure game over is set if max strikes reached
         return ActionResult.success("Strike added.");
