@@ -184,10 +184,11 @@ public class GameManager {
         return drawService.drawCardToPlayerHand(this, playerId);
     }
 
-    public void incrementStrikes() {
+    public ActionResult incrementStrikes() {
         logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
         logger.info("After increment: Strikes = " + gameState.getStrikes());
+        return ActionResult.success("Strike added.");
     }
 
     /**
