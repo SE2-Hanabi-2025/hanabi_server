@@ -188,6 +188,7 @@ public class GameManager {
         logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
         logger.info("After increment: Strikes = " + gameState.getStrikes());
+        gameState.checkEndCondition(); // Ensure game over is set if max strikes reached
         return ActionResult.success("Strike added.");
     }
 
