@@ -187,8 +187,7 @@ public class GameManager {
     public synchronized ActionResult incrementStrikes() {
         int currentTurn = gameState.getTurnCounter();
         if (gameState.getLastStrikeTurn() == currentTurn) {
-            logger.info("Strike already given for this turn (" + currentTurn + "). Ignoring duplicate CHEAT action.");
-            return ActionResult.failure("Strike already given for this round.");
+            return ActionResult.success("Strike already given for this round.");
         }
         logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
