@@ -149,4 +149,15 @@ class GameStatusTest {
         GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, true, gameLost, currentScore, currentPlayerId, ownHand);
         assertTrue(status.isGameOver());
     }
+
+    @Test
+    void testGetOwnHand() {
+        List<Card> ownHand = new ArrayList<>();
+        Card card1 = mock(Card.class);
+        Card card2 = mock(Card.class);
+        ownHand.add(card1);
+        ownHand.add(card2);
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentScore, currentPlayerId, ownHand);
+        assertEquals(ownHand, status.getOwnHand());
+    }
 }
