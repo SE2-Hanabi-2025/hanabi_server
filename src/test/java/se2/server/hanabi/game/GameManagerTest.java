@@ -373,4 +373,59 @@ public class GameManagerTest {
         expected.remove(player1.getId());
         assertEquals(visibleHands, expected );
     }
+
+    @Test
+    void testHandleDefuseAttempt_CorrectSequenceAndProximity() {
+        int playerId = player1.getId();
+        game.setStrikes(2); // Ensure there is at least one strike to defuse
+        java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
+        String proximity = "DARK";
+        ActionResult result = game.handleDefuseAttempt(playerId, correctSequence, proximity);
+        assertTrue(result.isSuccess());
+        assertEquals("Strike defused!", result.getMessage());
+        assertEquals(1, game.getStrikes()); // Should have one less strike
+    }
+
+    @Test
+    void testHandleDefuseAttempt_WrongSequence() {
+        int playerId = player1.getId();
+        game.setStrikes(2);
+        java.util.List<String> wrongSequence = java.util.Arrays.asList("DOWN", "UP", "DOWN", "DOWN");
+        String proximity = "DARK";
+        ActionResult result = game.handleDefuseAttempt(playerId, wrongSequence, proximity);
+        assertTrue(result.isSuccess()); // addStrikeCheat returns success
+        assertEquals("Defuse failed, strike added!", result.getMessage());
+        assertEquals(3, game.getStrikes()); // Should have one more strike
+    }
+
+    @Test
+    void testHandleDefuseAttempt_WrongProximity() {
+        int playerId = player1.getId();
+        game.setStrikes(2);
+        java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
+        String proximity = "LIGHT";
+        ActionResult result = game.handleDefuseAttempt(playerId, correctSequence, proximity);
+        assertTrue(result.isSuccess()); // addStrikeCheat returns success
+        assertEquals("Defuse failed, strike added!", result.getMessage());
+        assertEquals(3, game.getStrikes());
+    }
+
+    @Test
+    void testHandleDefuseAttempt_MissingParams() {
+        int playerId = player1.getId();
+        ActionResult result = game.handleDefuseAttempt(playerId, null, null);
+        assertFalse(result.isSuccess());
+        assertEquals("Missing sequence or proximity for defuse attempt.", result.getMessage());
+    }
+
+    @Test
+    void testHandleDefuseAttempt_NoStrikesToDefuse() {
+        int playerId = player1.getId();
+        game.setStrikes(0);
+        java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
+        String proximity = "DARK";
+        ActionResult result = game.handleDefuseAttempt(playerId, correctSequence, proximity);
+        assertFalse(result.isSuccess());
+        assertEquals("No strikes to defuse.", result.getMessage());
+    }
 }
