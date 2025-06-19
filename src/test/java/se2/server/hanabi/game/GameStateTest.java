@@ -163,4 +163,21 @@ class GameStateTest {
         assertTrue(gameState.isGameLost());
     }
 
+    @Test
+    void testIsValidCardIndex() {
+        // Valid index for player1
+        List<Card> hand = gameState.getHands().get(player1.getId());
+        if (hand != null && !hand.isEmpty()) {
+            assertTrue(gameState.isValidCardIndex(player1.getId(), 0));
+        }
+        // Invalid index: negative
+        assertFalse(gameState.isValidCardIndex(player1.getId(), -1));
+        // Invalid index: too large
+        int handSize = hand != null ? hand.size() : 0;
+        assertFalse(gameState.isValidCardIndex(player1.getId(), handSize));
+        // Invalid player
+        assertFalse(gameState.isValidCardIndex(playerX.getId(), 0));
+    }
+
+
 }

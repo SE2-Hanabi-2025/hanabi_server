@@ -23,6 +23,7 @@ public class GameStatus {
     private final boolean gameLost;
     private final int currentScore;
     private final int currentPlayerId;
+    private final List<Card> ownHand;
 
     public GameStatus(
         List<Player> players, 
@@ -38,7 +39,8 @@ public class GameStatus {
         boolean gameOver, 
         boolean gameLost,
         int currentScore,
-        int currentPlayerId
+        int currentPlayerId,
+        List<Card> ownHand
         ) {
         this.players = players;
         this.playerCardIds = playerCardIds;
@@ -54,6 +56,7 @@ public class GameStatus {
         this.gameLost = gameLost;
         this.currentScore = currentScore;
         this.currentPlayerId = currentPlayerId;
+        this.ownHand = ownHand;
     }
 
     public List<Player> getPlayers() {
@@ -115,5 +118,9 @@ public class GameStatus {
 
     public int getCurrentPlayerId() {
         return currentPlayerId;
+    }
+
+    public List<Card> getOwnHand() {
+        return ownHand;
     }
 }

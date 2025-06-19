@@ -29,6 +29,8 @@ public class GameState {
     private boolean gameLost = false;
     private int finalTurnsRemaining = -1;
     private final GameLogger logger;
+    private int lastStrikeTurn = -1;
+    private int turnCounter = 0;
 
     /**
      * Constructor for the game state
@@ -179,9 +181,9 @@ public class GameState {
         if (gameOver) {
             return false;
         }
-
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        logger.info("Turn advances to " + getCurrentPlayerId());
+        turnCounter++;
+        logger.info("Turn advances to " + getCurrentPlayerId() + ", turnCounter=" + turnCounter);
 
         removeExpiredShownHints();
         decrementHintsRemainingTurns();
@@ -380,5 +382,19 @@ public class GameState {
 
         int numHintsShown = cardsShowingColorHintsAndRemainingTurns.size() + cardsShowingValueHintsAndRemainingTurns.size();
         logger.info("Remaining turns for shown hints decremented. "+numHintsShown+" hints are shown");
+    }
+
+    public int getCurrentTurnNumber() {
+        return currentPlayerIndex;
+    }
+    public int getLastStrikeTurn() {
+        return lastStrikeTurn;
+    }
+    public void setLastStrikeTurn(int turn) {
+        lastStrikeTurn = turn;
+    }
+
+    public int getTurnCounter() {
+        return turnCounter;
     }
 }

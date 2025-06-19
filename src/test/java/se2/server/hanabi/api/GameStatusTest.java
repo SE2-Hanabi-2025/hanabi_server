@@ -69,7 +69,8 @@ class GameStatusTest {
         currentScore = 17;
         currentPlayerId = 1; // Using playerId
 
-        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentScore, currentPlayerId);
+        List<Card> ownHand = new ArrayList<>(); // Add this for the new constructor
+        gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentScore, currentPlayerId, ownHand);
     }
 
     @Test
@@ -144,7 +145,19 @@ class GameStatusTest {
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, true, gameLost, currentScore, currentPlayerId);
+        List<Card> ownHand = new ArrayList<>(); // Add this for the new constructor
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, true, gameLost, currentScore, currentPlayerId, ownHand);
         assertTrue(status.isGameOver());
+    }
+
+    @Test
+    void testGetOwnHand() {
+        List<Card> ownHand = new ArrayList<>();
+        Card card1 = mock(Card.class);
+        Card card2 = mock(Card.class);
+        ownHand.add(card1);
+        ownHand.add(card2);
+        GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentScore, currentPlayerId, ownHand);
+        assertEquals(ownHand, status.getOwnHand());
     }
 }
