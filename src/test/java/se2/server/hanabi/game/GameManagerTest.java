@@ -373,4 +373,17 @@ public class GameManagerTest {
         expected.remove(player1.getId());
         assertEquals(visibleHands, expected );
     }
+
+    @Test
+    void testIncrementStrikes_DuplicateStrikeInSameTurn() {
+        // First call should add a strike
+        ActionResult first = game.incrementStrikes();
+        assertTrue(first.isSuccess());
+        assertEquals("Strike added.", first.getMessage());
+
+        // Second call in the same turn should not add another strike
+        ActionResult second = game.incrementStrikes();
+        assertTrue(second.isSuccess());
+        assertEquals("Strike already given for this round.", second.getMessage());
+    }
 }
