@@ -58,9 +58,9 @@ public class LobbyController {
             description = "This endpoint allows a player to join an existing lobby using the lobby ID. If the lobby is full or the game has already started, it returns appropriate error messages.",
             parameters = {
                     @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH),
-                    @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
+                    @Parameter(name = "name", description = "The name of the player joining the lobby", in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
 
-                    @Parameter(name = "avatarResID", description = "The avatar resource ID of the player", required = false, example = "2131230890")
+                    @Parameter(name = "avatarResID", description = "The avatar resource ID of the player", example = "2131230890")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully joined the lobby",
@@ -114,7 +114,7 @@ public class LobbyController {
 
         int playerId = lobbyManager.joinLobby(id, name, avatarResID);
         if (playerId != -1) {
-            return ResponseEntity.ok("Joined lobby: "+id+" PlayerID: "+Integer.toString(playerId));
+            return ResponseEntity.ok("Joined lobby: "+id+" PlayerID: "+ playerId);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Unknown error while joining lobby.");
@@ -153,7 +153,7 @@ public class LobbyController {
             description = "Starts a new game with all players currently in the lobby. Requires at least 2 players.",
             parameters = {
                     @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH),
-                    @Parameter(name = "isCasualMode", description = "Decides the game mode", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "true"),
+                    @Parameter(name = "isCasualMode", description = "Decides the game mode", in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "true"),
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Game started successfully",
