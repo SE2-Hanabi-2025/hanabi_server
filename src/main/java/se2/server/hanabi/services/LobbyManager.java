@@ -6,11 +6,18 @@ import se2.server.hanabi.model.Lobby;
 import se2.server.hanabi.model.Player;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class LobbyManager {
 
-    private final Map<String, Lobby> lobbies = new HashMap<>();
+    private final Map<String, Lobby> lobbies = new ConcurrentHashMap<>();
+
+    public LobbyManager(){
+    }
 
     public String createLobby() {
         String uniqueCode = generateUniqueCode();
@@ -109,6 +116,17 @@ public class LobbyManager {
         return removed;
     }
 
+    public Optional<String> ReturnToGame(int playerId){
+        for (Lobby lobby : lobbies.values()){
+            GameManager gameManager = lobby.getGameManager();
+            if (gameManager != null && !gameManager.isGameOver()){
+                if (lobby.getPlayerId(playerId) != null){
+                    return Optional.of(lobby.getId());
+            }
+        }
+    }
+    return Optional.empty();
+}
 }
 
 
