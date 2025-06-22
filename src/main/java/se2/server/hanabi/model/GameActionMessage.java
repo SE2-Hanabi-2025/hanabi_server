@@ -3,8 +3,12 @@ package se2.server.hanabi.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import lombok.Getter;
+import lombok.Setter;
 import se2.server.hanabi.game.HintType;
 
+@Setter
+@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameActionMessage {
     
@@ -17,7 +21,8 @@ public class GameActionMessage {
         ADD_STRIKE,
         DEFUSE_ATTEMPT // New action type for cheat validation
     }
-    
+
+    // Getters and Setters
     @JsonProperty("type")
     private String type;
     
@@ -52,85 +57,5 @@ public class GameActionMessage {
     // Default constructor for JSON deserialization
     public GameActionMessage() {
     }
-    
-    // Getters and Setters
-    public String getType() {
-        return type;
-    }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public ActionType getActionType() {
-        return actionType;
-    }
-
-    public void setActionType(ActionType actionType) {
-        this.actionType = actionType;
-    }
-
-    public String getLobbyId() {
-        return lobbyId;
-    }
-
-    public void setLobbyId(String lobbyId) {
-        this.lobbyId = lobbyId;
-    }
-
-    public Integer getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(Integer playerId) {
-        this.playerId = playerId;
-    }
-
-    public Integer getCardIndex() {
-        return cardIndex;
-    }
-
-    public void setCardIndex(Integer cardIndex) {
-        this.cardIndex = cardIndex;
-    }
-
-    public Integer getToPlayerId() {
-        return toPlayerId;
-    }
-
-    public void setToPlayerId(Integer toPlayerId) {
-        this.toPlayerId = toPlayerId;
-    }
-
-    public HintType getHintType() {
-        return hintType;
-    }
-
-    public void setHintType(HintType hintType) {
-        this.hintType = hintType;
-    }
-
-    public String getHintValue() {
-        return hintValue;
-    }
-
-    public void setHintValue(String hintValue) {
-        this.hintValue = hintValue;
-    }
-
-    public java.util.List<String> getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(java.util.List<String> sequence) {
-        this.sequence = sequence;
-    }
-
-    public String getProximity() {
-        return proximity;
-    }
-
-    public void setProximity(String proximity) {
-        this.proximity = proximity;
-    }
 }
