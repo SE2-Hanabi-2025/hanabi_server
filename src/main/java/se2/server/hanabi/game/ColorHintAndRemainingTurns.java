@@ -1,10 +1,14 @@
 package se2.server.hanabi.game;
 
+import lombok.Getter;
+import lombok.Setter;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Card.Color;
 
+@Getter
 public class ColorHintAndRemainingTurns {
-    private Card.Color color;
+    private final Card.Color color;
+    @Setter
     private int numTurns;
     
 
@@ -13,15 +17,4 @@ public class ColorHintAndRemainingTurns {
         this.numTurns = numTurns;
     }
 
-    public Card.Color getColor() {
-        return color;
-    }
-
-    public int getNumTurns() {
-        return numTurns;
-    }
-
-    public void setNumTurns(int numTurns) {
-        this.numTurns = numTurns;
-    }
 }
