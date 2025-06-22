@@ -51,8 +51,8 @@ public class GameStatus {
         boolean gameOver, 
         boolean gameLost,
         int currentScore,
-        int currentPlayerId
-        ) {
+        int currentPlayerId,
+        List<Card> cards) {
         this.players = players;
         this.playerCardIds = playerCardIds;
         this.visibleHands = visibleHands;
