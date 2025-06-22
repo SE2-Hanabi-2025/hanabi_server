@@ -12,6 +12,7 @@ public class GameActionMessage {
         PLAY,
         DISCARD,
         HINT,
+        CHEAT, // Added CHEAT action type
         DEFUSE, 
         ADD_STRIKE,
         DEFUSE_ATTEMPT // New action type for cheat validation

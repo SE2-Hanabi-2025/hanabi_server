@@ -180,7 +180,8 @@ public class GameManager {
             gameState.isGameOver(),
             gameState.isGameLost(),
             gameState.getCurrentScore(),
-            gameState.getCurrentPlayerId()
+            gameState.getCurrentPlayerId(),
+            gameState.getHands().get(playerId) // send real hand for this player
         );
     }
     
@@ -228,10 +229,17 @@ public class GameManager {
         return drawService.drawCardToPlayerHand(this, playerId);
     }
 
-    public void incrementStrikes() {
+    public synchronized ActionResult incrementStrikes() {
+        int currentTurn = gameState.getTurnCounter();
+        if (gameState.getLastStrikeTurn() == currentTurn) {
+            return ActionResult.success("Strike already given for this round.");
+        }
         logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
+        gameState.setLastStrikeTurn(currentTurn);
         logger.info("After increment: Strikes = " + gameState.getStrikes());
+        gameState.checkEndCondition(); // Ensure game over is set if max strikes reached
+        return ActionResult.success("Strike added.");
     }
 
     /**
