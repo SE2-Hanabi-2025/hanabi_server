@@ -1,5 +1,7 @@
 package se2.server.hanabi.game;
 
+import lombok.Getter;
+import lombok.Setter;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
 import se2.server.hanabi.model.Player;
@@ -14,19 +16,51 @@ import java.util.Map;
  * Encapsulates the state of a Hanabi game
  */
 public class GameState {
+    // Getters & Setters
+    @Getter
     private final List<Player> players;
+    @Getter
     private final Map<Integer, List<Card>> hands = new HashMap<>();
+    @Getter
     private final Deck deck;
+    @Getter
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
+    @Getter
     private final List<Card> discardPile = new ArrayList<>();
+    /**
+     * -- GETTER --
+     *  Get the number of turns that a hint will last until it disapears
+     *
+     */
+    @Getter
     private final int numTurnsHintsLast;
+    /**
+     * -- GETTER --
+     *  Get the map of card IDs along with their corresponding color hints and the number of turns until they are removed
+     *
+     */
+    @Getter
     private final Map<Integer, ColorHintAndRemainingTurns> cardsShowingColorHintsAndRemainingTurns = new HashMap<>();
+    /**
+     * -- GETTER --
+     *  Get the map of card IDs along with their corresponding value hints and the number of turns until they are removed
+     *
+     */
+    @Getter
     private final Map<Integer, ValueHintAndRemainingTurns> cardsShowingValueHintsAndRemainingTurns = new HashMap<>();
+    @Getter
     private int numRemainingHintTokens = GameRules.MAX_HINT_TOKENS;
+    @Setter
+    @Getter
     private int strikes = 0;
     private int currentPlayerIndex = 0;
+    @Getter
     private boolean gameOver = false;
+    @Setter
+    @Getter
     private boolean gameLost = false;
+    @Setter
+    @Getter
     private int finalTurnsRemaining = -1;
     private final GameLogger logger;
 
@@ -121,30 +155,6 @@ public class GameState {
      */
     public int getCurrentPlayerId() {
         return players.get(currentPlayerIndex).getId();
-    }
-
-    /**
-     * Get the number of turns that a hint will last until it disapears
-     * @return the number of turns that a hint will last until it disapears
-     */
-    public int getNumTurnsHintsLast() {
-        return numTurnsHintsLast;
-    }
-
-    /**
-     * Get the map of card IDs along with their corresponding color hints and the number of turns until they are removed
-     * @return map of card IDs along with their corresponding color hints and the number of turns until they are removed
-     */
-    public Map<Integer, ColorHintAndRemainingTurns> getCardsShowingColorHintsAndRemainingTurns() {
-        return cardsShowingColorHintsAndRemainingTurns;
-    }
-
-    /**
-     * Get the map of card IDs along with their corresponding value hints and the number of turns until they are removed
-     * @return map of card IDs along with their corresponding value hints and the number of turns until they are removed
-     */
-    public Map<Integer, ValueHintAndRemainingTurns> getCardsShowingValueHintsAndRemainingTurns() {
-        return cardsShowingValueHintsAndRemainingTurns;
     }
 
     /**
@@ -275,46 +285,9 @@ public class GameState {
         return copy;
     }
 
-    // Getters & Setters
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public Map<Integer, List<Card>> getHands() {
-        return hands;
-    }
-
-    public Deck getDeck() {
-        return deck;
-    }
-
-    public Map<Card.Color, Integer> getPlayedCards() {
-        return playedCards;
-    }
-
-    public List<Card> getDiscardPile() {
-        return discardPile;
-    }
-
-    public int getNumRemainingHintTokens() {
-        return numRemainingHintTokens;
-    }
-
     public void setNumRemainingHintTokens(int numRemainingHintTokens) {
         this.numRemainingHintTokens = Math.min(numRemainingHintTokens, GameRules.MAX_HINT_TOKENS);
         logger.info("Hint tokens updated to " + this.numRemainingHintTokens + " out of " + GameRules.MAX_HINT_TOKENS);
-    }
-
-    public int getStrikes() {
-        return strikes;
-    }
-
-    public void setStrikes(int strikes) {
-        this.strikes = strikes;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
     }
 
     public void setGameOver(boolean gameOver) {
@@ -322,22 +295,6 @@ public class GameState {
         if (gameOver) {
             logger.info("Game is now marked as over.");
         }
-    }
-
-    public boolean isGameLost() {
-        return gameLost;
-    }
-
-    public void setGameLost(boolean gameLost) {
-        this.gameLost = gameLost;
-    }
-
-    public int getFinalTurnsRemaining() {
-        return finalTurnsRemaining;
-    }
-    
-    public void setFinalTurnsRemaining(int turns) {
-        this.finalTurnsRemaining = turns;
     }
 
     public void removeCardFromShownHints(int cardId) {
@@ -352,9 +309,7 @@ public class GameState {
                 colorHintsToBeRemoved.add(cardId);
             }
         });
-        colorHintsToBeRemoved.forEach((cardId) -> {
-            cardsShowingColorHintsAndRemainingTurns.remove(cardId);
-        });
+        colorHintsToBeRemoved.forEach(cardsShowingColorHintsAndRemainingTurns::remove);
         
         List<Integer> valueHintsToBeRemoved = new ArrayList<Integer>();
         cardsShowingValueHintsAndRemainingTurns.forEach((cardId, valueHintAndRemainingTurns) -> {
@@ -362,9 +317,7 @@ public class GameState {
                 valueHintsToBeRemoved.add(cardId);
             }
         });
-        valueHintsToBeRemoved.forEach((cardId) -> {
-            cardsShowingValueHintsAndRemainingTurns.remove(cardId);
-        });
+        valueHintsToBeRemoved.forEach(cardsShowingValueHintsAndRemainingTurns::remove);
 
         int numHintsRemoved = colorHintsToBeRemoved.size()+valueHintsToBeRemoved.size();
         logger.info(numHintsRemoved+" hints removed.");

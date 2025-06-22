@@ -54,7 +54,7 @@ public class LobbyManager {
     /**
      * Start the game for a specific lobby
      * @param lobbyId the ID of the lobby
-     * @param isCasualMode sets the game mode
+     * @param isCasaulMode sets the game mode
      * @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
      * @return true if game was successfully started, false otherwise
      */
@@ -105,8 +105,7 @@ public class LobbyManager {
         if (lobby == null){
             return false;
         }
-        boolean removed = lobby.removePlayerId(playerId);
-        return removed;
+        return lobby.removePlayerId(playerId);
     }
 
 }

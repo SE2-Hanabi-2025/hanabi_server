@@ -33,8 +33,7 @@ public class HintAction {
         }
 
         List<Integer> matchingCardIds = new ArrayList<>();
-        for (int i = 0; i < targetHand.size(); i++) {
-            Card card = targetHand.get(i);
+        for (Card card : targetHand) {
             if (type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) {
                 ColorHintAndRemainingTurns colorHintAndTurns = new ColorHintAndRemainingTurns(card.getColor(), game.getNumTurnsHintsLast());
                 game.getGameState().getCardsShowingColorHintsAndRemainingTurns().put(card.getId(), colorHintAndTurns);

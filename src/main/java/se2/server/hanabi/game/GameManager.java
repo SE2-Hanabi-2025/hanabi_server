@@ -1,5 +1,6 @@
 package se2.server.hanabi.game;
 
+import lombok.Getter;
 import se2.server.hanabi.api.GameStatus;
 import se2.server.hanabi.game.actions.DiscardCardAction;
 import se2.server.hanabi.game.actions.HintAction;
@@ -16,7 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameManager {
+    @Getter
     private final GameState gameState;
+    @Getter
     private final GameLogger logger = new GameLogger();
     private final DrawService drawService = new DrawService();
 
@@ -220,12 +223,11 @@ public class GameManager {
 
     /**
      * Draw a card to a player's hand from the deck
-     * 
-     * @param playerId the ID of the player who should draw a card
-     * @return the drawn card or null if no card was drawn
+     *
+     * @param playerId the ID of the player who should  draw a card
      */
-    public Card drawCardToHand(int playerId) {
-        return drawService.drawCardToPlayerHand(this, playerId);
+    public void drawCardToHand(int playerId) {
+        drawService.drawCardToPlayerHand(this, playerId);
     }
 
     public void incrementStrikes() {
@@ -242,16 +244,8 @@ public class GameManager {
         return logger.getHistory();
     }
 
-    public GameLogger getLogger() {
-        return logger;
-    }
-    
     // GameState delegating methods
-    
-    public GameState getGameState() {
-        return gameState;
-    }
-    
+
     public List<Player> getPlayers() {
         return gameState.getPlayers();
     }

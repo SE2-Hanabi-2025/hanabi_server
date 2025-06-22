@@ -1,6 +1,11 @@
 package se2.server.hanabi.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
 public class Player {
+    @Setter
     private String name;
     private final int id;
     private static int nextId = 0;
@@ -19,19 +24,4 @@ public class Player {
     }
 
 
-    public String getName() {
-        return name;
-    }
-
-    public int getAvatarResID() {
-        return avatarResID;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
 }

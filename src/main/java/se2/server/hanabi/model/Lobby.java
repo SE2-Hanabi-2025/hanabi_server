@@ -4,19 +4,16 @@ import lombok.Getter;
 import se2.server.hanabi.game.GameManager;
 import java.util.*;
 
-import java.util.*;
 
+@Getter
 public class Lobby {
 
-    @Getter
     private final String id;
 
-    @Getter
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players;
     
     private boolean isGameStarted;
     
-    @Getter
     private GameManager gameManager;
 
     public Lobby(String id) {
@@ -25,10 +22,6 @@ public class Lobby {
         this.isGameStarted = false;
     }
 
-    public boolean isGameStarted() {
-        return isGameStarted;
-    }
-    
     /**
      * Start the game by creating a GameManager instance with the current players
      * @param isCasualMode sets the game mode
