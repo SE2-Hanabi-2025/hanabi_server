@@ -6,11 +6,13 @@ import se2.server.hanabi.game.actions.HintAction;
 import se2.server.hanabi.game.actions.PlayCardAction;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Deck;
+import se2.server.hanabi.model.Lobby;
 import se2.server.hanabi.model.Player;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.util.GameRules;
 import se2.server.hanabi.services.DrawService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ public class GameManager {
     private final GameState gameState;
     private final GameLogger logger = new GameLogger();
     private final DrawService drawService = new DrawService();
+    private final Map<String, Lobby> lobbies = new HashMap<>();
 
     /**
      * Factory method to create a new game with players
@@ -108,6 +111,16 @@ public class GameManager {
         }
 
         return result;
+    }
+
+    public ActionResult forceEndGame(int playerId){
+        if (isGameOver()){
+            return ActionResult.invalid("Game is already over");
+        }
+        logger.info("Player " + playerId + " ended the game due to disconnection");
+        setGameOver(true);
+        logFinalScore();
+        return ActionResult.success("Game ended by player " + playerId);
     }
 
     public ActionResult defuseStrike(int playerId) {

@@ -14,7 +14,8 @@ public class GameActionMessage {
         HINT,
         DEFUSE, 
         ADD_STRIKE,
-        DEFUSE_ATTEMPT // New action type for cheat validation
+        DEFUSE_ATTEMPT, // New action type for cheat validation
+        FORCE_END_GAME
     }
     
     @JsonProperty("type")

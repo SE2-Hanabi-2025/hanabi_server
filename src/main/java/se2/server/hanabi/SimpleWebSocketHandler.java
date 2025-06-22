@@ -1,6 +1,7 @@
 package se2.server.hanabi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -9,6 +10,8 @@ import se2.server.hanabi.game.GameLogger;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.GameActionMessage;
+import se2.server.hanabi.model.Lobby;
+import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyManager;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.game.HintType;
@@ -32,7 +35,13 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // Session parameters should include lobbyId and playerId
+
+        Map<String, String> parameters = extractParameters(session.getUri().getQuery());
+        if (parameters == null){
+            session.close(CloseStatus.BAD_DATA.withReason("lobbyId and playerId are required"));
+            return;
+        }
+    /*    // Session parameters should include lobbyId and playerId
 
         URI uri = session.getUri();
         if (uri == null) {
@@ -48,19 +57,34 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        Map<String, String> parameters = extractParameters(query);
+        Map<String, String> parameters = extractParameters(query);*/
+
         String lobbyId = parameters.get("lobbyId");
-        String playerId = parameters.get("playerId");
-        
-        if (lobbyId != null && playerId != null) {
-            String sessionKey = createSessionKey(lobbyId, playerId);
-            sessions.put(sessionKey, session);
-            logger.info("WebSocket connection established for player " + playerId + " in lobby " + lobbyId);
-        } else {
-            logger.error("WebSocket connection rejected: missing lobbyId or playerId");
-            session.close(CloseStatus.BAD_DATA);
+        String playerIdStr = parameters.get("playerId");
+        int playerId = Integer.parseInt(playerIdStr);
+
+        Lobby lobby = lobbyManager.getLobby(lobbyId);
+        if (lobby != null) {
+            Player player = lobby.getPlayerId(playerId);
+
+            if (player != null && player.getStatus() == Player.ConnectionStatus.DISCONNECTED){
+                player.setStatus(Player.ConnectionStatus.CONNECTED);
+                logger.info("Player " + player.getName() + " has RECONNECTED");
+
+                ObjectNode messageJson = objectMapper.createObjectNode();
+                messageJson.put("type", "player_reconnected");
+                messageJson.put("playerName", player.getName());
+                broadcastMessage(lobbyId, new TextMessage(messageJson.toString()));
+            }
         }
-    
+        String sessionKey = createSessionKey(lobbyId, playerIdStr);
+        sessions.put(sessionKey, session);
+        logger.info("WebSocket connection established for player " + playerId + " in lobby " + lobbyId);
+
+        if (lobby != null && lobby.getGameManager() != null){
+            String gameStatus = objectMapper.writeValueAsString(lobby.getGameManager().getStatusFor(playerId));
+            session.sendMessage(new TextMessage(gameStatus));
+        }
     }
 
     @Override
@@ -79,21 +103,45 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        // Remove session from our map
-        sessions.values().removeIf(s -> s.getId().equals(session.getId()));
-       // logger.info("WebSocket connection closed with status: " + status);
+        Map<String, String> param = extractParameters(session.getUri().getQuery());
+        if (param == null){
+            super.afterConnectionClosed(session, status);
+            return;
+        }
 
-        URI uri = session.getUri();
-        if (uri != null && uri.getQuery() != null){
-            Map<String, String> params = extractParameters(uri.getQuery());
-            String lobbyId = params.get("lobbyId");
-            String playerId = params.get("playerId");
-            if (lobbyId != null && playerId != null){
-                lobbyManager.leaveLobby(lobbyId, Integer.parseInt(playerId));
+        String lobbyId = param.get("lobbyId");
+        String playerIdStr = param.get("playerId");
+        int playerId = Integer.parseInt(playerIdStr);
+
+        Lobby lobby = lobbyManager.getLobby(lobbyId);
+        if (lobby != null) {
+            Player disconnectedPlayer = lobby.disconnectedPlayer(playerId);
+
+            if (disconnectedPlayer != null){
+                logger.info("Player" + disconnectedPlayer.getName() + " has disconnected. Waiting to reconnect");
+
+                ObjectNode messageJson = objectMapper.createObjectNode();
+                messageJson.put("type", "player_disconnected");
+                messageJson.put("playerName", disconnectedPlayer.getName());
+                broadcastMessage(lobbyId, new TextMessage(messageJson.toString()));
             }
         }
-        logger.info("Player has left the game, register leave in lobby");
+        String sessionKey = createSessionKey(lobbyId, playerIdStr);
+        sessions.remove(sessionKey);
+
         super.afterConnectionClosed(session, status);
+    }
+
+    private void broadcastMessage(String lobbyId, TextMessage message){
+        for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()){
+            if (entry.getKey().startsWith(lobbyId + ":") && entry.getValue().isOpen()){
+                try {
+                    entry.getValue().sendMessage(message);
+                }catch (IOException e){
+                    logger.error("Failed to broadcast message" + e.getMessage());
+                }
+            }
+        }
     }
 
     private Map<String, String> extractParameters(String query) {
@@ -177,6 +225,9 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                     actionMessage.getProximity()
                 );
                 break;
+            case FORCE_END_GAME:
+                result = gameManager.forceEndGame(actionMessage.getPlayerId());
+                break;
             default:
                 session.sendMessage(new TextMessage("{\"error\": \"Unknown action type\"}"));
                 return;
@@ -188,7 +239,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
         // Update game state for all players in the lobby
         broadcastGameUpdate(lobbyId, gameManager);
     }
-
     private void broadcastGameUpdate(String lobbyId, GameManager gameManager) {
         for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
             if (entry.getKey().startsWith(lobbyId + ":") && entry.getValue().isOpen()) {
