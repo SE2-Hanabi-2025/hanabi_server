@@ -23,7 +23,7 @@ public class GameValidator {
     }
 
     public static boolean canDiscard(GameManager game) {
-        return game.getHints() < GameRules.MAX_HINTS;
+        return game.getHints() < GameRules.MAX_HINT_TOKENS;
     }
 
     public static boolean isValidHintTypeAndValue(HintType type, Object value) {

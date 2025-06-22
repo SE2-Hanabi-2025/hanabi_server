@@ -1,8 +1,10 @@
 package se2.server.hanabi.game.actions;
 
+import se2.server.hanabi.game.ColorHintAndRemainingTurns;
 import se2.server.hanabi.game.GameManager;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.game.HintType;
+import se2.server.hanabi.game.ValueHintAndRemainingTurns;
 import se2.server.hanabi.model.Card;
 
 import java.util.ArrayList;
@@ -31,10 +33,14 @@ public class HintAction {
         }
 
         List<Integer> matchingCardIds = new ArrayList<>();
-        for (int i = 0; i < targetHand.size(); i++) {
-            Card card = targetHand.get(i);
-            if ((type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) ||
-                (type == HintType.VALUE && card.getValue() == (int) value)) {
+        for (Card card : targetHand) {
+            if (type == HintType.COLOR && card.getColor().name().equalsIgnoreCase(value.toString())) {
+                ColorHintAndRemainingTurns colorHintAndTurns = new ColorHintAndRemainingTurns(card.getColor(), game.getNumTurnsHintsLast());
+                game.getGameState().getCardsShowingColorHintsAndRemainingTurns().put(card.getId(), colorHintAndTurns);
+                matchingCardIds.add(card.getId());
+            } else if (type == HintType.VALUE && card.getValue() == (int) value) {
+                ValueHintAndRemainingTurns valueHintAndTurns = new ValueHintAndRemainingTurns(card.getValue(), game.getNumTurnsHintsLast());
+                game.getGameState().getCardsShowingValueHintsAndRemainingTurns().put(card.getId(), valueHintAndTurns);
                 matchingCardIds.add(card.getId());
             }
         }
@@ -57,7 +63,7 @@ public class HintAction {
     
         
         game.getLogger().info(logMessage.toString());
-        game.setHints(game.getHints() - 1); // Deduct hint tokens only when a valid hint is applied
+        game.setNumRemainingHintTokens(game.getHints() - 1); // Deduct hint tokens only when a valid hint is applied
         game.advanceTurn();
         return ActionResult.success("Hint given");
     }

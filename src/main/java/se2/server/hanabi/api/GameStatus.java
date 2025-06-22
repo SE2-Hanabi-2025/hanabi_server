@@ -1,5 +1,6 @@
 package se2.server.hanabi.api;
 
+import lombok.Getter;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Player;
 
@@ -9,28 +10,69 @@ import java.util.HashMap;
 
 public class GameStatus {
 
+    @Getter
     private final List<Player> players;
+    @Getter
+    private final List<Integer> playerCardIds;
     private final Map<Integer, List<Card>> visibleHands;
+    @Getter
     private final Map<Card.Color, Integer> playedCards;
+    @Getter
     private final List<Card> discardPile;
-    private final int hints;
+    private final int numRemaningCards;
+    @Getter
+    private final Map<Integer, Card.Color> cardsShowingColorHints;
+    @Getter
+    private final Map<Integer, Integer> cardsShowingValueHints;
+    @Getter
+    private final int numRemainingHintTokens;
+    @Getter
     private final int strikes;
+    @Getter
     private final boolean gameOver;
-    private final String currentPlayer;
+    @Getter
+    private final boolean gameLost;
+    @Getter
+    private final int currentScore;
+    @Getter
+    private final int currentPlayerId;
 
-    public GameStatus(List<Player> players, Map<Integer, List<Card>> visibleHands, Map<Card.Color, Integer> playedCards, List<Card> discardPile, int hints, int strikes, boolean gameOver, String currentPlayer) {
+    @Getter
+    private List<Card> ownHand = List.of();
+
+
+    public GameStatus(
+            List<Player> players,
+            List<Integer> playerCardIds,
+            Map<Integer, List<Card>> visibleHands,
+            Map<Card.Color, Integer> playedCards,
+            List<Card> discardPile,
+            int numRemaningCards,
+            Map<Integer, Card.Color> cardsShowingColorHints,
+            Map<Integer, Integer> cardsShowingValueHints,
+            int numRemainingHintTokens,
+            int strikes,
+            boolean gameOver,
+            boolean gameLost,
+            int currentScore,
+            int currentPlayerId,
+            List<Card> ownHand)
+    {
         this.players = players;
+        this.playerCardIds = playerCardIds;
         this.visibleHands = visibleHands;
         this.playedCards = playedCards;
         this.discardPile = discardPile;
-        this.hints = hints;
+        this.numRemaningCards = numRemaningCards;
+        this.cardsShowingColorHints = cardsShowingColorHints;
+        this.cardsShowingValueHints = cardsShowingValueHints;
+        this.numRemainingHintTokens = numRemainingHintTokens;
         this.strikes = strikes;
         this.gameOver = gameOver;
-        this.currentPlayer = currentPlayer;
-    }
-
-    public List<Player> getPlayers() {
-        return players;
+        this.gameLost = gameLost;
+        this.currentScore = currentScore;
+        this.currentPlayerId = currentPlayerId;
+        this.ownHand = ownHand;
     }
 
     public Map<Integer, List<Card>> getVisibleHands() {
@@ -42,32 +84,8 @@ public class GameStatus {
         return convertedHands;
     }
 
-    public Map<Card.Color, Integer> getPlayedCards() {
-        return playedCards;
+    public int getNumRemainingCards() {
+        return numRemaningCards;
     }
 
-    public List<Card> getDiscardPile() {
-        return discardPile;
-    }
-
-    public int getHints() {
-        return hints;
-    }
-
-    public int getStrikes() {
-        return strikes;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public String getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public int getCurrentPlayerId() {
-        // Assuming `currentPlayer` is the ID of the current player as a String
-        return Integer.parseInt(currentPlayer);
-    }
 }

@@ -3,6 +3,7 @@ package se2.server.hanabi.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se2.server.hanabi.model.Lobby;
-import se2.server.hanabi.model.Player;
 import se2.server.hanabi.services.LobbyManager;
 import se2.server.hanabi.util.GameRules;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @Tag(name = "Lobby API", description = "Endpoints to manage lobbies, such as creating and joining a lobby.")
@@ -55,13 +58,15 @@ public class LobbyController {
             description = "This endpoint allows a player to join an existing lobby using the lobby ID. If the lobby is full or the game has already started, it returns appropriate error messages.",
             parameters = {
                     @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH),
-                    @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous")
+                    @Parameter(name = "name", description = "The name of the player joining the lobby", in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
+
+                    @Parameter(name = "avatarResID", description = "The avatar resource ID of the player", example = "2131230890")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully joined the lobby",
                             content = @io.swagger.v3.oas.annotations.media.Content(
                                     mediaType = "text/plain",
-                                    schema = @Schema(type = "string", example = "Joined lobby: abc123")
+                                    schema = @Schema(type = "string", example = "Joined lobby: abc123 PlayerID: 4")
                             )),
                     @ApiResponse(responseCode = "404", description = "Lobby not found",
                             content = @io.swagger.v3.oas.annotations.media.Content(
@@ -87,7 +92,8 @@ public class LobbyController {
     )
     public ResponseEntity<String> joinLobby(
             @PathVariable String id,
-            @RequestParam(defaultValue = "Anonymous") String name
+            @RequestParam(defaultValue = "Anonymous") String name,
+            @RequestParam(defaultValue = "0") int avatarResID
     ) {
         Lobby lobby = lobbyManager.getLobby(id);
 
@@ -106,20 +112,48 @@ public class LobbyController {
                     .body("Lobby is full.");
         }
 
-        boolean success = lobbyManager.joinLobby(id, name);
-        if (success) {
-            return ResponseEntity.ok("Joined lobby: " + id);
+        int playerId = lobbyManager.joinLobby(id, name, avatarResID);
+        if (playerId != -1) {
+            return ResponseEntity.ok("Joined lobby: "+id+" PlayerID: "+ playerId);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Unknown error while joining lobby.");
         }
     }
+    @GetMapping("/leave-lobby/{lobbyId}/{playerId}")
+    @Operation(
+            summary = "Player leaves lobby",
+            description = "Player leaves lobby; Server removes player from the list",
+            parameters = {
+                    @Parameter(name = "lobbyId", description = "Lobby ID", required = true, in = ParameterIn.PATH),
+                            @Parameter(name = "playerID", description = "Player ID", required = true, in = ParameterIn.PATH, schema = @Schema(type = "integer"))
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Left lobby successfully"),
+                    @ApiResponse(responseCode = "404", description = "Lobby/Player not found")
+            }
+    )
+
+    public ResponseEntity<String> leaveLobby(
+            @PathVariable String lobbyId,
+            @PathVariable int playerId
+    ) {
+        boolean success = lobbyManager.leaveLobby(lobbyId, playerId);
+        if (success){
+            return ResponseEntity.ok("Player" + playerId + "left lobby successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to leave lobby");
+        }
+    }
+
+
     @GetMapping("/start-game/{id}")
     @Operation(
             summary = "Start a game in a lobby",
             description = "Starts a new game with all players currently in the lobby. Requires at least 2 players.",
             parameters = {
-                    @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH)
+                    @Parameter(name = "id", description = "The unique identifier of the lobby", required = true, in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH),
+                    @Parameter(name = "isCasualMode", description = "Decides the game mode", in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "true"),
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Game started successfully",
@@ -139,7 +173,10 @@ public class LobbyController {
                             ))
             }
     )
-    public ResponseEntity<String> startGame(@PathVariable String id) {
+    public ResponseEntity<String> startGame(
+        @PathVariable String id, 
+        @RequestParam Boolean isCasualMode
+    ) {
         Lobby lobby = lobbyManager.getLobby(id);
         
         if (lobby == null) {
@@ -156,8 +193,8 @@ public class LobbyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Not enough players to start game (minimum 2)");
         }
-        
-        boolean success = lobbyManager.startGame(id);
+
+        boolean success = lobbyManager.startGame(id, isCasualMode);
         if (success) {
             return ResponseEntity.ok("Game started successfully");
         } else {
@@ -175,15 +212,27 @@ public class LobbyController {
                     @ApiResponse(responseCode = "404", description = "Lobby not found")
             }
     )
-    public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
+    //public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
+    public ResponseEntity<List<Map<String, Object>>> getPlayersInLobby(@PathVariable String id) {
         Lobby lobby = lobbyManager.getLobby(id);
         if (lobby == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        List<String> playerNames = lobby.getPlayers().stream()
-                .map(Player::getName)
+    //    List<String> playerNames = lobby.getPlayers().stream()
+    //            .map(Player::getName)
+    //            .collect(Collectors.toList());
+    //    return ResponseEntity.ok(playerNames);
+    //}
+        List<Map<String, Object>> players = lobby.getPlayers().stream()
+                .map(player -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("name", player.getName());
+                    map.put("avatarResID", player.getAvatarResID());
+                    return map;
+                })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(playerNames);
+
+        return ResponseEntity.ok(players);
     }
 
     

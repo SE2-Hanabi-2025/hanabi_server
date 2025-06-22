@@ -52,8 +52,8 @@ public class PlayCardAction {
         if (card.getValue() == expected) {
             game.getPlayedCards().put(card.getColor(), expected);
             game.getLogger().info("Played cards state: " + game.getPlayedCards());
-            if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINTS) {
-                game.setHints(game.getHints() + 1);
+            if (card.getValue() == GameRules.MAX_CARD_VALUE && game.getHints() < GameRules.MAX_HINT_TOKENS) {
+                game.setNumRemainingHintTokens(game.getHints() + 1);
             }
 
             // Check if all cards are played perfectly
@@ -71,6 +71,7 @@ public class PlayCardAction {
                 return ActionResult.failure("No cards left in the deck.");
             }
 
+            game.removeCardFromShownHints(card.getId());
             game.drawCardToHand(playerId);
             game.advanceTurn();
             return ActionResult.success("You successfully played " + card);

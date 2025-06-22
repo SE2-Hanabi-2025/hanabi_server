@@ -1,5 +1,6 @@
 package se2.server.hanabi.game;
 
+import lombok.Getter;
 import se2.server.hanabi.api.GameStatus;
 import se2.server.hanabi.game.actions.DiscardCardAction;
 import se2.server.hanabi.game.actions.HintAction;
@@ -10,48 +11,54 @@ import se2.server.hanabi.model.Player;
 import se2.server.hanabi.util.ActionResult;
 import se2.server.hanabi.util.GameRules;
 import se2.server.hanabi.services.DrawService;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameManager {
+    @Getter
     private final GameState gameState;
+    @Getter
     private final GameLogger logger = new GameLogger();
     private final DrawService drawService = new DrawService();
 
     /**
-     * Factory method to create a new game with player IDs
-     * @param playerIds List of player IDs
+     * Factory method to create a new game with players
+     * @param isCasualMode sets the game mode
+     * @param players List of players
      * @return A new GameManager instance
      */
-    public static GameManager createNewGame(List<Integer> playerIds) {
-        if (playerIds == null || playerIds.isEmpty() || 
-            !GameRules.isPlayerCountValid(playerIds.size())) {
+    public static GameManager createNewGame(List<Player> players, Boolean isCasualMode) {
+        if (players == null || players.isEmpty() || 
+            !GameRules.isPlayerCountValid(players.size())) {
             throw new IllegalArgumentException("Invalid number of players: must be between " + 
                 GameRules.MIN_PLAYERS + " and " + GameRules.MAX_PLAYERS);
         }
 
-        // Create Player objects from playerIds
-        List<Player> players = playerIds.stream()
-                                        .map(id -> new Player(id))
-                                        .collect(Collectors.toList());
-
-        return new GameManager(players);
+        return new GameManager(players, isCasualMode);
     }
 
-    public GameManager(List<Player> players) {
-        if (!GameRules.isPlayerCountValid(players.size())) {
-            throw new IllegalArgumentException("Invalid number of players");
-        }
+    /**
+     * Factory method to create a new game with players
+     * @param players List of players
+     * @return A new GameManager instance
+     */
+    public static GameManager createNewGame(List<Player> players) {
+        return createNewGame(players, false);
+    }
 
-        this.gameState = new GameState(players, logger);
+    private GameManager(List<Player> players, Boolean isCasualMode) {
+
+        int numTurnsHintsLast = (isCasualMode)? GameRules.TURNS_HINTS_LAST_CASUAL : GameRules.TURNS_HINTS_LAST_DEFAULT;
+        this.gameState = new GameState(players, numTurnsHintsLast, logger);
 
         logger.info("Starting new game with " + players.size() + " players");
         logger.info("Players: " + players.stream().map(p -> p.getId() + " (" + p.getName() + ")").collect(Collectors.joining(", ")));
 
         gameState.dealInitialCards();
 
-        logger.info("Game setup completed. " + gameState.getDeck().getRemainingCards() + " cards left in deck.");
+        logger.info("Game setup completed. " + gameState.getDeck().getNumRemainingCards() + " cards left in deck.");
         logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
     }
 
@@ -75,7 +82,7 @@ public class GameManager {
         }
         if (!GameValidator.canDiscard(this)) {
             logger.warn("Player " + playerId + " attempted to discard but hints are already at maximum.");
-            return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINTS + ").");
+            return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINT_TOKENS + ").");
         }
         logger.info("Player " + playerId + " attempts to discard card at index " + cardIndex);
         return new DiscardCardAction(this, playerId, cardIndex).execute();
@@ -106,30 +113,78 @@ public class GameManager {
         return result;
     }
 
+    public ActionResult defuseStrike(int playerId) {
+        if (!gameState.isCurrentPlayer(playerId)) {
+            return ActionResult.invalid("You can only defuse on your turn.");
+        }
+        int strikes = getStrikes();
+        if (strikes > 0) {
+            setStrikes(strikes - 1);
+            logger.info("[CHEAT] Player " + playerId + " defused a strike! (strikes now: " + (strikes - 1) + ")");
+            advanceTurn();
+            return ActionResult.success("Strike defused!");
+        } else {
+            logger.info("[CHEAT] Player " + playerId + " tried to defuse a strike, but none left.");
+            return ActionResult.invalid("No strikes to defuse.");
+        }
+    }
+
+    public ActionResult addStrikeCheat(int playerId) {
+        int strikes = getStrikes();
+        if (strikes > 0) {
+            setStrikes(strikes + 1);
+            logger.info("[CHEAT] Player " + playerId + " triggered a failed defuse! (strikes now: " + (strikes + 1) + ")");
+            advanceTurn();
+            return ActionResult.success("Defuse failed, strike added!");
+        } else {
+            logger.info("[CHEAT] Player " + playerId + " tried to add a strike, but no strikes present.");
+            return ActionResult.invalid("No strikes present, cannot add another.");
+        }
+    }
+
+    // Handle DEFUSE_ATTEMPT cheat logic
+    public ActionResult handleDefuseAttempt(Integer playerId, java.util.List<String> sequence, String proximity) {
+        // Correct sequence: DOWN, DOWN, UP, DOWN
+        java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
+        String requiredProximity = "DARK";
+
+        if (sequence == null || proximity == null) {
+            return ActionResult.invalid("Missing sequence or proximity for defuse attempt.");
+        }
+        if (sequence.equals(correctSequence) && requiredProximity.equalsIgnoreCase(proximity)) {
+            return defuseStrike(playerId);
+        } else {
+            return addStrikeCheat(playerId);
+        }
+    }
+
     public int getCurrentPlayerId() {
         return gameState.getCurrentPlayerId();
     }
 
-    // Game state information
-    
-    /**
+// Game state information
+      /**
      * Get the complete game status for a specific player
      * @param playerId ID of the player requesting status
      * @return GameStatus object with all relevant game information
      */
     public GameStatus getStatusFor(int playerId) {
-
-        int currentPlayerId = gameState.getCurrentPlayerId();
-
         return new GameStatus(
             gameState.getPlayers(),
-            gameState.getVisibleHands(currentPlayerId),
+            gameState.getPlayerCardIds(playerId),
+            gameState.getVisibleHands(playerId),
             gameState.getPlayedCards(),
             gameState.getDiscardPile(),
-            gameState.getHints(),
+            gameState.getDeck().getNumRemainingCards(),
+            gameState.getCardsShowingColorHints(),
+            gameState.getCardsShowingValueHints(),
+            gameState.getNumRemainingHintTokens(),
             gameState.getStrikes(),
             gameState.isGameOver(),
-            String.valueOf(currentPlayerId) // Pass current player ID as a string
+            gameState.isGameLost(),
+            gameState.getCurrentScore(),
+            gameState.getCurrentPlayerId(),
+            gameState.getHands().get(playerId) // send real hand for this player
         );
     }
     
@@ -169,18 +224,24 @@ public class GameManager {
 
     /**
      * Draw a card to a player's hand from the deck
-     * 
-     * @param playerId the ID of the player who should draw a card
-     * @return the drawn card or null if no card was drawn
+     *
+     * @param playerId the ID of the player who should  draw a card
      */
-    public Card drawCardToHand(int playerId) {
-        return drawService.drawCardToPlayerHand(this, playerId);
+    public void drawCardToHand(int playerId) {
+        drawService.drawCardToPlayerHand(this, playerId);
     }
 
-    public void incrementStrikes() {
+    public synchronized ActionResult incrementStrikes() {
+        int currentTurn = gameState.getTurnCounter();
+        if (gameState.getLastStrikeTurn() == currentTurn) {
+            return ActionResult.success("Strike already given for this round.");
+        }
         logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
+        gameState.setLastStrikeTurn(currentTurn);
         logger.info("After increment: Strikes = " + gameState.getStrikes());
+        gameState.checkEndCondition(); // Ensure game over is set if max strikes reached
+        return ActionResult.success("Strike added.");
     }
 
     /**
@@ -191,16 +252,8 @@ public class GameManager {
         return logger.getHistory();
     }
 
-    public GameLogger getLogger() {
-        return logger;
-    }
-    
     // GameState delegating methods
-    
-    public GameState getGameState() {
-        return gameState;
-    }
-    
+
     public List<Player> getPlayers() {
         return gameState.getPlayers();
     }
@@ -222,11 +275,11 @@ public class GameManager {
     }
 
     public int getHints() {
-        return gameState.getHints();
+        return gameState.getNumRemainingHintTokens();
     }
 
-    public void setHints(int hints) {
-        gameState.setHints(hints);
+    public void setNumRemainingHintTokens(int hints) {
+        gameState.setNumRemainingHintTokens(hints);
     }
 
     public int getStrikes() {
@@ -276,6 +329,14 @@ public class GameManager {
      */
     public void setFinalTurnsRemaining(int turns) {
         gameState.setFinalTurnsRemaining(turns);
+    }
+
+    public int getNumTurnsHintsLast() {
+        return gameState.getNumTurnsHintsLast();
+    }
+
+    public void removeCardFromShownHints(int cardId) {
+        gameState.removeCardFromShownHints(cardId);
     }
 
 }

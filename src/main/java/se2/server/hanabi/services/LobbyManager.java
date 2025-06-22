@@ -31,19 +31,20 @@ public class LobbyManager {
         return lobbies.get(id);
     }
 
-    public boolean joinLobby(String id, String playerName) {
+    public int joinLobby(String id, String playerName, int avatarResID) {
         Lobby lobby = lobbies.get(id);
         if (lobby == null || lobby.isGameStarted()) {
-            return false;
+            return -1;
         }
 
         List<Player> players = lobby.getPlayers();
         if (players.size() >= 5) {
-            return false;
+            return -1;
         }
 
-        players.add(new Player(playerName));
-        return true;
+        Player newPlayer = new Player(playerName, avatarResID);
+        players.add(newPlayer);
+        return newPlayer.getId();
     }
 
     public Collection<Lobby> getAllLobbies() {
@@ -53,15 +54,27 @@ public class LobbyManager {
     /**
      * Start the game for a specific lobby
      * @param lobbyId the ID of the lobby
+     * @param isCasaulMode sets the game mode
+     * @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
      * @return true if game was successfully started, false otherwise
      */
-    public boolean startGame(String lobbyId) {
+    public boolean startGame(String lobbyId, Boolean isCasaulMode) {
         Lobby lobby = lobbies.get(lobbyId);
         if (lobby == null || lobby.isGameStarted()) {
             return false;
         }
         
-        return lobby.startGame();
+        return lobby.startGame(isCasaulMode);
+    }
+
+    /**
+     * Start the game for a specific lobby
+     * @param lobbyId the ID of the lobby
+     * @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
+     * @return true if game was successfully started, false otherwise
+     */
+    public boolean startGame(String lobbyId) {
+        return startGame(lobbyId, false);
     }
     
     /**
@@ -86,6 +99,15 @@ public class LobbyManager {
     public boolean removeLobby(String lobbyId) {
         return lobbies.remove(lobbyId) != null;
     }
+
+    public boolean leaveLobby(String lobbyId, int playerId){
+        Lobby lobby = lobbies.get(lobbyId);
+        if (lobby == null){
+            return false;
+        }
+        return lobby.removePlayerId(playerId);
+    }
+
 }
 
 

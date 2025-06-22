@@ -9,7 +9,9 @@ public class GameRules {
     public static final int MAX_PLAYERS = 5;
 
     // Hinweise & Strikes
-    public static final int MAX_HINTS = 8;
+    public static final int TURNS_HINTS_LAST_DEFAULT = 1;
+    public static final int TURNS_HINTS_LAST_CASUAL = -1; // persistent
+    public static final int MAX_HINT_TOKENS = 8;
     public static final int MAX_STRIKES = 3;
 
     // Kartenwerte

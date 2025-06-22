@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Deck {
-    private List<Card> cards;
+    private final List<Card> cards;
 
     public Deck() {
         cards = new ArrayList<>();
@@ -40,7 +40,7 @@ public class Deck {
      * Get the number of cards remaining in the deck
      * @return number of remaining cards
      */
-    public int getRemainingCards() {
+    public int getNumRemainingCards() {
         return cards.size();
     }
 

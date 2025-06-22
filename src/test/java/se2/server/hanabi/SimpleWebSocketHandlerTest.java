@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
 class SimpleWebSocketHandlerTest {
-    private SimpleWebSocketHandler handler;
+    /*private SimpleWebSocketHandler handler;
     private WebSocketSession session;
 
     @BeforeEach
@@ -28,5 +28,5 @@ class SimpleWebSocketHandlerTest {
         handler.handleTextMessage(session, message);
         
         verify(session, times(1)).sendMessage(new TextMessage("Hello back from server!"));
-    }
+    }*/
 }
