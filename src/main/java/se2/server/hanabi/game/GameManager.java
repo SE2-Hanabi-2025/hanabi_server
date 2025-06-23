@@ -1,5 +1,6 @@
 package se2.server.hanabi.game;
 
+import lombok.Getter;
 import se2.server.hanabi.api.GameStatus;
 import se2.server.hanabi.game.actions.DiscardCardAction;
 import se2.server.hanabi.game.actions.HintAction;
@@ -18,7 +19,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameManager {
+    @Getter
     private final GameState gameState;
+    @Getter
     private final GameLogger logger = new GameLogger();
     private final DrawService drawService = new DrawService();
     private final Map<String, Lobby> lobbies = new HashMap<>();
@@ -193,7 +196,8 @@ public class GameManager {
             gameState.isGameOver(),
             gameState.isGameLost(),
             gameState.getCurrentScore(),
-            gameState.getCurrentPlayerId()
+            gameState.getCurrentPlayerId(),
+            gameState.getHands().get(playerId) // send real hand for this player
         );
     }
     
@@ -233,18 +237,24 @@ public class GameManager {
 
     /**
      * Draw a card to a player's hand from the deck
-     * 
-     * @param playerId the ID of the player who should draw a card
-     * @return the drawn card or null if no card was drawn
+     *
+     * @param playerId the ID of the player who should  draw a card
      */
-    public Card drawCardToHand(int playerId) {
-        return drawService.drawCardToPlayerHand(this, playerId);
+    public void drawCardToHand(int playerId) {
+        drawService.drawCardToPlayerHand(this, playerId);
     }
 
-    public void incrementStrikes() {
+    public synchronized ActionResult incrementStrikes() {
+        int currentTurn = gameState.getTurnCounter();
+        if (gameState.getLastStrikeTurn() == currentTurn) {
+            return ActionResult.success("Strike already given for this round.");
+        }
         logger.info("Before increment: Strikes = " + gameState.getStrikes());
         gameState.incrementStrikes();
+        gameState.setLastStrikeTurn(currentTurn);
         logger.info("After increment: Strikes = " + gameState.getStrikes());
+        gameState.checkEndCondition(); // Ensure game over is set if max strikes reached
+        return ActionResult.success("Strike added.");
     }
 
     /**
@@ -255,16 +265,8 @@ public class GameManager {
         return logger.getHistory();
     }
 
-    public GameLogger getLogger() {
-        return logger;
-    }
-    
     // GameState delegating methods
-    
-    public GameState getGameState() {
-        return gameState;
-    }
-    
+
     public List<Player> getPlayers() {
         return gameState.getPlayers();
     }

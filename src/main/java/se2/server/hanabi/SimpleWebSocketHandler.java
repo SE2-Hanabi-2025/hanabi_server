@@ -212,6 +212,9 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                     value
                 );
                 break;
+            case CHEAT:
+                result = gameManager.incrementStrikes();
+                break;
             case DEFUSE:
                 result = gameManager.defuseStrike(actionMessage.getPlayerId());
                 break;

@@ -112,8 +112,7 @@ public class LobbyManager {
         if (lobby == null){
             return false;
         }
-        boolean removed = lobby.removePlayerId(playerId);
-        return removed;
+        return lobby.removePlayerId(playerId);
     }
 
     public Optional<String> ReturnToGame(int playerId){

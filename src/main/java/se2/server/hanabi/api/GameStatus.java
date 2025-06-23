@@ -1,5 +1,6 @@
 package se2.server.hanabi.api;
 
+import lombok.Getter;
 import se2.server.hanabi.model.Card;
 import se2.server.hanabi.model.Player;
 
@@ -9,37 +10,54 @@ import java.util.HashMap;
 
 public class GameStatus {
 
+    @Getter
     private final List<Player> players;
+    @Getter
     private final List<Integer> playerCardIds;
     private final Map<Integer, List<Card>> visibleHands;
+    @Getter
     private final Map<Card.Color, Integer> playedCards;
+    @Getter
     private final List<Card> discardPile;
     private final int numRemaningCards;
+    @Getter
     private final Map<Integer, Card.Color> cardsShowingColorHints;
+    @Getter
     private final Map<Integer, Integer> cardsShowingValueHints;
+    @Getter
     private final int numRemainingHintTokens;
+    @Getter
     private final int strikes;
+    @Getter
     private final boolean gameOver;
+    @Getter
     private final boolean gameLost;
+    @Getter
     private final int currentScore;
+    @Getter
     private final int currentPlayerId;
 
+    @Getter
+    private List<Card> ownHand = List.of();
+
+
     public GameStatus(
-        List<Player> players, 
-        List<Integer> playerCardIds,
-        Map<Integer, List<Card>> visibleHands, 
-        Map<Card.Color, Integer> playedCards, 
-        List<Card> discardPile, 
-        int numRemaningCards,
-        Map<Integer, Card.Color> cardsShowingColorHints,
-        Map<Integer, Integer> cardsShowingValueHints,
-        int numRemainingHintTokens, 
-        int strikes, 
-        boolean gameOver, 
-        boolean gameLost,
-        int currentScore,
-        int currentPlayerId
-        ) {
+            List<Player> players,
+            List<Integer> playerCardIds,
+            Map<Integer, List<Card>> visibleHands,
+            Map<Card.Color, Integer> playedCards,
+            List<Card> discardPile,
+            int numRemaningCards,
+            Map<Integer, Card.Color> cardsShowingColorHints,
+            Map<Integer, Integer> cardsShowingValueHints,
+            int numRemainingHintTokens,
+            int strikes,
+            boolean gameOver,
+            boolean gameLost,
+            int currentScore,
+            int currentPlayerId,
+            List<Card> ownHand)
+    {
         this.players = players;
         this.playerCardIds = playerCardIds;
         this.visibleHands = visibleHands;
@@ -54,14 +72,7 @@ public class GameStatus {
         this.gameLost = gameLost;
         this.currentScore = currentScore;
         this.currentPlayerId = currentPlayerId;
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public List<Integer> getPlayerCardIds() {
-        return playerCardIds;
+        this.ownHand = ownHand;
     }
 
     public Map<Integer, List<Card>> getVisibleHands() {
@@ -73,47 +84,8 @@ public class GameStatus {
         return convertedHands;
     }
 
-    public Map<Card.Color, Integer> getPlayedCards() {
-        return playedCards;
-    }
-
-    public List<Card> getDiscardPile() {
-        return discardPile;
-    }
-
     public int getNumRemainingCards() {
         return numRemaningCards;
     }
-    
-    public Map<Integer, Card.Color> getCardsShowingColorHints() {
-        return cardsShowingColorHints;
-    }
 
-    public Map<Integer, Integer> getCardsShowingValueHints() {
-        return cardsShowingValueHints;
-    }
-
-    public int getNumRemainingHintTokens() {
-        return numRemainingHintTokens;
-    }
-
-    public int getStrikes() {
-        return strikes;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public boolean isGameLost() {
-        return gameLost;
-    }
-
-    public int getCurrentScore() {
-        return currentScore;
-    }
-
-    public int getCurrentPlayerId() {
-        return currentPlayerId;
-    }
 }
