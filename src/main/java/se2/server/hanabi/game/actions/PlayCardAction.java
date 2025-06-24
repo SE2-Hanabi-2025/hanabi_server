@@ -8,6 +8,7 @@ import se2.server.hanabi.util.ActionResult;
 import java.util.List;
 
 public class PlayCardAction {
+    private static final String PLAYER_PREFIX = "Player ";
     private final GameManager game;
     private final int playerId;
     private final int cardIndex;
@@ -20,30 +21,30 @@ public class PlayCardAction {
 
     public ActionResult execute() {
         if (game.isGameOver()) {
-            game.getLogger().warn("Attempt to play card after game over by player " + playerId);
+            game.getLogger().warn("Attempt to play card after game over by " + PLAYER_PREFIX.toLowerCase() + playerId);
             return ActionResult.failure("Game is already over");
         }
 
         List<Card> hand = game.getHands().get(playerId);
         if (hand == null) {
-            game.getLogger().warn("Player " + playerId + " not found while playing card");
+            game.getLogger().warn(PLAYER_PREFIX + playerId + " not found while playing card");
             return ActionResult.failure("Player not found");
         }
         if (cardIndex < 0 || cardIndex >= hand.size()) {
-            game.getLogger().warn("Invalid card index " + cardIndex + " by player " + playerId);
+            game.getLogger().warn("Invalid card index " + cardIndex + " by " + PLAYER_PREFIX.toLowerCase() + playerId);
             return ActionResult.failure("Invalid card index");
         }
         Card card = hand.remove(cardIndex);
-        game.getLogger().info("Player " + playerId + " played card: " + card);
+        game.getLogger().info(PLAYER_PREFIX + playerId + " played card: " + card);
         int expected = game.getPlayedCards().get(card.getColor()) + 1;
 
         game.getLogger().info("Card value: " + card.getValue() + ", Expected: " + expected);
 
         if (card.getValue() != expected) {
-            game.getLogger().warn("Player " + playerId + " played an invalid card: " + card);
+            game.getLogger().warn(PLAYER_PREFIX + playerId + " played an invalid card: " + card);
             game.getDiscardPile().add(card);
             game.incrementStrikes(); // Ensure strikes are incremented for invalid cards
-            game.getLogger().warn("Wrong card played by player " + playerId);
+            game.getLogger().warn("Wrong card played by " + PLAYER_PREFIX.toLowerCase() + playerId);
             game.drawCardToHand(playerId);
             game.advanceTurn();
             return ActionResult.failure("Wrong card!");
