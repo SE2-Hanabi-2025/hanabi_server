@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameManager {
+    private static final String PLAYER_PREFIX = "Player ";
     @Getter
     private final GameState gameState;
     @Getter
@@ -59,7 +60,7 @@ public class GameManager {
         gameState.dealInitialCards();
 
         logger.info("Game setup completed. " + gameState.getDeck().getNumRemainingCards() + " cards left in deck.");
-        logger.info("Player " + gameState.getCurrentPlayerId() + " goes first.");
+        logger.info(PLAYER_PREFIX + gameState.getCurrentPlayerId() + " goes first.");
     }
 
     public ActionResult playCard(int playerId, int cardIndex) {
@@ -69,7 +70,7 @@ public class GameManager {
         if (!GameValidator.isValidCardIndex(this, playerId, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
-        logger.info("Player " + playerId + " attempts to play card at index " + cardIndex);
+        logger.info(PLAYER_PREFIX + playerId + " attempts to play card at index " + cardIndex);
         return new PlayCardAction(this, playerId, cardIndex).execute();
     }
 
@@ -81,10 +82,10 @@ public class GameManager {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
         }
         if (!GameValidator.canDiscard(this)) {
-            logger.warn("Player " + playerId + " attempted to discard but hints are already at maximum.");
+            logger.warn(PLAYER_PREFIX + playerId + " attempted to discard but hints are already at maximum.");
             return ActionResult.invalid("Cannot discard: hint tokens are already at maximum (" + GameRules.MAX_HINT_TOKENS + ").");
         }
-        logger.info("Player " + playerId + " attempts to discard card at index " + cardIndex);
+        logger.info(PLAYER_PREFIX + playerId + " attempts to discard card at index " + cardIndex);
         return new DiscardCardAction(this, playerId, cardIndex).execute();
     }
 
@@ -120,11 +121,11 @@ public class GameManager {
         int strikes = getStrikes();
         if (strikes > 0) {
             setStrikes(strikes - 1);
-            logger.info("[CHEAT] Player " + playerId + " defused a strike! (strikes now: " + (strikes - 1) + ")");
+            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " defused a strike! (strikes now: " + (strikes - 1) + ")");
             advanceTurn();
             return ActionResult.success("Strike defused!");
         } else {
-            logger.info("[CHEAT] Player " + playerId + " tried to defuse a strike, but none left.");
+            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " tried to defuse a strike, but none left.");
             return ActionResult.invalid("No strikes to defuse.");
         }
     }
@@ -133,11 +134,11 @@ public class GameManager {
         int strikes = getStrikes();
         if (strikes > 0) {
             setStrikes(strikes + 1);
-            logger.info("[CHEAT] Player " + playerId + " triggered a failed defuse! (strikes now: " + (strikes + 1) + ")");
+            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " triggered a failed defuse! (strikes now: " + (strikes + 1) + ")");
             advanceTurn();
             return ActionResult.success("Defuse failed, strike added!");
         } else {
-            logger.info("[CHEAT] Player " + playerId + " tried to add a strike, but no strikes present.");
+            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " tried to add a strike, but no strikes present.");
             return ActionResult.invalid("No strikes present, cannot add another.");
         }
     }
