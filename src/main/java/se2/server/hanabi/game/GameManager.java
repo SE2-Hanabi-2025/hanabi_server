@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class GameManager {
     private static final String PLAYER_PREFIX = "Player ";
+    private static final String ERROR_NOT_YOUR_TURN = "Not your turn or game is over.";
     @Getter
     private final GameState gameState;
     @Getter
@@ -65,7 +66,7 @@ public class GameManager {
 
     public ActionResult playCard(int playerId, int cardIndex) {
         if (!GameValidator.isPlayerTurn(this, playerId)) {
-            return ActionResult.invalid("Not your turn or game is over.");
+            return ActionResult.invalid(ERROR_NOT_YOUR_TURN);
         }
         if (!GameValidator.isValidCardIndex(this, playerId, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
@@ -76,7 +77,7 @@ public class GameManager {
 
     public ActionResult discardCard(int playerId, int cardIndex) {
         if (!GameValidator.isPlayerTurn(this, playerId)) {
-            return ActionResult.invalid("Not your turn or game is over.");
+            return ActionResult.invalid(ERROR_NOT_YOUR_TURN);
         }
         if (!GameValidator.isValidCardIndex(this, playerId, cardIndex)) {
             return ActionResult.invalid("Invalid card index: " + cardIndex);
@@ -91,7 +92,7 @@ public class GameManager {
 
     public ActionResult giveHint(int fromPlayerId, int toPlayerId, HintType type, Object value) {
         if (!GameValidator.isPlayerTurn(this, fromPlayerId)) {
-            return ActionResult.invalid("Not your turn or game is over.");
+            return ActionResult.invalid(ERROR_NOT_YOUR_TURN);
         }
         if (!GameValidator.isNotSelfHint(fromPlayerId, toPlayerId)) {
             return ActionResult.invalid("Cannot give hint to yourself.");
