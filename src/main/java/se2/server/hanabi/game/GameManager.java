@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class GameManager {
     private static final String PLAYER_PREFIX = "Player ";
     private static final String ERROR_NOT_YOUR_TURN = "Not your turn or game is over.";
+    private static final String CHEAT_PREFIX = "[CHEAT] ";
     @Getter
     private final GameState gameState;
     @Getter
@@ -122,11 +123,11 @@ public class GameManager {
         int strikes = getStrikes();
         if (strikes > 0) {
             setStrikes(strikes - 1);
-            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " defused a strike! (strikes now: " + (strikes - 1) + ")");
+            logger.info(CHEAT_PREFIX + PLAYER_PREFIX + playerId + " defused a strike! (strikes now: " + (strikes - 1) + ")");
             advanceTurn();
             return ActionResult.success("Strike defused!");
         } else {
-            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " tried to defuse a strike, but none left.");
+            logger.info(CHEAT_PREFIX + PLAYER_PREFIX + playerId + " tried to defuse a strike, but none left.");
             return ActionResult.invalid("No strikes to defuse.");
         }
     }
@@ -135,11 +136,11 @@ public class GameManager {
         int strikes = getStrikes();
         if (strikes > 0) {
             setStrikes(strikes + 1);
-            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " triggered a failed defuse! (strikes now: " + (strikes + 1) + ")");
+            logger.info(CHEAT_PREFIX + PLAYER_PREFIX + playerId + " triggered a failed defuse! (strikes now: " + (strikes + 1) + ")");
             advanceTurn();
             return ActionResult.success("Defuse failed, strike added!");
         } else {
-            logger.info("[CHEAT] " + PLAYER_PREFIX + playerId + " tried to add a strike, but no strikes present.");
+            logger.info(CHEAT_PREFIX + PLAYER_PREFIX + playerId + " tried to add a strike, but no strikes present.");
             return ActionResult.invalid("No strikes present, cannot add another.");
         }
     }
