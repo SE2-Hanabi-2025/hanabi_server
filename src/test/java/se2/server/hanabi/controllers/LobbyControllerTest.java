@@ -31,8 +31,6 @@ public class LobbyControllerTest {
 
     private static final int RED = 2131230890;
     private static final int BLUE = 2131230891;
-    private static final int GREEN = 2131230892;
-    private static final int YELLOW = 2131230893;
     private static final int WHITE = 0; // default avatar
 
     @Test
