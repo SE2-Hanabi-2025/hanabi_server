@@ -16,18 +16,18 @@ public class GameActionMessage {
         PLAY,
         DISCARD,
         HINT,
-        CHEAT, // Added CHEAT action type
+        CHEAT,
         DEFUSE, 
         ADD_STRIKE,
-        DEFUSE_ATTEMPT // New action type for cheat validation
+        DEFUSE_ATTEMPT
     }
 
-    // Getters and Setters
+
     @JsonProperty("type")
     private String type;
     
     @JsonProperty("action")
-    @JsonAlias({"type"}) // Allow the "type" field to also map to this property
+    @JsonAlias({"type"})
     private ActionType actionType;
     
     @JsonProperty("lobbyId")
@@ -56,6 +56,10 @@ public class GameActionMessage {
 
     // Default constructor for JSON deserialization
     public GameActionMessage() {
+        // This empty constructor is intentionally left blank
+        // It's required by Jackson for JSON deserialization
+        // Jackson uses this no-args constructor to create an instance 
+        // and then populate fields from JSON
     }
 
 }

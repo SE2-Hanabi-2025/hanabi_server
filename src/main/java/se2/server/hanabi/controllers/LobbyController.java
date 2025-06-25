@@ -212,17 +212,13 @@ public class LobbyController {
                     @ApiResponse(responseCode = "404", description = "Lobby not found")
             }
     )
-    //public ResponseEntity<List<String>> getPlayersInLobby(@PathVariable String id) {
+
     public ResponseEntity<List<Map<String, Object>>> getPlayersInLobby(@PathVariable String id) {
         Lobby lobby = lobbyManager.getLobby(id);
         if (lobby == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-    //    List<String> playerNames = lobby.getPlayers().stream()
-    //            .map(Player::getName)
-    //            .collect(Collectors.toList());
-    //    return ResponseEntity.ok(playerNames);
-    //}
+
         List<Map<String, Object>> players = lobby.getPlayers().stream()
                 .map(player -> {
                     Map<String, Object> map = new HashMap<>();

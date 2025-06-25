@@ -48,7 +48,8 @@ public class HintAction {
         if (matchingCardIds.isEmpty()) {
             game.getLogger().info("No matching cards found for hint by player " + fromPlayerId);
             return ActionResult.failure("No matching cards found");
-        }        // Build detailed log message with card positions, values, and colors
+        }
+        
         StringBuilder logMessage = new StringBuilder("Player " + fromPlayerId + " gave a hint to player " + toPlayerId + " about " + type + " " + value + ". Matching cards: ");
         
         for (int i = 0; i < targetHand.size(); i++) {
