@@ -23,7 +23,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final LobbyManager lobbyManager;
     
-    // Map to store sessions by player ID and lobby ID
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     public SimpleWebSocketHandler(LobbyManager lobbyManager) {
@@ -32,7 +31,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // Session parameters should include lobbyId and playerId
 
         URI uri = session.getUri();
         if (uri == null) {
@@ -79,7 +77,7 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws IOException {
-        // Remove session from our map
+
         sessions.values().removeIf(s -> s.getId().equals(session.getId()));
         logger.info("WebSocket connection closed with status: " + status);
     }
@@ -93,7 +91,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
             return;
         }
         
-        // Check if the actionType is null
         if (actionMessage.getActionType() == null) {
             session.sendMessage(new TextMessage("{\"error\": \"Missing or invalid action type. Make sure to include 'action' field.\"}"));
             return;
@@ -109,7 +106,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                 result = gameManager.discardCard(actionMessage.getPlayerId(), actionMessage.getCardIndex());
                 break;
             case HINT:
-                // Convert hint value based on hint type
                 Object value;
                 if (actionMessage.getHintType() == HintType.COLOR) {
                     try {
@@ -159,10 +155,8 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                 return;
         }
         
-        // Send result back to the client who made the action
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(result)));
-        
-        // Update game state for all players in the lobby
+
         broadcastGameUpdate(lobbyId, gameManager);
     }
     

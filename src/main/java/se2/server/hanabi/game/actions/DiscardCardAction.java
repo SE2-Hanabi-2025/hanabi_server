@@ -22,7 +22,7 @@ public class DiscardCardAction {
             game.getLogger().error("Discard failed - Game is already over.");
             return ActionResult.failure("Game is already over");
         }
-        // The validation is now handled by GameManager before calling this method
+        
         List<Card> hand = game.getHands().get(playerId);
         if (hand == null) {
             game.getLogger().error("Discard failed - Unknown player");

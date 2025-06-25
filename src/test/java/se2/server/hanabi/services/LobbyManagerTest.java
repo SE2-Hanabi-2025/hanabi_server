@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
     private static final int Red = 2131230890;
     private static final int Blue = 2131230891;
-    private static final int White = 0; // default avatar
+    private static final int White = 0;
     
     @BeforeEach
     void setUp() {
@@ -50,16 +50,13 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void joinLobby_WhenGameStarted() {
         String lobbyId = lobbyManager.createLobby();
-        
-        // Add the minimum required players to start a game (2 players)
+
         lobbyManager.joinLobby(lobbyId, "Player1",Red);
         lobbyManager.joinLobby(lobbyId, "Player2", Blue);
-        
-        // Start the game properly through the lobbyManager
+
         boolean gameStarted = lobbyManager.startGame(lobbyId);
         assertTrue(gameStarted, "Game should start successfully with 2 players");
 
-        // Now try to join after game is started
         int result = lobbyManager.joinLobby(lobbyId, "NewPlayer", White);
 
         assertEquals(result, -1,"No player should be able to join once the game has started");

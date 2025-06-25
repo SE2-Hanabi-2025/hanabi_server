@@ -16,12 +16,12 @@ public class CardTest {
     void testCardValueAndColorToString() {
         Card card = new Card(3, Card.Color.RED);
         assertEquals(3, card.getValue());
-        assertEquals("Card{value=3, color=RED, id=0}", card.toString()); // Updated expected output to include id
+        assertEquals("Card{value=3, color=RED, id=0}", card.toString());
     }
     
     @Test
     void testCardToStringForMultipleCards() {
-        Card.resetNextID(); // Reset ID counter for consistent testing
+        Card.resetNextID();
 
         Card card1 = new Card(1, Card.Color.BLUE);
         Card card2 = new Card(2, Card.Color.GREEN);
