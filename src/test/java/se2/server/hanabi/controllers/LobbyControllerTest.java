@@ -29,11 +29,9 @@ public class LobbyControllerTest {
     @Autowired
     private LobbyManager lobbyManager;
 
-    private static final int Red = 2131230890;
-    private static final int Blue = 2131230891;
-    private static final int Green = 2131230892;
-    private static final int Yellow = 2131230893;
-    private static final int White = 0; // default avatar
+    private static final int RED = 2131230890;
+    private static final int BLUE = 2131230891;
+    private static final int WHITE = 0; // default avatar
 
     @Test
     void createLobby_ReturnLobbyId() throws Exception {
@@ -49,7 +47,7 @@ public class LobbyControllerTest {
     void joinLobby_successful() throws Exception {
         Lobby mockLobby = new Lobby("test123");
         when(lobbyManager.getLobby("test123")).thenReturn(mockLobby);
-        when(lobbyManager.joinLobby("test123", "Alice", White)).thenReturn(15);
+        when(lobbyManager.joinLobby("test123", "Alice", WHITE)).thenReturn(15);
 
         mockMvc.perform(get("/join-lobby/test123").param("name", "Alice"))
                 .andExpect(status().isOk())
@@ -69,8 +67,8 @@ public class LobbyControllerTest {
     void joinLobby_gameAlreadyStarted() throws Exception {
         Lobby startedLobby = new Lobby("started");
         // Add at least 2 players to the lobby so we can start the game
-        startedLobby.getPlayers().add(new Player("Player1", Red));
-        startedLobby.getPlayers().add(new Player("Player2", Blue));
+        startedLobby.getPlayers().add(new Player("Player1", RED));
+        startedLobby.getPlayers().add(new Player("Player2", BLUE));
         startedLobby.startGame(); // Start the game now that we have enough players
         when(lobbyManager.getLobby("started")).thenReturn(startedLobby);
 
@@ -84,7 +82,7 @@ public class LobbyControllerTest {
         Lobby fullLobby = new Lobby("fulllobby");
         List<Player> fullList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            fullList.add(new se2.server.hanabi.model.Player("Player" + i, Red));
+            fullList.add(new se2.server.hanabi.model.Player("Player" + i, RED));
         }
 
         fullLobby.getPlayers().addAll(fullList);
@@ -99,7 +97,7 @@ public class LobbyControllerTest {
     void joinLobby_unknownJoinError() throws Exception {
         Lobby lobby = new Lobby("error");
         when(lobbyManager.getLobby("errorLobby")).thenReturn(lobby);
-        when(lobbyManager.joinLobby("errorLobby", "Buggy", White)).thenReturn(-1);
+        when(lobbyManager.joinLobby("errorLobby", "Buggy", WHITE)).thenReturn(-1);
 
         mockMvc.perform(get("/join-lobby/errorLobby").param("name", "Buggy"))
                 .andExpect(status().isInternalServerError())
@@ -109,8 +107,8 @@ public class LobbyControllerTest {
     @Test
     void startGame_successful() throws Exception {
         Lobby lobby = new Lobby("game123");
-        lobby.getPlayers().add(new Player("P1", Red));
-        lobby.getPlayers().add(new Player("P2", Blue));
+        lobby.getPlayers().add(new Player("P1", RED));
+        lobby.getPlayers().add(new Player("P2", BLUE));
         when(lobbyManager.getLobby("game123")).thenReturn(lobby);
         when(lobbyManager.startGame("game123", true)).thenReturn(true);
 
@@ -131,8 +129,8 @@ public class LobbyControllerTest {
     @Test
     void startGame_gameAlreadyStarted() throws Exception {
         Lobby lobby = new Lobby("alreadyStarted");
-        lobby.getPlayers().add(new Player("P1", Red));
-        lobby.getPlayers().add(new Player("P2", Blue));
+        lobby.getPlayers().add(new Player("P1", RED));
+        lobby.getPlayers().add(new Player("P2", BLUE));
         lobby.startGame();
         when(lobbyManager.getLobby("alreadyStarted")).thenReturn(lobby);
 
@@ -144,7 +142,7 @@ public class LobbyControllerTest {
     @Test
     void startGame_notEnoughPlayers() throws Exception {
         Lobby lobby = new Lobby("fewPlayers");
-        lobby.getPlayers().add(new Player("P1", Red));
+        lobby.getPlayers().add(new Player("P1", RED));
         when(lobbyManager.getLobby("fewPlayers")).thenReturn(lobby);
 
         mockMvc.perform(get("/start-game/fewPlayers").param("isCasualMode", "false"))
@@ -155,8 +153,8 @@ public class LobbyControllerTest {
     @Test
     void startGame_unknownError() throws Exception {
         Lobby lobby = new Lobby("unknownError");
-        lobby.getPlayers().add(new Player("P1", Red));
-        lobby.getPlayers().add(new Player("P2", Blue));
+        lobby.getPlayers().add(new Player("P1", RED));
+        lobby.getPlayers().add(new Player("P2", BLUE));
         when(lobbyManager.getLobby("unknownError")).thenReturn(lobby);
         when(lobbyManager.startGame("unknownError")).thenReturn(false);
 
@@ -183,8 +181,8 @@ public class LobbyControllerTest {
     void testGetPlayersInLobby() throws Exception {
         String lobbyId = "testLobby";
 
-        Player player1 = new Player("Player1", Red);
-        Player player2 = new Player("Player2", Blue);
+        Player player1 = new Player("Player1", RED);
+        Player player2 = new Player("Player2", BLUE);
 
         Lobby mockLobby = mock(Lobby.class);
         when(mockLobby.getPlayers()).thenReturn(List.of(player1, player2));
@@ -194,17 +192,17 @@ public class LobbyControllerTest {
                 .andExpect(status().isOk())
                 //.andExpect(content().json("[\"Player1\", \"Player2\"]"));
                 .andExpect(jsonPath("$[0].name").value("Player1"))
-                .andExpect(jsonPath("$[0].avatarResID").value(Red))
+                .andExpect(jsonPath("$[0].avatarResID").value(RED))
                 .andExpect(jsonPath("$[1].name").value("Player2"))
-                .andExpect(jsonPath("$[1].avatarResID").value(Blue));
+                .andExpect(jsonPath("$[1].avatarResID").value(BLUE));
     }
 
     @Test
     void testGetPlayersInLobby_DefaultAvatar() throws Exception {
         String lobbyId = "testLobby";
 
-        Player player1 = new Player("Player1", White);
-        Player player2 = new Player("Player2", Red);
+        Player player1 = new Player("Player1", WHITE);
+        Player player2 = new Player("Player2", RED);
 
         Lobby mockLobby = mock(Lobby.class);
         when(mockLobby.getPlayers()).thenReturn(List.of(player1, player2));
@@ -213,9 +211,9 @@ public class LobbyControllerTest {
         mockMvc.perform(get("/lobby/" + lobbyId + "/players"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Player1"))
-                .andExpect(jsonPath("$[0].avatarResID").value(White))
+                .andExpect(jsonPath("$[0].avatarResID").value(WHITE))
                 .andExpect(jsonPath("$[1].name").value("Player2"))
-                .andExpect(jsonPath("$[1].avatarResID").value(Red));
+                .andExpect(jsonPath("$[1].avatarResID").value(RED));
     }
 
     @TestConfiguration

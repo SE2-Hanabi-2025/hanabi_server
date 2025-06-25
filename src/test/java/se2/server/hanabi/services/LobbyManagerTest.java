@@ -11,10 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
     private LobbyManager lobbyManager;
 
     private static final int Red = 2131230890;
-     private static final int Blue = 2131230891;
-     private static final int Green = 2131230892;
-     private static final int Yellow = 2131230893;
-     private static final int White = 0; // default avatar
+    private static final int Blue = 2131230891;
+    private static final int White = 0; // default avatar
+    
     @BeforeEach
     void setUp() {
         lobbyManager = new LobbyManager();
@@ -36,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void joinLobby_WhenFull() {
         String lobbyId = lobbyManager.createLobby();
+        @SuppressWarnings("unused")
         Lobby lobby = lobbyManager.getLobby(lobbyId);
 
         for (int i = 0; i < 5; i++) {
@@ -88,7 +88,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void getAllLobbies_ReturnsLobbies() {
+        @SuppressWarnings("unused")
         String lobbyId1 = lobbyManager.createLobby();
+        @SuppressWarnings("unused")
         String lobbyId2 = lobbyManager.createLobby();
 
         assertEquals(2, lobbyManager.getAllLobbies().size(), "There should be 2 lobbies");

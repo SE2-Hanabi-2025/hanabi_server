@@ -342,6 +342,8 @@ public class GameManagerTest {
         game.getPlayedCards().put(Card.Color.BLUE, 4);
         game.logFinalScore();
         // Verify the log contains the correct final score (mock logger or capture output if necessary)
+        assertTrue(game.getGameHistory().stream()
+            .anyMatch(entry -> entry.contains("Final score: 9")), "Final score should be logged correctly.");
     }
 
     @Test 
