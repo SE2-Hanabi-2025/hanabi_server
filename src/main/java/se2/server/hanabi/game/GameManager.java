@@ -145,7 +145,6 @@ public class GameManager {
         }
     }
 
-    // Handle DEFUSE_ATTEMPT cheat logic
     public ActionResult handleDefuseAttempt(Integer playerId, java.util.List<String> sequence, String proximity) {
         // Correct sequence: DOWN, DOWN, UP, DOWN
         java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
@@ -165,8 +164,7 @@ public class GameManager {
         return gameState.getCurrentPlayerId();
     }
 
-// Game state information
-      /**
+    /**
      * Get the complete game status for a specific player
      * @param playerId ID of the player requesting status
      * @return GameStatus object with all relevant game information
@@ -187,29 +185,18 @@ public class GameManager {
             gameState.isGameLost(),
             gameState.getCurrentScore(),
             gameState.getCurrentPlayerId(),
-            gameState.getHands().get(playerId) // send real hand for this player
+            gameState.getHands().get(playerId)
         );
     }
-    
-    /**
-     * Get a specific player's hand
-     * @param playerId ID of the player
-     * @return List of cards in the player's hand, or null if player not found
-     */
+
     public List<Card> getPlayerHand(int playerId) {
         return gameState.getHands().get(playerId);
     }
 
-    /**
-     * Get all hands except the specified player's
-     * @param viewerId ID of the player who should not see their own hand
-     * @return Map of player IDs to their hand of cards
-     */
     public Map<Integer, List<Card>> getVisibleHands(int viewerId) {
         return gameState.getVisibleHands(viewerId);
     }
 
-    // Helper functions
 
     public void advanceTurn() {
         if (gameState.advanceTurn()) {
@@ -225,11 +212,6 @@ public class GameManager {
         logger.info("Final score: " + totalScore + " out of " + GameRules.MAX_SCORE);
     }
 
-    /**
-     * Draw a card to a player's hand from the deck
-     *
-     * @param playerId the ID of the player who should  draw a card
-     */
     public void drawCardToHand(int playerId) {
         drawService.drawCardToPlayerHand(this, playerId);
     }
@@ -247,15 +229,10 @@ public class GameManager {
         return ActionResult.success("Strike added.");
     }
 
-    /**
-     * Get game history logs
-     * @return List of game log entries
-     */
     public List<String> getGameHistory() {
         return logger.getHistory();
     }
 
-    // GameState delegating methods
 
     public List<Player> getPlayers() {
         return gameState.getPlayers();
@@ -310,26 +287,14 @@ public class GameManager {
         gameState.setGameOver(gameOver);
     }
     
-    /**
-     * Get the current score
-     * @return current score as sum of all played cards' values
-     */
     public int getCurrentScore() {
         return gameState.getCurrentScore();
     }
     
-    /**
-     * Get number of turns remaining in final round
-     * @return number of turns remaining or -1 if not in final round
-     */
     public int getFinalTurnsRemaining() {
         return gameState.getFinalTurnsRemaining();
     }
     
-    /**
-     * Set the number of turns remaining in the final round
-     * @param turns number of turns remaining
-     */
     public void setFinalTurnsRemaining(int turns) {
         gameState.setFinalTurnsRemaining(turns);
     }

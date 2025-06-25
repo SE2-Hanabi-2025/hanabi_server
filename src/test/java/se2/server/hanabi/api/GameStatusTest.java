@@ -13,7 +13,7 @@ class GameStatusTest {
 
     private List<Player> players;
     private List<Integer> playerCardIds;
-    private Map<Integer, List<Card>> visibleHands; // Changed key to Integer for playerId
+    private Map<Integer, List<Card>> visibleHands;
     private Map<Card.Color, Integer> playedCards;
     private List<Card> discardPile;
     private int numRemaningCards;
@@ -30,18 +30,18 @@ class GameStatusTest {
     void setUp() {
         Player player1 = mock(Player.class);
         Player player2 = mock(Player.class);
-        when(player1.getId()).thenReturn(1); // Mock player IDs
+        when(player1.getId()).thenReturn(1);
         when(player2.getId()).thenReturn(2);
         players = Arrays.asList(player1, player2);
 
-        // Mock player's hand as list of integers (card IDs)
-        playerCardIds = Arrays.asList(1, 2, 3); // Sample card IDs
+       
+        playerCardIds = Arrays.asList(1, 2, 3);
 
         Card card1 = mock(Card.class);
         Card card2 = mock(Card.class);
         List<Card> hand1 = Arrays.asList(card1, card2);
         visibleHands = new HashMap<>();
-        visibleHands.put(1, hand1); // Using playerId as key
+        visibleHands.put(1, hand1);
 
         playedCards = new EnumMap<>(Card.Color.class);
         playedCards.put(Card.Color.RED, 2);
@@ -67,9 +67,9 @@ class GameStatusTest {
         gameOver = false;
         gameLost = false;
         currentScore = 17;
-        currentPlayerId = 1; // Using playerId
+        currentPlayerId = 1;
 
-        List<Card> ownHand = new ArrayList<>(); // Add this for the new constructor
+        List<Card> ownHand = new ArrayList<>();
         gameStatus = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, gameOver, gameLost, currentScore, currentPlayerId, ownHand);
     }
 
@@ -145,7 +145,7 @@ class GameStatusTest {
 
     @Test
     void testGameStatusWithGameOverTrue() {
-        List<Card> ownHand = new ArrayList<>(); // Add this for the new constructor
+        List<Card> ownHand = new ArrayList<>();
         GameStatus status = new GameStatus(players, playerCardIds, visibleHands, playedCards, discardPile, numRemaningCards, cardsShowingColorHints, cardsShowingValueHints, numRemainingHintTokens, strikes, true, gameLost, currentScore, currentPlayerId, ownHand);
         assertTrue(status.isGameOver());
     }

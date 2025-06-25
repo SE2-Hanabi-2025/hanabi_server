@@ -56,7 +56,7 @@ public class PlayCardActionTest {
         hand.clear();
         hand.add(new Card(5, Card.Color.GREEN));
         ActionResult result = new PlayCardAction(game, player2.getId(), 0).execute(); 
-        assertTrue(result.isSuccess()); // Added assertion to use the result variable
+        assertTrue(result.isSuccess());
         assertEquals(GameRules.MAX_HINT_TOKENS, game.getHints());
     }
 
@@ -94,7 +94,7 @@ public class PlayCardActionTest {
     @Test
     public void testPlayCardByUnknownPlayer() {
         System.out.println("GameManager strikes before action: " + game.getStrikes());
-        ActionResult result = new PlayCardAction(game, player3.getId(), 0).execute(); // Using not-in-game player ID 3
+        ActionResult result = new PlayCardAction(game, player3.getId(), 0).execute();
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("Player not found"));
@@ -107,14 +107,13 @@ public class PlayCardActionTest {
         hand.clear();
         hand.add(new Card(2, Card.Color.YELLOW));
 
-        ActionResult result = new PlayCardAction(game, player2.getId(), 5).execute(); // Passing invalid card index
+        ActionResult result = new PlayCardAction(game, player2.getId(), 5).execute();
 
         assertTrue(result.getMessage().contains("Invalid card index"));
     }
 
     @Test
     public void testPlayCardWithEmptyDeck() {
-        // Simulate an empty deck
         while (!game.getDeck().isEmpty()) {
             game.getDeck().drawCard();
         }
@@ -141,7 +140,7 @@ public class PlayCardActionTest {
         hand.clear();
         hand.add(new Card(1, Card.Color.RED));
 
-        ActionResult result = new PlayCardAction(game, player1.getId(), -1).execute(); // Invalid index
+        ActionResult result = new PlayCardAction(game, player1.getId(), -1).execute();
         assertFalse(result.isSuccess(), "Playing a card with an invalid index should fail.");
         assertEquals("Invalid card index", result.getMessage(), "Expected message for invalid card index.");
     }

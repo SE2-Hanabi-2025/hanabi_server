@@ -31,7 +31,7 @@ public class LobbyControllerTest {
 
     private static final int RED = 2131230890;
     private static final int BLUE = 2131230891;
-    private static final int WHITE = 0; // default avatar
+    private static final int WHITE = 0;
 
     @Test
     void createLobby_ReturnLobbyId() throws Exception {
@@ -66,10 +66,10 @@ public class LobbyControllerTest {
     @Test
     void joinLobby_gameAlreadyStarted() throws Exception {
         Lobby startedLobby = new Lobby("started");
-        // Add at least 2 players to the lobby so we can start the game
+
         startedLobby.getPlayers().add(new Player("Player1", RED));
         startedLobby.getPlayers().add(new Player("Player2", BLUE));
-        startedLobby.startGame(); // Start the game now that we have enough players
+        startedLobby.startGame();
         when(lobbyManager.getLobby("started")).thenReturn(startedLobby);
 
         mockMvc.perform(get("/join-lobby/started").param("name", "Test"))
@@ -190,7 +190,6 @@ public class LobbyControllerTest {
 
         mockMvc.perform(get("/lobby/" + lobbyId + "/players"))
                 .andExpect(status().isOk())
-                //.andExpect(content().json("[\"Player1\", \"Player2\"]"));
                 .andExpect(jsonPath("$[0].name").value("Player1"))
                 .andExpect(jsonPath("$[0].avatarResID").value(RED))
                 .andExpect(jsonPath("$[1].name").value("Player2"))

@@ -43,7 +43,7 @@ public class PlayCardAction {
         if (card.getValue() != expected) {
             game.getLogger().warn(PLAYER_PREFIX + playerId + " played an invalid card: " + card);
             game.getDiscardPile().add(card);
-            game.incrementStrikes(); // Ensure strikes are incremented for invalid cards
+            game.incrementStrikes();
             game.getLogger().warn("Wrong card played by " + PLAYER_PREFIX.toLowerCase() + playerId);
             game.drawCardToHand(playerId);
             game.advanceTurn();
@@ -57,7 +57,6 @@ public class PlayCardAction {
                 game.setNumRemainingHintTokens(game.getHints() + 1);
             }
 
-            // Check if all cards are played perfectly
             boolean allPerfect = game.getPlayedCards().values().stream()
                 .allMatch(value -> value == GameRules.MAX_CARD_VALUE);
             if (allPerfect) {
@@ -78,7 +77,6 @@ public class PlayCardAction {
             return ActionResult.success("You successfully played " + card);
         }
 
-        // Ensure a default return statement for valid card plays
         return ActionResult.success("Card played successfully.");
     }
 }

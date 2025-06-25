@@ -16,7 +16,6 @@ import java.util.Map;
  * Encapsulates the state of a Hanabi game
  */
 public class GameState {
-    // Getters & Setters
     @Getter
     private final List<Player> players;
     @Getter
@@ -27,25 +26,10 @@ public class GameState {
     private final Map<Card.Color, Integer> playedCards = new HashMap<>();
     @Getter
     private final List<Card> discardPile = new ArrayList<>();
-    /**
-     * -- GETTER --
-     *  Get the number of turns that a hint will last until it disapears
-     *
-     */
     @Getter
     private final int numTurnsHintsLast;
-    /**
-     * -- GETTER --
-     *  Get the map of card IDs along with their corresponding color hints and the number of turns until they are removed
-     *
-     */
     @Getter
     private final Map<Integer, ColorHintAndRemainingTurns> cardsShowingColorHintsAndRemainingTurns = new HashMap<>();
-    /**
-     * -- GETTER --
-     *  Get the map of card IDs along with their corresponding value hints and the number of turns until they are removed
-     *
-     */
     @Getter
     private final Map<Integer, ValueHintAndRemainingTurns> cardsShowingValueHintsAndRemainingTurns = new HashMap<>();
     @Getter
@@ -89,19 +73,13 @@ public class GameState {
     public GameState(List<Player> players, GameLogger logger) {
         this(players, GameRules.TURNS_HINTS_LAST_DEFAULT, logger);
     }
-    
-    /**
-     * Initialize the played cards map with all colors set to 0
-     */
+
     private void initializePlayedCards() {
         for (Card.Color color : Card.Color.values()) {
             playedCards.put(color, 0);
         }
     }
-    
-    /**
-     * Deal initial cards to all players based on the number of players
-     */
+
     public void dealInitialCards() {
         int handSize = GameRules.getInitialHandSize(players.size());
         logger.info("Dealing " + handSize + " cards per player");
@@ -116,53 +94,27 @@ public class GameState {
         }
     }
     
-    /**
-     * Checks if a player is the current player
-     * @param playerId the ID of the player to check
-     * @return true if the player is the current player, false otherwise
-     */
     public boolean isCurrentPlayer(int playerId) {
         return players.get(currentPlayerIndex).getId() == playerId;
     }
-    
-    /**
-     * Checks if an action is valid
-     * @param playerId the ID of the player attempting the action
-     * @return true if the action is valid, false otherwise
-     */
+
     public boolean isActionValid(int playerId) {
         return !gameOver && isCurrentPlayer(playerId);
     }
-    
-    /**
-     * Check if a card index is valid for a player's hand
-     */
+
     public boolean isValidCardIndex(int playerId, int cardIndex) {
         List<Card> hand = hands.get(playerId);
         return hand != null && cardIndex >= 0 && cardIndex < hand.size();
     }
     
-    /**
-     * Check if a player exists in the game
-     * @param playerId the ID of the player to check
-     * @return true if the player exists, false otherwise
-     */
     public boolean playerExists(int playerId) {
         return players.stream().anyMatch(p -> p.getId() == playerId);
     }
 
-    /**
-     * Get the current player's ID
-     * @return the ID of the current player
-     */
     public int getCurrentPlayerId() {
         return players.get(currentPlayerIndex).getId();
     }
 
-    /**
-     * Get a map of card IDs and their corresponding color hints
-     * @return map of card IDs and their corresponding color hints
-     */
     public Map<Integer, Card.Color> getCardsShowingColorHints() {
         Map<Integer, Card.Color> cardsShowingColorHints = new HashMap<>();
         cardsShowingColorHintsAndRemainingTurns.forEach((cardId, colorHintAndRemainingTurns) -> 
@@ -171,10 +123,6 @@ public class GameState {
         return cardsShowingColorHints;
     }
 
-    /**
-     * Get a map of card IDs and their corresponding value hints
-     * @return map of card IDs and their corresponding color hints
-     */
     public Map<Integer, Integer> getCardsShowingValueHints() {
         Map<Integer, Integer> cardsShowingValueHints = new HashMap<>();
         cardsShowingValueHintsAndRemainingTurns.forEach((cardId, ValueHintAndRemainingTurns) -> 
@@ -183,10 +131,6 @@ public class GameState {
         return cardsShowingValueHints;
     }
 
-    /**
-     * Advances to the next player's turn
-     * @return true if the turn was advanced, false if the game is over
-     */
     public boolean advanceTurn() {
         if (gameOver) {
             return false;
@@ -198,7 +142,6 @@ public class GameState {
         removeExpiredShownHints();
         decrementHintsRemainingTurns();
         
-        // Update final turns counter if we're in final rounds
         if (finalTurnsRemaining > 0) {
             finalTurnsRemaining--;
             logger.info("Final round: " + finalTurnsRemaining + " turns remaining.");
@@ -207,10 +150,6 @@ public class GameState {
         return true;
     }
     
-    /**
-     * Checks if the game has ended
-     * @return true if any end condition is met, false otherwise
-     */
     public boolean checkEndCondition() {
         if (strikes >= GameRules.MAX_STRIKES) {
             gameOver = true;
@@ -237,10 +176,6 @@ public class GameState {
         return false;
     }
     
-    /**
-     * Get the current score
-     * @return current score as sum of all played cards' values
-     */
     public int getCurrentScore() {
         if (gameLost) {
             return 0;
@@ -250,20 +185,12 @@ public class GameState {
         
     }
     
-    /**
-     * Increment the strikes counter
-     */
     public void incrementStrikes() {
         logger.info("Incrementing strikes. Current strikes: " + strikes);
         strikes++;
         logger.warn("Strike count increased to " + strikes + " out of " + GameRules.MAX_STRIKES);
     }
     
-    /**
-     *  Returns the cardIds of the given player
-     * @param playerId ID of the players whose cardIds will be returned
-     * @return List of card IDs
-     */
     public List<Integer> getPlayerCardIds(int playerId) {
         List<Integer> cardIds = new ArrayList<Integer>();
         for (Card card : hands.get(playerId)) {
@@ -272,11 +199,6 @@ public class GameState {
         return cardIds;
     }
 
-    /**
-     * Get all hands except the specified player's
-     * @param viewerId ID of the player who should not see their own hand
-     * @return Map of player IDs to their hand of cards
-     */
     public Map<Integer, List<Card>> getVisibleHands(int viewerId) {
         Map<Integer, List<Card>> copy = new HashMap<>();
         for (Map.Entry<Integer, List<Card>> entry : hands.entrySet()) {
