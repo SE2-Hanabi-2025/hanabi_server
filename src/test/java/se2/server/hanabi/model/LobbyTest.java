@@ -19,8 +19,7 @@ public class LobbyTest {
     @Test
     public void testStartGame() {
         assertFalse(lobby.isGameStarted(), "Game should not be started");
-        
-        // Add two players to the lobby so we can start the game
+
         lobby.getPlayers().add(new Player("Player1"));
         lobby.getPlayers().add(new Player("Player2"));
         

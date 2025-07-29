@@ -2,7 +2,6 @@ package se2.server.hanabi.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import se2.server.hanabi.game.HintType;
 
 import java.util.Arrays;
 

@@ -25,7 +25,7 @@ public class DeckTest {
             assertTrue(card.getValue() >= 1 && card.getValue() <= 5);
             drawnCount++;
         }
-        assertEquals(50, drawnCount); // 5 colors × 10 cards each
+        assertEquals(50, drawnCount);
         assertNull(deck.drawCard());
     }
 
@@ -49,10 +49,10 @@ public class DeckTest {
 
     @Test
     void testDeckCardDistribution() {
-        Card.resetNextID(); // Ensure counter is reset
+        Card.resetNextID();
         Deck deck = new Deck();
 
-        int[][] cardCounts = new int[Card.Color.values().length][5]; // 5 values (1-5) for each color
+        int[][] cardCounts = new int[Card.Color.values().length][5];
 
         while (!deck.isEmpty()) {
             Card card = deck.drawCard();
@@ -80,7 +80,7 @@ public class DeckTest {
 
     @Test
     void testCardIdsAndDetails() {
-        Card.resetNextID(); // Ensure counter is reset
+        Card.resetNextID();
         Deck deck = new Deck();
         Card[] cardsById = new Card[50];
 
@@ -99,7 +99,7 @@ public class DeckTest {
 
     @Test
     void testPrintCardIdsAndDetails() {
-        Card.resetNextID(); // Ensure counter is reset
+        Card.resetNextID();
         Deck deck = new Deck();
 
         while (!deck.isEmpty()) {
@@ -111,7 +111,7 @@ public class DeckTest {
 
     @Test
     void testPrintCardIdsAndDetailsInRow() {
-        Card.resetNextID(); // Ensure counter is reset
+        Card.resetNextID();
         Deck deck = new Deck();
 
         StringBuilder cardDetails = new StringBuilder();
@@ -127,18 +127,16 @@ public class DeckTest {
 
     @Test
     void testPrintCardIdsInOrder() {
-        Card.resetNextID(); // Ensure counter is reset
+        Card.resetNextID();
         Deck deck = new Deck();
         Card[] cardsById = new Card[50];
 
-        // Collect all cards by their IDs
         while (!deck.isEmpty()) {
             Card card = deck.drawCard();
             assertNotNull(card, "Card should not be null");
             cardsById[card.getId()] = card;
         }
 
-        // Print cards in order of their IDs
         for (int id = 0; id < 50; id++) {
             assertNotNull(cardsById[id], "Card with ID " + id + " should exist");
             System.out.println("Card ID " + id + ": " + cardsById[id].toString());
@@ -153,7 +151,7 @@ public class DeckTest {
 
     @Test
     void testAddCardToTop() {
-        deck.clear(); // Clear the deck to ensure it starts empty
+        deck.clear();
         Card card = new Card(1, Card.Color.RED);
         deck.addCardToTop(card);
         assertEquals(1, deck.getNumRemainingCards(), "Deck should have one card after adding a card to the top");

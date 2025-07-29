@@ -21,7 +21,6 @@ public class ActionResult {
         return new ActionResult(ActionResultType.INVALID_MOVE, msg);
     }
 
-    // Getters & Setters
     public boolean isSuccess() {
         return type == ActionResultType.SUCCESS;
     }

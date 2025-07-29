@@ -9,13 +9,6 @@ import se2.server.hanabi.game.GameManager;
  */
 public class DrawService {
     
-    /**
-     * Draws a card from the deck and adds it to the player's hand if possible
-     * 
-     * @param gameManager the game manager containing the game state
-     * @param playerId the ID of the player drawing a card
-     * @return the drawn card or null if no card could be drawn
-     */
     public Card drawCardToPlayerHand(GameManager gameManager, int playerId) {
         Deck deck = gameManager.getDeck();
         
@@ -33,12 +26,7 @@ public class DrawService {
         
         return card;
     }
-    
-    /**
-     * Checks if the deck is empty and updates the final turns counter if needed
-     * 
-     * @param gameManager the game manager to check
-     */
+
     public void checkDeckEmptyStatus(GameManager gameManager) {
         Deck deck = gameManager.getDeck();
         

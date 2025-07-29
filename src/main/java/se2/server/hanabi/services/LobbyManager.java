@@ -58,13 +58,6 @@ public class LobbyManager {
         return lobbies.values();
     }
     
-    /**
-     * Start the game for a specific lobby
-     * @param lobbyId the ID of the lobby
-     * @param isCasaulMode sets the game mode
-     * @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
-     * @return true if game was successfully started, false otherwise
-     */
     public boolean startGame(String lobbyId, Boolean isCasaulMode) {
         Lobby lobby = lobbies.get(lobbyId);
         if (lobby == null || lobby.isGameStarted()) {
@@ -74,21 +67,10 @@ public class LobbyManager {
         return lobby.startGame(isCasaulMode);
     }
 
-    /**
-     * Start the game for a specific lobby
-     * @param lobbyId the ID of the lobby
-     * @Parameter(name = "name", description = "The name of the player joining the lobby", required = false, in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY, example = "Anonymous"),
-     * @return true if game was successfully started, false otherwise
-     */
     public boolean startGame(String lobbyId) {
         return startGame(lobbyId, false);
     }
     
-    /**
-     * Get the GameManager for a specific lobby
-     * @param lobbyId the ID of the lobby
-     * @return the GameManager or null if lobby doesn't exist or game hasn't started
-     */
     public GameManager getGameManager(String lobbyId) {
         Lobby lobby = lobbies.get(lobbyId);
         if (lobby == null || !lobby.isGameStarted()) {
@@ -98,11 +80,6 @@ public class LobbyManager {
         return lobby.getGameManager();
     }
     
-    /**
-     * Remove a lobby
-     * @param lobbyId the ID of the lobby to remove
-     * @return true if lobby was removed, false if it didn't exist
-     */
     public boolean removeLobby(String lobbyId) {
         return lobbies.remove(lobbyId) != null;
     }

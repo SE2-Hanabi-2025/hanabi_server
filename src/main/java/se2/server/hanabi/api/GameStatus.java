@@ -76,7 +76,6 @@ public class GameStatus {
     }
 
     public Map<Integer, List<Card>> getVisibleHands() {
-        // Convert the keys of the map from String to Integer
         Map<Integer, List<Card>> convertedHands = new HashMap<>();
         for (Map.Entry<Integer, List<Card>> entry : visibleHands.entrySet()) {
             convertedHands.put((entry.getKey()), entry.getValue());

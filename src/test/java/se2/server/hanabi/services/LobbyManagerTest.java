@@ -11,10 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
     private LobbyManager lobbyManager;
 
     private static final int Red = 2131230890;
-     private static final int Blue = 2131230891;
-     private static final int Green = 2131230892;
-     private static final int Yellow = 2131230893;
-     private static final int White = 0; // default avatar
+    private static final int Blue = 2131230891;
+    private static final int White = 0;
+    
     @BeforeEach
     void setUp() {
         lobbyManager = new LobbyManager();
@@ -36,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void joinLobby_WhenFull() {
         String lobbyId = lobbyManager.createLobby();
+        @SuppressWarnings("unused")
         Lobby lobby = lobbyManager.getLobby(lobbyId);
 
         for (int i = 0; i < 5; i++) {
@@ -50,16 +50,13 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void joinLobby_WhenGameStarted() {
         String lobbyId = lobbyManager.createLobby();
-        
-        // Add the minimum required players to start a game (2 players)
+
         lobbyManager.joinLobby(lobbyId, "Player1",Red);
         lobbyManager.joinLobby(lobbyId, "Player2", Blue);
-        
-        // Start the game properly through the lobbyManager
+
         boolean gameStarted = lobbyManager.startGame(lobbyId);
         assertTrue(gameStarted, "Game should start successfully with 2 players");
 
-        // Now try to join after game is started
         int result = lobbyManager.joinLobby(lobbyId, "NewPlayer", White);
 
         assertEquals(result, -1,"No player should be able to join once the game has started");
@@ -88,7 +85,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void getAllLobbies_ReturnsLobbies() {
+        @SuppressWarnings("unused")
         String lobbyId1 = lobbyManager.createLobby();
+        @SuppressWarnings("unused")
         String lobbyId2 = lobbyManager.createLobby();
 
         assertEquals(2, lobbyManager.getAllLobbies().size(), "There should be 2 lobbies");

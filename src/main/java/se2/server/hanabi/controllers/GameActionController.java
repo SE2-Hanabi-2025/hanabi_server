@@ -131,7 +131,6 @@ public class GameActionController {
             return ResponseEntity.notFound().build();
         }
         
-        // Convert hint value based on hint type
         Object value;
         if (hintType == HintType.COLOR) {
             try {
@@ -179,5 +178,4 @@ public class GameActionController {
         return ResponseEntity.ok(gameManager.getGameHistory());
     }
     
-    // The defuseStrike REST endpoint has been removed. Use the WebSocket DEFUSE action instead.
 }

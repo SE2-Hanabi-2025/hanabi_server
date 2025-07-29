@@ -9,6 +9,10 @@ class HanabiApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// This test method intentionally left empty
+		// It verifies that the Spring application context loads successfully
+		// The test will fail if the application context cannot be created
+		// which can happen due to misconfiguration, bean creation errors, etc.
 	}
 
 	@Test

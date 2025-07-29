@@ -32,7 +32,6 @@ public class GameManagerTest {
 
     @Test
     void testCreateNewGame() {
-        // Test factory method
         assertNotNull(game);
         assertEquals(3, game.getPlayers().size());
         assertEquals(player1.getId(), game.getPlayers().get(0).getId());
@@ -41,18 +40,15 @@ public class GameManagerTest {
 
     @Test
     void testInitialGameState() {
-        // Test initial state values
         assertFalse(game.isGameOver());
         assertEquals(GameRules.MAX_HINT_TOKENS, game.getHints());
         assertEquals(0, game.getStrikes());
         assertEquals(0, game.getCurrentPlayerIndex());
         assertEquals(player1.getId(), game.getCurrentPlayerId());
-        
-        // Test initial hands
+
         Map<Integer, List<Card>> hands = game.getHands();
         assertEquals(GameRules.HAND_SIZE_SMALL_GROUP, hands.get(player1.getId()).size());
-        
-        // Test played cards (all should be 0)
+
         Map<Card.Color, Integer> playedCards = game.getPlayedCards();
         for (Card.Color color : Card.Color.values()) {
             assertEquals(0, playedCards.get(color));
@@ -61,7 +57,6 @@ public class GameManagerTest {
 
     @Test
     void testPlayCardWrongTurn() {
-        // Player 2 tries to play when it's Player 1's turn
         ActionResult result = game.playCard(2, 0);
         assertFalse(result.isSuccess());
         assertEquals("Not your turn or game is over.", result.getMessage());
@@ -69,7 +64,6 @@ public class GameManagerTest {
     
     @Test
     void testGiveHintToSelf() {
-        // Player 1 tries to give hint to self
         ActionResult result = game.giveHint(player1.getId(), player1.getId(), HintType.COLOR, Card.Color.RED);
         assertFalse(result.isSuccess());
         assertEquals("Cannot give hint to yourself.", result.getMessage());
@@ -77,10 +71,8 @@ public class GameManagerTest {
 
     @Test
     void testNoActionAfterGameOver() {
-        // Force game over
         game.setGameOver(true);
-        
-        // Try to perform actions
+
         ActionResult playResult = game.playCard(1, 0);
         assertFalse(playResult.isSuccess());
         
@@ -108,8 +100,7 @@ public class GameManagerTest {
         assertNotNull(status);
         assertEquals(3, status.getPlayers().size());
         assertEquals(player1.getId(), status.getCurrentPlayerId());
-        
-        // Player 1 shouldn't see their own hand in visible hands
+
         Map<Integer, List<Card>> visibleHands = status.getVisibleHands();
         assertFalse(visibleHands.containsKey(player1.getId()));
         assertTrue(visibleHands.containsKey(player2.getId()));
@@ -125,20 +116,18 @@ public class GameManagerTest {
 
     @Test
     void testSetHintsWithinMaximum() {
-        game.setNumRemainingHintTokens(GameRules.MAX_HINT_TOKENS + 2); // Try to set hints beyond max
-        assertEquals(GameRules.MAX_HINT_TOKENS, game.getHints()); // Should be capped at max
+        game.setNumRemainingHintTokens(GameRules.MAX_HINT_TOKENS + 2);
+        assertEquals(GameRules.MAX_HINT_TOKENS, game.getHints());
     }
 
     @Test
     void testGetCurrentScore() {
-        // Initial score should be 0
+
         assertEquals(0, game.getCurrentScore());
-        
-        // Add some played cards
+
         game.getPlayedCards().put(Card.Color.RED, 3);
         game.getPlayedCards().put(Card.Color.BLUE, 2);
-        
-        // Score should be 3 + 2 = 5
+
         assertEquals(5, game.getCurrentScore());
     }
 
@@ -147,8 +136,7 @@ public class GameManagerTest {
         List<String> history = game.getGameHistory();
         assertNotNull(history);
         assertFalse(history.isEmpty());
-        
-        // Initial history should contain setup messages
+
         boolean foundSetupMessage = false;
         for (String entry : history) {
             if (entry.contains("Starting new game with")) {
@@ -239,13 +227,10 @@ public class GameManagerTest {
 
     @Test
     void testHintTokenExhaustion() {
-        // Exhaust all hint tokens
         game.setNumRemainingHintTokens(0);
 
-        // Attempt to give a hint
         ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.COLOR, Card.Color.RED);
 
-        // Verify the action fails with the correct message
         assertFalse(result.isSuccess(), "Giving a hint should fail when no hint tokens are available.");
         assertEquals("No hint tokens available.", result.getMessage(), "Expected message for hint token exhaustion.");
     }
@@ -253,18 +238,14 @@ public class GameManagerTest {
 
     @Test
     void testTurnAdvancement() {
-        // Verify initial turn
         assertEquals(player1.getId(), game.getCurrentPlayerId(), "Initial turn should belong to Player 1.");
 
-        // Advance turn
         game.advanceTurn();
         assertEquals(player2.getId(), game.getCurrentPlayerId(), "Turn should advance to Player 2.");
 
-        // Advance turn again
         game.advanceTurn();
         assertEquals(player3.getId(), game.getCurrentPlayerId(), "Turn should advance to Player 3.");
 
-        // Wrap around to Player 1
         game.advanceTurn();
         assertEquals(player1.getId(), game.getCurrentPlayerId(), "Turn should wrap around to Player 1.");
     }
@@ -286,17 +267,14 @@ public class GameManagerTest {
 
     @Test
     void testGameInitializationEdgeCases() {
-        // Test with minimum players
         GameManager minGame = GameManager.createNewGame(Arrays.asList(player1,player2));
         assertNotNull(minGame, "Game should initialize with minimum players.");
         assertEquals(2, minGame.getPlayers().size(), "Game should have 2 players.");
 
-        // Test with maximum players
         GameManager maxGame = GameManager.createNewGame(Arrays.asList(player1,player1,player2,player2,player3));
         assertNotNull(maxGame, "Game should initialize with maximum players.");
         assertEquals(5, maxGame.getPlayers().size(), "Game should have 5 players.");
 
-        // Test with invalid player counts
         Exception tooFewPlayersException = assertThrows(IllegalArgumentException.class, () -> {
             GameManager.createNewGame(Arrays.asList(player1));
         });
@@ -311,13 +289,10 @@ public class GameManagerTest {
 
     @Test
     void testInvalidCardPlay() {
-        // Simulate a scenario where the card at index 0 is invalid
-        game.getHands().get(player1.getId()).set(0, new Card(5, Card.Color.RED)); // Set an invalid card
+        game.getHands().get(player1.getId()).set(0, new Card(5, Card.Color.RED));
 
-        // Attempt to play the invalid card
         ActionResult result = game.playCard(player1.getId(), 0);
 
-        // Verify the action fails with the correct message
         assertFalse(result.isSuccess(), "Playing an invalid card should fail.");
         assertEquals("Wrong card!", result.getMessage(), "Expected message for invalid card play.");
     }
@@ -341,7 +316,8 @@ public class GameManagerTest {
         game.getPlayedCards().put(Card.Color.RED, 5);
         game.getPlayedCards().put(Card.Color.BLUE, 4);
         game.logFinalScore();
-        // Verify the log contains the correct final score (mock logger or capture output if necessary)
+        assertTrue(game.getGameHistory().stream()
+            .anyMatch(entry -> entry.contains("Final score: 9")), "Final score should be logged correctly.");
     }
 
     @Test 
@@ -353,7 +329,7 @@ public class GameManagerTest {
 
     @Test
     public void testDiscardCardWithInvalidIndex() {
-        ActionResult result = game.discardCard(player1.getId(), -1); // Invalid index
+        ActionResult result = game.discardCard(player1.getId(), -1);
         assertFalse(result.isSuccess(), "Discarding with an invalid index should fail.");
         assertEquals("Invalid card index: -1", result.getMessage(), "Expected message for invalid card index.");
     }
@@ -377,13 +353,13 @@ public class GameManagerTest {
     @Test
     void testHandleDefuseAttempt_CorrectSequenceAndProximity() {
         int playerId = player1.getId();
-        game.setStrikes(2); // Ensure there is at least one strike to defuse
+        game.setStrikes(2);
         java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
         String proximity = "DARK";
         ActionResult result = game.handleDefuseAttempt(playerId, correctSequence, proximity);
         assertTrue(result.isSuccess());
         assertEquals("Strike defused!", result.getMessage());
-        assertEquals(1, game.getStrikes()); // Should have one less strike
+        assertEquals(1, game.getStrikes());
     }
 
     @Test
@@ -393,9 +369,9 @@ public class GameManagerTest {
         java.util.List<String> wrongSequence = java.util.Arrays.asList("DOWN", "UP", "DOWN", "DOWN");
         String proximity = "DARK";
         ActionResult result = game.handleDefuseAttempt(playerId, wrongSequence, proximity);
-        assertTrue(result.isSuccess()); // addStrikeCheat returns success
+        assertTrue(result.isSuccess());
         assertEquals("Defuse failed, strike added!", result.getMessage());
-        assertEquals(3, game.getStrikes()); // Should have one more strike
+        assertEquals(3, game.getStrikes());
     }
 
     @Test
@@ -405,7 +381,7 @@ public class GameManagerTest {
         java.util.List<String> correctSequence = java.util.Arrays.asList("DOWN", "DOWN", "UP", "DOWN");
         String proximity = "LIGHT";
         ActionResult result = game.handleDefuseAttempt(playerId, correctSequence, proximity);
-        assertTrue(result.isSuccess()); // addStrikeCheat returns success
+        assertTrue(result.isSuccess());
         assertEquals("Defuse failed, strike added!", result.getMessage());
         assertEquals(3, game.getStrikes());
     }
@@ -432,12 +408,10 @@ public class GameManagerTest {
 
     @Test
     void testIncrementStrikes_DuplicateStrikeInSameTurn() {
-        // First call should add a strike
         ActionResult first = game.incrementStrikes();
         assertTrue(first.isSuccess());
         assertEquals("Strike added.", first.getMessage());
 
-        // Second call in the same turn should not add another strike
         ActionResult second = game.incrementStrikes();
         assertTrue(second.isSuccess());
         assertEquals("Strike already given for this round.", second.getMessage());

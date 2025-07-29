@@ -6,14 +6,13 @@ import lombok.Getter;
 public class Card {
     private final int value;
     private final Color color;
-    // Getter for the unique ID
-    private final int id; // Change UUID to an integer-based ID
-    private static int nextID = 0; // Static counter for generating unique IDs
+    private final int id;
+    private static int nextID = 0;
 
     public Card(int value, Color color) {
         this.value = value;
         this.color = color;
-        this.id = nextID++; // Generate a unique integer ID for each card
+        this.id = nextID++;
     }
 
     public static void resetNextID() {
@@ -22,7 +21,7 @@ public class Card {
 
     @Override
     public String toString() {
-        return "Card{" + "value=" + value + ", color=" + color + ", id=" + id + '}'; // Include ID in toString
+        return "Card{" + "value=" + value + ", color=" + color + ", id=" + id + '}';
     }
 
     public enum Color {

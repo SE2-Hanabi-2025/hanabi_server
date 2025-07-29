@@ -22,7 +22,7 @@ class DrawServiceTest {
         Player player1 = new Player("alice");
         Player player2 = new Player("bob");
         gameManager = GameManager.createNewGame(List.of(player1, player2));
-        playerId = player1.getId(); // Assigning player ID instead of name
+        playerId = player1.getId();
     }
 
     @Test

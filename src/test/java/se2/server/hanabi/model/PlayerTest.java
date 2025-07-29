@@ -9,7 +9,7 @@ class PlayerTest {
     void testPlayerConstructorWithName() {
         Player player = new Player("Vlado");
         assertEquals("Vlado", player.getName());
-        assertTrue(player.getId() >= 0); // Ensure ID is non-negative
+        assertTrue(player.getId() >= 0);
     }
 
     @Test
@@ -22,14 +22,14 @@ class PlayerTest {
     @Test
     void testGetId() {
         Player player = new Player("Dave");
-        assertTrue(player.getId() >= 0); // Ensure ID is non-negative
+        assertTrue(player.getId() >= 0);
     }
 
     @Test
     void testUniqueIds() {
         Player player1 = new Player("Eve");
         Player player2 = new Player("Frank");
-        assertNotEquals(player1.getId(), player2.getId()); // Ensure IDs are unique
+        assertNotEquals(player1.getId(), player2.getId());
     }
 
     @Test
@@ -50,20 +50,20 @@ class PlayerTest {
     void testSetNameToWhitespace() {
         Player player = new Player("Grace");
         player.setName("   ");
-        assertEquals("   ", player.getName()); // Ensure whitespace is accepted
+        assertEquals("   ", player.getName());
     }
 
     @Test
     void testConstructorWithEmptyName() {
         Player player = new Player("");
-        assertEquals("", player.getName()); // Ensure empty name is accepted
+        assertEquals("", player.getName());
         assertTrue(player.getId() >= 0);
     }
 
     @Test
     void testConstructorWithNullName() {
         Player player = new Player((String) null);
-        assertNull(player.getName()); // Ensure null name is handled
+        assertNull(player.getName());
         assertTrue(player.getId() >= 0);
     }
 
@@ -71,6 +71,6 @@ class PlayerTest {
     void testIdIncrement() {
         Player player1 = new Player("Player1");
         Player player2 = new Player("Player2");
-        assertEquals(player1.getId() + 1, player2.getId()); // Ensure IDs increment correctly
+        assertEquals(player1.getId() + 1, player2.getId());
     }
 }

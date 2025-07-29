@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  hanabi-server:
+    build: .
+    ports:
+      - "53218:8080"   
+    restart: unless-stopped

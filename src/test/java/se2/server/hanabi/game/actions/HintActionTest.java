@@ -38,7 +38,7 @@ public class HintActionTest {
     @Test
     public void testValidValueHintDecreasesTokens() {
         game.setNumRemainingHintTokens(2);
-        List<Card> hand = game.getHands().get(player2.getId()); // Using player ID 2
+        List<Card> hand = game.getHands().get(player2.getId());
         hand.clear();
         hand.add(new Card(4, Card.Color.RED));
         ActionResult result = new HintAction(game, player1.getId(), player2.getId(), HintType.VALUE, 4).execute(); // Passing player IDs 1 and 2
@@ -50,51 +50,51 @@ public class HintActionTest {
     @Test
     public void testHintCannotBeGivenToSelf() {
         game.setNumRemainingHintTokens(2);
-        List<Card> hand = game.getHands().get(player1.getId()); // Using player ID 1
+        List<Card> hand = game.getHands().get(player1.getId());
         hand.clear();
         hand.add(new Card(1, Card.Color.WHITE));
 
-        ActionResult result = game.giveHint(player1.getId(), player1.getId(), HintType.COLOR, Card.Color.WHITE); // Using GameManager.giveHint
+        ActionResult result = game.giveHint(player1.getId(), player1.getId(), HintType.COLOR, Card.Color.WHITE);
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("Cannot give hint to yourself"));
-        assertEquals(2, game.getHints()); // Hint tokens should remain unchanged
+        assertEquals(2, game.getHints());
     }
 
     @Test
     public void testHintFailsWithNoTokens() {
         game.setNumRemainingHintTokens(0);
-        List<Card> hand = game.getHands().get(player2.getId()); // Using player ID 2
+        List<Card> hand = game.getHands().get(player2.getId());
         hand.clear();
         hand.add(new Card(3, Card.Color.GREEN));
 
-        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.COLOR, Card.Color.GREEN); // Using GameManager.giveHint
+        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.COLOR, Card.Color.GREEN);
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("No hint tokens available"));
-        assertEquals(0, game.getHints()); // Hint tokens should remain unchanged
+        assertEquals(0, game.getHints());
     }
 
     @Test
     public void testHintWithNoMatchingCardsStillFails() {
         game.setNumRemainingHintTokens(2);
-        List<Card> hand = game.getHands().get(player2.getId()); // Using player ID 2
+        List<Card> hand = game.getHands().get(player2.getId());
         hand.clear();
         hand.add(new Card(5, Card.Color.YELLOW));
 
-        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.VALUE, 3); // Using GameManager.giveHint
+        ActionResult result = game.giveHint(player1.getId(), player2.getId(), HintType.VALUE, 3);
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("No matching cards found"));
-        assertEquals(2, game.getHints()); // Hint tokens should remain unchanged
+        assertEquals(2, game.getHints());
     }
 
     @Test
     public void testGiveHintToInvalidPlayer() {
-        ActionResult result = new HintAction(game, player1.getId(), player3.getId(), HintType.VALUE, 3).execute(); // Using GameManager.giveHint
+        ActionResult result = new HintAction(game, player1.getId(), player3.getId(), HintType.VALUE, 3).execute();
 
         assertFalse(result.isSuccess());
         assertTrue(result.getMessage().contains("Target player not found"));
-        assertEquals(8, game.getHints()); // Hint tokens should remain full
+        assertEquals(8, game.getHints());
     }
 }
